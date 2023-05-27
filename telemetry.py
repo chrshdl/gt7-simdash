@@ -1,0 +1,1 @@
+from grantourismo import Feed
