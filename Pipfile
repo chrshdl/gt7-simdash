@@ -5,8 +5,10 @@ name = "pypi"
 
 [packages]
 granturismo = {editable = true, ref = "main", git = "https://github.com/lucaspettit/telempy.git"}
+python-socketio = "*"
+uvicorn = {extras = ["standard"], version = "*"}
 
 [dev-packages]
 
 [requires]
-python_version = "3.9"
+python_version = "3.10"
