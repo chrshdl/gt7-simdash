@@ -1,10 +1,11 @@
 [[source]]
-url = "https://pypi.python.org/simple"
+url = "https://pypi.org/simple"
 verify_ssl = true
 name = "pypi"
 
 [packages]
-granturismo = {editable = true, ref = "main", git = "https://github.com/lucaspettit/telempy.git"}
+pygame = "*"
+salsa20 = "*"
 
 [dev-packages]
 
