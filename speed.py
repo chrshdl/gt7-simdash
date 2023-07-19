@@ -14,6 +14,5 @@ class Odometer(pygame.sprite.Sprite):
   def update(self):
     self.image.fill((17,30,38))
     self.speed = (self.speed + 1) % 400
-    self.text = self.font.render(f"{str(self.speed):>3}", True, (64,84,60))
-    text_rect = self.text.get_rect()
-    self.image.blit(self.text, [10,-17])
+    text = self.font.render(f"{str(self.speed):>3}", True, (64,84,60))
+    self.image.blit(text, [10,-17])
