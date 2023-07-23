@@ -1,30 +1,40 @@
 import pygame
-from speed import Odometer
+from pygame.locals import *
+import sys
+from speed import Speedometer
 
 W = 800 
 H = 480
 
 pygame.init()
-screen = pygame.display.set_mode((W,H))
+screen = pygame.display.set_mode((W,H), pygame.RESIZABLE)
+monitor_size = [pygame.display.Info().current_w, pygame.display.Info().current_h]
 clock = pygame.time.Clock()
 
-middle_group = pygame.sprite.Group()
-ow = 240
-oh = 130
-middle_group.add(Odometer(ow, oh, (W-ow)//2, (H-oh)//2))
+sprites = pygame.sprite.Group()
+sprites.add(Speedometer(240, 130, (W-240)//2, (H-130)//2))
 
-active = True
+fullscreen = False
 
-while active:
+while True:
   for event in pygame.event.get():
     if event.type == pygame.QUIT:
-      active = False
+      pygame.quit()
+      sys.exit()
+    if event.type == KEYDOWN:
+      if event.key == K_ESCAPE:
+        pygame.quit()
+        sys.exit()
+      if event.key == K_f:
+        fullscreen = not fullscreen
+        if fullscreen:
+          screen = pygame.display.set_mode(monitor_size, pygame.FULLSCREEN)
+        else:
+          screen = pygame.display.set_mode((W,H), pygame.RESIZABLE)
   
-  middle_group.update()
-  middle_group.draw(screen)
+  sprites.update()
+  sprites.draw(screen)
   pygame.display.update()
 
-  clock.tick(30)
+  clock.tick(60)
 
-pygame.quit()  
- 

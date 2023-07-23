@@ -1,6 +1,6 @@
 import pygame
 
-class Odometer(pygame.sprite.Sprite):
+class Speedometer(pygame.sprite.Sprite):
   def __init__(self, w, h, x, y):
     super().__init__() 
     self.speed = 0
