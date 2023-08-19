@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 pygame = "*"
 salsa20 = "*"
+granturismo = {git = "https://github.com/lucaspettit/telempy.git"}
 
 [dev-packages]
 

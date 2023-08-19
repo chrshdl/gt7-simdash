@@ -11,8 +11,8 @@ class Speedometer(pygame.sprite.Sprite):
     self.rect.y = y
     self.font = pygame.font.Font('digital-7-mono.ttf', 160)
 
-  def update(self):
+  def update(self, value):
     self.image.fill((17,30,38))
-    self.speed = (self.speed + 1) % 400
+    self.speed =  value
     text = self.font.render(f"{str(self.speed):>3}", True, (64,84,60))
     self.image.blit(text, [10,-17])
