@@ -2,7 +2,7 @@ import pygame
 from pygame.locals import *
 import sys
 from speed import Speedometer
-from granturismo import Feed
+from granturismo.intake import Listener
 
 W = 800 
 H = 480
@@ -17,14 +17,16 @@ if __name__ == "__main__":
   pygame.init()
   screen = pygame.display.set_mode((W,H), pygame.RESIZABLE)
   monitor_size = [pygame.display.Info().current_w, pygame.display.Info().current_h]
-  clock = pygame.time.Clock()
 
   sprites = pygame.sprite.Group()
   sprites.add(Speedometer(240, 130, (W-240)//2, (H-130)//2))
-
+  
   fullscreen = False
 
-  with Feed(ip_address) as feed:
+  listener = Listener(ip_address)
+  listener.start()
+
+  try:
     while True:
       for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -41,10 +43,11 @@ if __name__ == "__main__":
             else:
               screen = pygame.display.set_mode((W,H), pygame.RESIZABLE)
 
-      packet = feed.get()
-      sprites.update(str(packet.car_speed))
+      packet = listener.get()
+      sprites.update(int(3.6*packet.car_speed))
       sprites.draw(screen)
       pygame.display.update()
 
-      clock.tick(60)
+  finally:
+    listener.close()
 
