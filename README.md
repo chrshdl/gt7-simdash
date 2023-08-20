@@ -5,4 +5,4 @@ A toy implementation of a granturismo 7 dash.
 
 Usage
 -----
-./main.py <PS5-IP>
+./main.py <PS5.IP>
