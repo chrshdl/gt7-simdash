@@ -5,7 +5,6 @@ name = "pypi"
 
 [packages]
 pygame = "*"
-salsa20 = "*"
 granturismo = "*"
 
 [dev-packages]

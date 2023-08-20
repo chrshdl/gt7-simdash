@@ -2,7 +2,10 @@ import pygame
 from pygame.locals import *
 import sys
 from speed import Speedometer
+from gear import GearIndicator
 from granturismo.intake import Listener
+from unittest.mock import Mock
+
 
 W = 800 
 H = 480
@@ -20,34 +23,41 @@ if __name__ == "__main__":
 
   sprites = pygame.sprite.Group()
   sprites.add(Speedometer(240, 130, (W-240)//2, (H-130)//2))
-  
+  sprites.add(GearIndicator(60,60, 740, 400))
+
+  data = Mock()
+  data.car_speed = 0
+  data.current_gear = 0
+
+  sprites.update(data)
+  sprites.draw(screen)
+  pygame.display.update()
+
   fullscreen = False
 
   listener = Listener(ip_address)
   listener.start()
 
-  try:
-    while True:
-      for event in pygame.event.get():
-        if event.type == pygame.QUIT:
+  while True:
+    for event in pygame.event.get():
+      if event.type == pygame.QUIT:
+        listener.close()
+        pygame.quit()
+        sys.exit()
+      if event.type == KEYDOWN:
+        if event.key == K_ESCAPE:
+          listener.close()
           pygame.quit()
           sys.exit()
-        if event.type == KEYDOWN:
-          if event.key == K_ESCAPE:
-            pygame.quit()
-            sys.exit()
-          if event.key == K_f:
-            fullscreen = not fullscreen
-            if fullscreen:
-              screen = pygame.display.set_mode(monitor_size, pygame.FULLSCREEN)
-            else:
-              screen = pygame.display.set_mode((W,H), pygame.RESIZABLE)
+        if event.key == K_f:
+          fullscreen = not fullscreen
+          if fullscreen:
+            screen = pygame.display.set_mode(monitor_size, pygame.FULLSCREEN)
+          else:
+            screen = pygame.display.set_mode((W,H), pygame.RESIZABLE)
 
-      packet = listener.get()
-      sprites.update(int(3.6*packet.car_speed))
-      sprites.draw(screen)
-      pygame.display.update()
-
-  finally:
-    listener.close()
+    packet = listener.get()
+    sprites.update(packet)
+    sprites.draw(screen)
+    pygame.display.update()
 
