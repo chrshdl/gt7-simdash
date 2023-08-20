@@ -4,7 +4,8 @@ from pygame.locals import *
 import sys
 from speed import Speedometer
 from gear import GearIndicator
-from granturismo.intake import Listener
+from rpm import RPM
+from granturismo.intake import Feed 
 from unittest.mock import Mock
 
 
@@ -23,21 +24,22 @@ if __name__ == "__main__":
   monitor_size = [pygame.display.Info().current_w, pygame.display.Info().current_h]
 
   sprites = pygame.sprite.Group()
-  sprites.add(Speedometer(240, 130, (W-240)//2, (H-130)//2))
+  sprites.add(Speedometer(360, 160, (W-360)//2+160, (H-160)//2))
   sprites.add(GearIndicator(60,60, 720, 400))
+  sprites.add(RPM(0,20))
 
   packet = Mock()
-  packet.car_speed = 23
-  packet.current_gear = 4
+  packet.car_speed = 0/3.6
+  packet.current_gear = None
 
   sprites.update(packet)
   sprites.draw(screen)
-  pygame.display.update()
+  pygame.display.flip()
 
   fullscreen = True
 
   if ip_address != None:
-    listener = Listener(ip_address)
+    listener = Feed(ip_address)
     listener.start()
 
   while True:
@@ -63,6 +65,7 @@ if __name__ == "__main__":
     if ip_address != None:
       packet = listener.get()
     sprites.update(packet)
+    screen.fill((0,0,0))
     sprites.draw(screen)
-    pygame.display.update()
+    pygame.display.flip()
 
