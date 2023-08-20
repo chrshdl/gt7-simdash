@@ -12,7 +12,14 @@ class GearIndicator(pygame.sprite.Sprite):
 
   def update(self, data):
     self.image.fill((17,30,38))
-    gear = "N" if data.current_gear == 0 else data.current_gear
-    text = self.font.render(f"{str(gear)}", True, (64,84,60))
+
+    if data.current_gear == 0:
+      gear = "R"
+    elif data.current_gear == None:
+      gear = "N"
+    else:
+      gear = str(data.current_gear)
+
+    text = self.font.render(f"{gear}", True, (64,84,60))
     self.image.blit(text, [15,0])
 
