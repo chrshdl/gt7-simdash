@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 pygame = "*"
-granturismo = "*"
+granturismo = "==0.0.10"
 
 [dev-packages]
 
