@@ -5,7 +5,7 @@ import sys
 from speed import Speedometer
 from gear import GearIndicator
 from rpm import RPM
-from granturismo.intake import Feed 
+from granturismo.intake import Listener 
 from unittest.mock import Mock
 
 
@@ -23,23 +23,24 @@ if __name__ == "__main__":
   screen = pygame.display.set_mode((W,H), pygame.FULLSCREEN)
   monitor_size = [pygame.display.Info().current_w, pygame.display.Info().current_h]
 
+  #bg = pygame.image.load("rpm1.png")
+
   sprites = pygame.sprite.Group()
   sprites.add(Speedometer(360, 160, (W-360)//2+160, (H-160)//2))
   sprites.add(GearIndicator(60,60, 720, 400))
-  sprites.add(RPM(0,20))
+  sprites.add(RPM(W,70))
+
+  #screen.blit(bg, bg.get_rect())
 
   packet = Mock()
   packet.car_speed = 0/3.6
   packet.current_gear = None
-
-  sprites.update(packet)
-  sprites.draw(screen)
-  pygame.display.flip()
+  packet.engine_rpm = 0.0
 
   fullscreen = True
 
   if ip_address != None:
-    listener = Feed(ip_address)
+    listener = Listener(ip_address)
     listener.start()
 
   while True:
@@ -64,8 +65,13 @@ if __name__ == "__main__":
 
     if ip_address != None:
       packet = listener.get()
-    sprites.update(packet)
+    else:
+      packet.engine_rpm = (packet.engine_rpm + 10) % 7001
+      packet.car_speed = (packet.car_speed + 1) % 255 
+    #screen.fill((17,30,38))
     screen.fill((0,0,0))
+    sprites.update(packet)
     sprites.draw(screen)
+    #screen.blit(bg, bg.get_rect())
     pygame.display.flip()
 
