@@ -1,31 +1,23 @@
 import pygame
 
 class RPM(pygame.sprite.Sprite):
-  def __init__(self, w, h):
+  def __init__(self, x, y, w, h, name, color=(0,0,0)):
     super().__init__()
     self.image = pygame.Surface((w,h), pygame.SRCALPHA)
-    self.image = self.image.convert_alpha()
+    self.image.fill(color)
     self.rect = self.image.get_rect()
-    self.height = h
+    self.rect.x = x
+    self.rect.y = y
+    self.name = name
 
   def update(self, data):
-    width = 10
-    margin = 1
-    offset = 2
-
-    self.image.fill((17,30,38))
-
     rpm = int(data.engine_rpm) // 100
 
-    for step in range(rpm):
-      color = (64,84,60)
-      pygame.draw.rect(self.image,
-        color,
-        [
-          offset + (margin + width) * step + margin,
-          0,
-          width,
-          self.height
-        ]
-      )
+    if self.name <= rpm:
+      if rpm >= 64 and self.name >=64:
+        self.image.fill((255,0,0))
+      else:
+        self.image.fill((64,84,60))
+    else:
+      self.image.fill((0,0,0))
 
