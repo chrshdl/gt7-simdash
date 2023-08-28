@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+import argparse
+import json
 import pygame
 from pygame.locals import *
 import sys
@@ -8,21 +10,31 @@ from rpm import RPM
 from unittest.mock import Mock
 
 
-W = 800 
-H = 480
+def run(conf):
 
-if __name__ == "__main__":
-  if len(sys.argv) < 2:
-    print(f"\n*** Usage with PS5: {sys.argv[0]} <PS5-IP>")
-    ip_address = None
-  else:
-    ip_address = sys.argv[1]
+  W = conf["width"] 
+  H = conf["height"]
+  fullscreen = conf["fullscreen"]
+  ip_address = conf["ps5_ip"]
+
+  if ip_address != None:
     from granturismo.intake import Feed
     listener = Feed(ip_address)
     listener.start()
+  else:
+    packet = Mock()
+    packet.car_speed = 0/3.6
+    packet.current_gear = 3
+    packet.engine_rpm = 0.0
+    packet.rpm_alert.min = 4500
 
   pygame.init()
-  screen = pygame.display.set_mode((W,H), pygame.FULLSCREEN)
+
+  if fullscreen:
+    screen = pygame.display.set_mode((W,H), pygame.FULLSCREEN)
+  else:
+    screen = pygame.display.set_mode((W,H), pygame.RESIZABLE)
+
   monitor_size = [pygame.display.Info().current_w, pygame.display.Info().current_h]
   clock = pygame.time.Clock()
 
@@ -45,13 +57,6 @@ if __name__ == "__main__":
       step) for step in range(71)
   )
 
-  packet = Mock()
-  packet.car_speed = 0/3.6
-  packet.current_gear = 3
-  packet.engine_rpm = 0.0
-  packet.rpm_alert.min = 4500
-
-  fullscreen = True
 
   while True:
     for event in pygame.event.get():
@@ -76,11 +81,23 @@ if __name__ == "__main__":
     if ip_address != None:
       packet = listener.get()
     else:
-      packet.engine_rpm = 4601 #(packet.engine_rpm + 30) % 7001
-      packet.car_speed = 120/3.6 #(packet.car_speed + 1) % 255
+      packet.engine_rpm = (packet.engine_rpm + 30) % 7001
+      packet.car_speed = (packet.car_speed + 1) % 255
+
     sprites.update(packet)
     sprites.draw(screen)
-    # screen.blit(bg, bg.get_rect())
     pygame.display.flip()
     clock.tick(60)
+
+
+if __name__ == "__main__":
+  parser = argparse.ArgumentParser(description="PS5 sim dash")
+  parser.add_argument("--config", help="json with the config", default="config.json")
+  args = parser.parse_args()
+
+  with open(args.config, 'r') as fid:
+    config = json.load(fid)
+
+  run(config)
+
 
