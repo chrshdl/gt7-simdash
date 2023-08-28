@@ -8,10 +8,10 @@ class GearIndicator(pygame.sprite.Sprite):
     self.rect = self.image.get_rect()
     self.rect.x = x
     self.rect.y = y
-    self.font = pygame.font.Font("digital-7-mono.ttf", 60)
+    self.font = pygame.font.Font("digital-7-mono.ttf", 320)
 
   def update(self, data):
-    self.image.fill((17,30,38))
+    self.image.fill((0,0,0))
     if data.flags.in_gear == False:
       gear = "N"
     else:
@@ -22,6 +22,6 @@ class GearIndicator(pygame.sprite.Sprite):
       else:
         gear = str(data.current_gear)
 
-    text = self.font.render(f"{gear}", True, (64,84,60))
-    self.image.blit(text, [15,0])
+    text = self.font.render(f"{gear}", True, (165,165,165))
+    self.image.blit(text, [60,-30])
 

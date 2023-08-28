@@ -22,42 +22,36 @@ if __name__ == "__main__":
     listener.start()
 
   pygame.init()
-  screen = pygame.display.set_mode((W,H), pygame.RESIZABLE)
+  screen = pygame.display.set_mode((W,H), pygame.FULLSCREEN)
   monitor_size = [pygame.display.Info().current_w, pygame.display.Info().current_h]
   clock = pygame.time.Clock()
 
-  bg = pygame.image.load("rpm1.png")
- # bg.set_alpha(128)
-  bg = pygame.transform.scale(bg, (.96*bg.get_rect().width, .96*bg.get_rect().height))
-
   sprites = pygame.sprite.Group()
 
-  sprites.add(Speedometer(360, 160, (W-160)//2, (H+160)//2))
-  sprites.add(GearIndicator(60,60, 720, 400))
+  sprites.add(Speedometer(360, 160, 0, 200))
+  sprites.add(GearIndicator(260,260, 520, 120))
 
   width = 10
-  height = 270
+  height = 70
   margin = 1
   offset = 2
 
   sprites.add(
     RPM(
       offset + (margin + width) * step + margin,
-      0,
+      20,
       width,
       height,
       step) for step in range(71)
   )
 
-
-  screen.blit(bg, bg.get_rect())
-
   packet = Mock()
   packet.car_speed = 0/3.6
-  packet.current_gear = None
+  packet.current_gear = 3
   packet.engine_rpm = 0.0
+  packet.rpm_alert.min = 4500
 
-  fullscreen = False
+  fullscreen = True
 
   while True:
     for event in pygame.event.get():
@@ -82,11 +76,11 @@ if __name__ == "__main__":
     if ip_address != None:
       packet = listener.get()
     else:
-      packet.engine_rpm = (packet.engine_rpm + 10) % 7001
-      packet.car_speed = (packet.car_speed + 1) % 255 
+      packet.engine_rpm = 4601 #(packet.engine_rpm + 30) % 7001
+      packet.car_speed = 120/3.6 #(packet.car_speed + 1) % 255
     sprites.update(packet)
     sprites.draw(screen)
-    screen.blit(bg, bg.get_rect())
+    # screen.blit(bg, bg.get_rect())
     pygame.display.flip()
     clock.tick(60)
 
