@@ -17,8 +17,8 @@ if __name__ == "__main__":
     ip_address = None
   else:
     ip_address = sys.argv[1]
-    from granturismo.intake import Listener
-    listener = Listener(ip_address)
+    from granturismo.intake import Feed
+    listener = Feed(ip_address)
     listener.start()
 
   pygame.init()
