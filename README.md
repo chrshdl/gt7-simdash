@@ -3,6 +3,16 @@ A toy implementation of a granturismo 7 dash.
 
 <img width=600px src="https://raw.githubusercontent.com/chrshdl/gt7-simdash/master/dash.png" />
 
+Installation
+-----
+```
+$ pipenv run pip install --upgrade wheel
+$ pipenv --python 3.9
+$ pipenv shell
+(gt7-simdash) $ pipenv install
+```
 Usage
 -----
-./main.py <PS5.IP>
+```
+(gt7-simdash) $ ./main.py <PS5.IP>
+```
