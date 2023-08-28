@@ -14,5 +14,5 @@ $ pipenv shell
 Usage
 -----
 ```
-(gt7-simdash) $ ./main.py <PS5.IP>
+(gt7-simdash) $ ./main.py
 ```
