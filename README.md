@@ -1,7 +1,7 @@
 # gt7-simdash
 A toy implementation of a granturismo 7 dash.
 
-<img width=600px src="https://raw.githubusercontent.com/chrshdl/gt7-simdash/simple_ui/simple_ui.mp4" />
+<video width=600px src="https://raw.githubusercontent.com/chrshdl/gt7-simdash/simple_ui/simple_ui.mp4" />
 
 Installation
 -----
