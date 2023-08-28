@@ -5,7 +5,9 @@ name = "pypi"
 
 [packages]
 pygame = "*"
-granturismo = "==0.0.10"
+wheel = "==0.37.0"
+setuptools = "*"
+granturismo = {git = "https://github.com/chrshdl/granturismo.git"}
 
 [dev-packages]
 
