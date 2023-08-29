@@ -47,7 +47,7 @@ def run(conf):
   rpm_max = int(packet.rpm_alert.max) // 100
   print(f"rpm max={rpm_max}")
 
-  width = W//rpm_max
+  width = W//(rpm_max + 10)
   height = 70
   margin = 1
   offset = 2
