@@ -50,7 +50,7 @@ def run(conf):
   print(f"rpm max={rpm_max}")
 
   width = W//(rpm_max + 10)
-  height = 70
+  height = 40
   margin = 1
   offset = 2
 
