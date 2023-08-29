@@ -49,14 +49,16 @@ def run(conf):
   offset = 2
 
   packet = listener.get()
-  
+  rpm_max = int(packet.rpm_alert.max) // 100
+  print(f"rpm max={rpm_max}")
+
   sprites.add(
     RPM(
       offset + (margin + width) * step + margin,
       20,
       width,
       height,
-      step) for step in range(int(packet.rpm_alert.max) // 100)
+      step) for step in range(rpm_max + 1)
   )
 
 
