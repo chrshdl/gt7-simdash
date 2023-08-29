@@ -48,13 +48,15 @@ def run(conf):
   margin = 1
   offset = 2
 
+  packet = listener.get()
+  
   sprites.add(
     RPM(
       offset + (margin + width) * step + margin,
       20,
       width,
       height,
-      step) for step in range(71)
+      step) for step in range(int(packet.rpm_alert.max) // 100)
   )
 
 
