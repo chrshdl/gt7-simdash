@@ -45,6 +45,8 @@ def run(conf):
 
   packet = listener.get()
   rpm_max = int(packet.rpm_alert.max) // 100
+  rpm_min = int(packet.rpm_alert.min) // 100
+  print(f"rpm min={rpm_min}")
   print(f"rpm max={rpm_max}")
 
   width = W//(rpm_max + 10)

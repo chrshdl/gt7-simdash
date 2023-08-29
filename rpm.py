@@ -12,17 +12,17 @@ class RPM(pygame.sprite.Sprite):
 
   def update(self, data):
     rpm = int(data.engine_rpm) // 100
-    rpm_alert = int(data.rpm_alert.min) // 100
+    rpm_alert_min = int(data.rpm_alert.min) // 100
 
     if self.name <= rpm:
-      if rpm >= rpm_alert and self.name >= rpm_alert:
+      if rpm >= rpm_alert_min and self.name >= rpm_alert_min:
         self.image.fill((82,24,21))
       else:
         self.image.fill((5,44,27))
     else:
-      if self.name % 10 == 0 and self.name >= rpm_alert:
+      if self.name % 10 == 0 and self.name >= rpm_alert_min:
         self.image.fill((82,24,21))
-      elif self.name % 10 == 0 and not self.name >= rpm_alert:
+      elif self.name % 10 == 0 and not self.name >= rpm_alert_min:
         self.image.fill((30,30,30))
       else:
         self.image.fill((0,0,0))
