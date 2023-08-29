@@ -5,7 +5,7 @@ class RPM(pygame.sprite.Sprite):
     super().__init__()
     self.name = name
     if self.name % 10 == 0:
-      self.image = pygame.Surface((w,h+15))
+      self.image = pygame.Surface((w,h+35))
     else:
       self.image = pygame.Surface((w,h))
     self.image.fill(color)
