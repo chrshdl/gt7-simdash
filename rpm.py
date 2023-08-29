@@ -3,7 +3,6 @@ import pygame
 class RPM(pygame.sprite.Sprite):
   def __init__(self, x, y, w, h, name, color=(0,0,0)):
     super().__init__()
-    self.image.fill(color)
     self.rect = self.image.get_rect()
     self.rect.x = x
     self.rect.y = y
@@ -12,7 +11,7 @@ class RPM(pygame.sprite.Sprite):
       self.image = pygame.Surface((w,h+10))
     else:
       self.image = pygame.Surface((w,h))
-      
+    self.image.fill(color)
 
   def update(self, data):
     rpm = int(data.engine_rpm) // 100
