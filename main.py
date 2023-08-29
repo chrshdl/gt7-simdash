@@ -58,7 +58,7 @@ def run(conf):
       20,
       width,
       height,
-      step) for step in range(rpm_max + 1)
+      step) for step in range(rpm_max + 10)
   )
 
 
