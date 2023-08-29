@@ -43,14 +43,14 @@ def run(conf):
   sprites.add(Speedometer(360, 160, 0, 200))
   sprites.add(GearIndicator(260,260, 520, 120))
 
-  width = 10
-  height = 70
-  margin = 1
-  offset = 2
-
   packet = listener.get()
   rpm_max = int(packet.rpm_alert.max) // 100
   print(f"rpm max={rpm_max}")
+
+  width = W//rpm_max
+  height = 70
+  margin = 1
+  offset = 2
 
   sprites.add(
     RPM(
