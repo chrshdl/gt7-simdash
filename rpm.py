@@ -23,7 +23,9 @@ class RPM(pygame.sprite.Sprite):
       else:
         self.image.fill((5,44,27))
     else:
-      if self.name % 10 == 0:
+      if self.name >= rpm_alert:
+        self.image.fill((82,24,21))
+      elif self.name % 10 == 0 and self.name < rpm_alert:
         self.image.fill((30,30,30))
       else:
         self.image.fill((0,0,0))
