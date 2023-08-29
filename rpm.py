@@ -16,6 +16,7 @@ class RPM(pygame.sprite.Sprite):
   def update(self, data):
     rpm = int(data.engine_rpm) // 100
     rpm_alert = int(data.rpm_alert.min) // 100
+    print(f"rpm={data.engine_rpm}")
 
     if self.name <= rpm:
       if rpm >= rpm_alert and self.name >= rpm_alert:
