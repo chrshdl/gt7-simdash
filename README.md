@@ -1,7 +1,7 @@
 # gt7-simdash
 A toy implementation of a granturismo 7 dash.
 
-<img src="https://github.com/chrshdl/gt7-simdash/blob/simple_ui/simple_ui.png" width=600/>
+<img width=600px src="https://raw.githubusercontent.com/chrshdl/gt7-simdash/master/dash.png" />
 
 Installation
 -----
@@ -13,6 +13,7 @@ $ pipenv shell
 ```
 Usage
 -----
+Consider adding the IP address of your PS5 in the `config.json`. After that, simply run: 
 ```
 (gt7-simdash) $ ./main.py
 ```
