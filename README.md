@@ -13,6 +13,7 @@ $ pipenv shell
 ```
 Usage
 -----
+Consider adding the IP address of your PS5 in the `config.json`. After that, simply run: 
 ```
-(gt7-simdash) $ ./main.py <PS5.IP>
+(gt7-simdash) $ ./main.py
 ```

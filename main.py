@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+import argparse
+import json
 import pygame
 from pygame.locals import *
 import sys
@@ -7,57 +9,60 @@ from gear import GearIndicator
 from rpm import RPM
 from unittest.mock import Mock
 
-
-W = 800 
-H = 480
-
-if __name__ == "__main__":
-  if len(sys.argv) < 2:
-    print(f"\n*** Usage with PS5: {sys.argv[0]} <PS5-IP>")
-    ip_address = None
-  else:
-    ip_address = sys.argv[1]
-    from granturismo.intake import Listener
-    listener = Listener(ip_address)
-    listener.start()
-
-  pygame.init()
-  screen = pygame.display.set_mode((W,H), pygame.RESIZABLE)
-  monitor_size = [pygame.display.Info().current_w, pygame.display.Info().current_h]
-  clock = pygame.time.Clock()
-
-  bg = pygame.image.load("rpm1.png")
- # bg.set_alpha(128)
-  bg = pygame.transform.scale(bg, (.96*bg.get_rect().width, .96*bg.get_rect().height))
-
+def create_dash(W, rpm_alert_min, rpm_alert_max):
   sprites = pygame.sprite.Group()
+  sprites.add(Speedometer(360, 160, 0, 200))
+  sprites.add(GearIndicator(260,260, 520, 120))
 
-  sprites.add(Speedometer(360, 160, (W-160)//2, (H+160)//2))
-  sprites.add(GearIndicator(60,60, 720, 400))
+  rpm_min = int(rpm_alert_min) // 100
+  rpm_max = int(rpm_alert_max) // 100
 
-  width = 10
-  height = 270
   margin = 1
-  offset = 2
+  offset = 15
+  width = (W - (rpm_max * margin) - offset) // rpm_max
+  height = 35
 
   sprites.add(
     RPM(
       offset + (margin + width) * step + margin,
-      0,
+      50,
       width,
       height,
-      step) for step in range(71)
+      step) for step in range(rpm_max + 1)
   )
+  return sprites
 
 
-  screen.blit(bg, bg.get_rect())
+def run(conf):
 
-  packet = Mock()
-  packet.car_speed = 0/3.6
-  packet.current_gear = None
-  packet.engine_rpm = 0.0
+  W = conf["width"] 
+  H = conf["height"]
+  fullscreen = conf["fullscreen"]
+  ip_address = conf["ps5_ip"]
 
-  fullscreen = False
+  if ip_address != None:
+    from granturismo.intake import Feed
+    listener = Feed(ip_address)
+    listener.start()
+    packet = listener.get()
+  else:
+    packet = Mock()
+    packet.car_speed = 0/3.6
+    packet.current_gear = 3
+    packet.engine_rpm = 0.0
+    packet.rpm_alert.min = 7000
+    packet.rpm_alert.max = 9000
+
+  pygame.init()
+  clock = pygame.time.Clock()
+  monitor_size = (pygame.display.Info().current_w, pygame.display.Info().current_h)
+
+  if fullscreen:
+    screen = pygame.display.set_mode(monitor_size, pygame.FULLSCREEN)
+  else:
+    screen = pygame.display.set_mode((W,H), pygame.RESIZABLE)
+
+  dash = create_dash(W, packet.rpm_alert.min, packet.rpm_alert.max)
 
   while True:
     for event in pygame.event.get():
@@ -82,11 +87,23 @@ if __name__ == "__main__":
     if ip_address != None:
       packet = listener.get()
     else:
-      packet.engine_rpm = (packet.engine_rpm + 10) % 7001
-      packet.car_speed = (packet.car_speed + 1) % 255 
-    sprites.update(packet)
-    sprites.draw(screen)
-    screen.blit(bg, bg.get_rect())
+      packet.engine_rpm = (packet.engine_rpm + 50) % packet.rpm_alert.max
+      packet.car_speed = (packet.car_speed + 1) % 255
+
+    dash.update(packet)
+    dash.draw(screen)
     pygame.display.flip()
     clock.tick(60)
+
+
+if __name__ == "__main__":
+  parser = argparse.ArgumentParser(description="PS5 sim dash")
+  parser.add_argument("--config", help="json with the config", default="config.json")
+  args = parser.parse_args()
+
+  with open(args.config, 'r') as fid:
+    config = json.load(fid)
+
+  run(config)
+
 

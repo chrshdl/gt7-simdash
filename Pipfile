@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 pygame = "*"
-granturismo = "==0.0.10"
+granturismo = {git = "https://github.com/chrshdl/granturismo.git"}
 
 [dev-packages]
 
