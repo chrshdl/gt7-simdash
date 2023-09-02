@@ -11,21 +11,21 @@ from rpm import RPM
 
 def create_dash(W, rpm_alert_min, rpm_alert_max):
   sprites = pygame.sprite.Group()
-  sprites.add(Speedometer(360, 160, 0, 200))
-  sprites.add(GearIndicator(260,260, 520, 120))
+  sprites.add(Speedometer(360, 130, (W-360)//2, 330))
+  sprites.add(GearIndicator(160,220, (W-160)//2, 80))
 
   rpm_min = int(rpm_alert_min) // 100
   rpm_max = int(rpm_alert_max) // 100
 
-  margin = 0
+  margin = 1
   offset = 15
   width = (W - (rpm_max * margin) - offset) // rpm_max
-  height = 35
+  height = 20
 
   sprites.add(
     RPM(
       offset + (margin + width) * step + margin,
-      50,
+      20,
       width,
       height,
       step) for step in range(rpm_max + 1)
@@ -48,10 +48,11 @@ def run(conf):
     from unittest.mock import Mock
     packet = Mock()
     packet.car_speed = 0/3.6
-    packet.current_gear = 3
+    packet.current_gear = 4 
     packet.engine_rpm = 0.0
     packet.rpm_alert.min = 7000
-    packet.rpm_alert.max = 9000
+    packet.rpm_alert.max = 8000
+    packet.flags.rev_limiter_alert_active = False
 
   pygame.init()
   clock = pygame.time.Clock()
@@ -88,7 +89,7 @@ def run(conf):
       packet = listener.get()
     else:
       packet.engine_rpm = (packet.engine_rpm + 50) % packet.rpm_alert.max
-      packet.car_speed = (packet.car_speed + 1) % 255
+      packet.car_speed = (packet.car_speed + 1) % (255/3.6)
 
     dash.update(packet)
     dash.draw(screen)
