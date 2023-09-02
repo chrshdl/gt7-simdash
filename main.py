@@ -7,7 +7,7 @@ import sys
 from speed import Speedometer
 from gear import GearIndicator
 from rpm import RPM
-from unittest.mock import Mock
+
 
 def create_dash(W, rpm_alert_min, rpm_alert_max):
   sprites = pygame.sprite.Group()
@@ -17,7 +17,7 @@ def create_dash(W, rpm_alert_min, rpm_alert_max):
   rpm_min = int(rpm_alert_min) // 100
   rpm_max = int(rpm_alert_max) // 100
 
-  margin = 1
+  margin = 0
   offset = 15
   width = (W - (rpm_max * margin) - offset) // rpm_max
   height = 35
@@ -34,8 +34,7 @@ def create_dash(W, rpm_alert_min, rpm_alert_max):
 
 
 def run(conf):
-
-  W = conf["width"] 
+  W = conf["width"]
   H = conf["height"]
   fullscreen = conf["fullscreen"]
   ip_address = conf["ps5_ip"]
@@ -46,6 +45,7 @@ def run(conf):
     listener.start()
     packet = listener.get()
   else:
+    from unittest.mock import Mock
     packet = Mock()
     packet.car_speed = 0/3.6
     packet.current_gear = 3
@@ -105,5 +105,4 @@ if __name__ == "__main__":
     config = json.load(fid)
 
   run(config)
-
 
