@@ -5,15 +5,15 @@ class Speedometer(pygame.sprite.Sprite):
     super().__init__()
     self.image = pygame.Surface((w,h))
     self.image = self.image.convert()
-    self.image.fill((17,30,38))
+    self.image.fill((5,5,5)) #17,30,38
     self.rect = self.image.get_rect()
     self.rect.x = x
     self.rect.y = y
-    self.font = pygame.font.Font("digital-7-mono.ttf", 160)
+    self.font = pygame.font.Font("digital-7-mono.ttf", 120)
     self.font2 = pygame.font.Font("digital-7-mono.ttf", 30)
 
   def update(self, data):
-    self.image.fill((17,30,38))
+    self.image.fill((5,5,5)) #17,30,38
     speed =  str(int(data.car_speed * 3.6))
     speed = speed.center(len(speed))
     text = self.font.render(f"{speed}", True, (0,200,0)) #64,84,60
