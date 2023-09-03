@@ -15,7 +15,8 @@ class Speedometer(pygame.sprite.Sprite):
   def update(self, data):
     self.image.fill((17,30,38))
     speed =  str(int(data.car_speed * 3.6))
-    text = self.font.render(f"{speed:^4}", True, (0,200,0)) #64,84,60
+    speed = speed.center(len(speed))
+    text = self.font.render(f"{speed}", True, (0,200,0)) #64,84,60
     self.image.blit(text, text.get_rect(center = self.image.get_rect().center))
     km_h = self.font2.render("KM/H", True, (255,255,255))
     self.image.blit(km_h, km_h.get_rect(center = self.image.get_rect().center)) 
