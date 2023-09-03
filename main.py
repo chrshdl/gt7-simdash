@@ -11,7 +11,7 @@ from rpm import RPM
 
 def create_dash(W, rpm_alert_min, rpm_alert_max):
   sprites = pygame.sprite.Group()
-  sprites.add(Speedometer(360, 130, (W-360)//2, 330))
+  sprites.add(Speedometer(300, 130, (W-300)//2, 330))
   sprites.add(GearIndicator(160,220, (W-160)//2, 80))
 
   rpm_min = int(rpm_alert_min) // 100
@@ -20,7 +20,7 @@ def create_dash(W, rpm_alert_min, rpm_alert_max):
   margin = 1
   offset = 15
   width = (W - (rpm_max * margin) - offset) // rpm_max
-  height = 20
+  height = 25
 
   sprites.add(
     RPM(
@@ -51,7 +51,7 @@ def run(conf):
     packet.current_gear = 4 
     packet.engine_rpm = 0.0
     packet.rpm_alert.min = 7000
-    packet.rpm_alert.max = 8000
+    packet.rpm_alert.max = 8500
     packet.flags.rev_limiter_alert_active = False
 
   pygame.init()
@@ -89,7 +89,7 @@ def run(conf):
       packet = listener.get()
     else:
       packet.engine_rpm = (packet.engine_rpm + 50) % packet.rpm_alert.max
-      packet.car_speed = (packet.car_speed + 1) % (255/3.6)
+      packet.car_speed = (packet.car_speed + .1) % (255/3.6)
 
     dash.update(packet)
     dash.draw(screen)
