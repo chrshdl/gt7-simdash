@@ -7,10 +7,12 @@ import sys
 from speed import Speedometer
 from gear import GearIndicator
 from rpm import RPM
+from rgb import RGB
 
 
 def create_dash(W, rpm_alert_min, rpm_alert_max):
   sprites = pygame.sprite.Group()
+  sprites.add(RGB(1,1,1,1))
   sprites.add(Speedometer(220, 120, (W-220)//2, 330))
   sprites.add(GearIndicator(160,220, (W-160)//2, 80))
 
@@ -39,7 +41,8 @@ def run(conf):
   fullscreen = conf["fullscreen"]
   ip_address = conf["ps5_ip"]
 
-  if ip_address != None:
+
+  if ip_address is not None:
     from granturismo.intake import Feed
     listener = Feed(ip_address)
     listener.start()
@@ -50,8 +53,8 @@ def run(conf):
     packet.car_speed = 0/3.6
     packet.current_gear = 1 
     packet.engine_rpm = 0.0
-    packet.rpm_alert.min = 7000
-    packet.rpm_alert.max = 8500
+    packet.rpm_alert.min = 6500
+    packet.rpm_alert.max = 8000
     packet.flags.rev_limiter_alert_active = False
 
   pygame.init()
@@ -65,16 +68,17 @@ def run(conf):
 
   dash = create_dash(W, packet.rpm_alert.min, packet.rpm_alert.max)
 
+
   while True:
     for event in pygame.event.get():
       if event.type == pygame.QUIT:
-        if ip_address != None:
+        if ip_address is not None:
           listener.close()
         pygame.quit()
         sys.exit()
       if event.type == KEYDOWN:
         if event.key == K_ESCAPE:
-          if ip_address != None:
+          if ip_address is not None:
             listener.close()
           pygame.quit()
           sys.exit()
@@ -85,7 +89,7 @@ def run(conf):
           else:
             screen = pygame.display.set_mode((W,H), pygame.RESIZABLE)
 
-    if ip_address != None:
+    if ip_address is not None:
       packet = listener.get()
     else:
       packet.engine_rpm = (packet.engine_rpm + 50) % packet.rpm_alert.max

@@ -1,6 +1,10 @@
 import pygame
+import time
+
 
 class GearIndicator(pygame.sprite.Sprite):
+    
+
   def __init__(self, w, h, x, y):
     super().__init__()
     self.image = pygame.Surface((w,h))
@@ -13,7 +17,8 @@ class GearIndicator(pygame.sprite.Sprite):
 
     self.text_show = True
     self.blink_count = 0
-    self.blink_stop = 3
+    self.blink_stop = 1
+
 
   def blink_update(self):
     if self.blink_count < self.blink_stop:
