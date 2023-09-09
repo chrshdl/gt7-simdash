@@ -7,12 +7,14 @@ import sys
 from speed import Speedometer
 from gear import GearIndicator
 from rpm import RPM
-from rgb import RGB
 
+
+def get_platform_name():
+  import platform
+  return platform.uname()[4]
 
 def create_dash(W, rpm_alert_min, rpm_alert_max):
   sprites = pygame.sprite.Group()
-  sprites.add(RGB(1,1,1,1))
   sprites.add(Speedometer(220, 120, (W-220)//2, 330))
   sprites.add(GearIndicator(160,220, (W-160)//2, 80))
 
@@ -32,6 +34,10 @@ def create_dash(W, rpm_alert_min, rpm_alert_max):
       height,
       step) for step in range(rpm_max + 1)
   )
+
+  if get_platform_name() == 'aarch64':
+    from rgb import RGB
+    sprites.add(RGB(1,1,1,1))
   return sprites
 
 
