@@ -18,18 +18,21 @@ class HMI:
     rpm_max = int(rpm_alert_max) // 100
 
     margin = 1
-    offset = 15
-    width = (width
-             - rpm_max * margin
-             - offset) // rpm_max
+    offset = 0 
+    #width = (width
+    #         - rpm_max * margin
+    #         - offset) // rpm_max
+    step_width = 3
     height = 25
+
+    print(rpm_max*(step_width+margin))
 
     self.sprites.add(
       RPM(
-        offset + (margin + width) * step + margin,
-        20,
-        width,
+        step_width,
         height,
+        ((width - rpm_max * (margin + step_width)) // 2
+        +(offset + (margin + step_width) * step + margin), 20),
         step) for step in range(rpm_max + 1)
     )
     #TODO: move to RPM
