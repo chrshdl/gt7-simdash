@@ -3,14 +3,14 @@ import pygame
 GREEN = (40,90,27)
 BLACK = (0,0,0)
 RED = (250,0,0)
-DARK_RED = (160,0,0)
+DARK_RED = (90,0,0)
 GREY = (20,20,20)
 DARK_GREY = (10,10,10)
 BLUE = (0,0,255)
 
 
 class RPM(pygame.sprite.Sprite):
-  def __init__(self, w, h, pos, step, color=BLACK):
+  def __init__(self, w, h, pos, step):
     super().__init__()
     self.step = step
     if self.step % 10 == 0:
@@ -19,6 +19,7 @@ class RPM(pygame.sprite.Sprite):
       self.image = pygame.Surface((w,h))
     self.image = self.image.convert()
     self.rect = self.image.get_rect(topleft=pos)
+
 
   def update(self, data):
     current_rpm = int(data.engine_rpm) // 100

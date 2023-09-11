@@ -24,21 +24,21 @@ class Dash:
       self.listener.start()
     else:
       from unittest.mock import Mock, MagicMock
-      packet = Mock()
-      packet.car_speed = 0/3.6
-      packet.current_gear = None 
-      packet.engine_rpm = 900.0
-      packet.rpm_alert.min = 6500
-      packet.rpm_alert.max = 8000
-      packet.flags.rev_limiter_alert_active = False
+      self.packet = Mock()
+      self.packet.car_speed = 0/3.6
+      self.packet.current_gear = 1 
+      self.packet.engine_rpm = 900.0
+      self.packet.rpm_alert.min = 7000
+      self.packet.rpm_alert.max = 8000
+      self.packet.flags.rev_limiter_alert_active = False
       
       self.listener = Mock()
       self.listener.get = MagicMock(name='get')
-      self.listener.get.return_value = packet
+      self.listener.get.return_value = self.packet
       self.listener.close = MagicMock(name='close')
-
-    packet = self.listener.get()
-    self.hmi = HMI(packet.rpm_alert.min, packet.rpm_alert.max)
+    
+    self.packet = self.listener.get()
+    self.hmi = HMI(self.packet.rpm_alert.min, self.packet.rpm_alert.max)
 
 
   def close(self):
@@ -47,7 +47,20 @@ class Dash:
     sys.exit()
 
 
+  def _get(self):
+    self.packet.engine_rpm = (self.packet.engine_rpm+50) % self.packet.rpm_alert.max
+    if self.packet.engine_rpm >= self.packet.rpm_alert.min:
+      self.packet.flags.rev_limiter_alert_active = True
+    else:
+      self.packet.flags.rev_limiter_alert_active = False
+      if self.packet.engine_rpm < 50:
+        self.packet.current_gear = (self.packet.current_gear + 1) % 7
+    self.packet.car_speed = (self.packet.car_speed+.1) % (260/3.6)
+    return self.packet
+
+
   def run(self):
+    from unittest.mock import Mock
     while True:
       for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -55,8 +68,11 @@ class Dash:
         if event.type == KEYDOWN:
           if event.key == K_ESCAPE:
             self.close()
-      packet = self.listener.get()
-      self.hmi.run(packet)
+      if isinstance(self.packet, Mock):
+        self.packet = self._get()
+      else:  
+        self.packet = self.listener.get()
+      self.hmi.run(self.packet)
       pygame.display.flip()
       self.clock.tick(60)
 
