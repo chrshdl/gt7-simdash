@@ -31,6 +31,7 @@ class Dash:
       self.packet.rpm_alert.min = 7000
       self.packet.rpm_alert.max = 8000
       self.packet.flags.rev_limiter_alert_active = False
+      self.packet.last_lap_time = 165256
       
       self.listener = Mock()
       self.listener.get = MagicMock(name='get')
