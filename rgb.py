@@ -29,33 +29,32 @@ class RGB(pygame.sprite.Sprite):
     if data.flags.rev_limiter_alert_active:
       self.count += 1
       if self.count % 8 == 0:
-        self.set_all_pixels(RGB.RED)
+        self.show_all_rgb(RGB.RED)
       if self.count % 16 == 0:
         self.clear_all_rgb()
     else:
       if data.engine_rpm < 100:
         self.clear_all_rgb()
-      elif data.engine_rpm == 4500:
-        self.blinkt_rgb(2)
-      elif data.engine_rpm == 5000:
-        self.blinkt_rgb(4)
-      elif data.engine_rpm == 5500:
-        self.blinkt_rgb(6)
-      elif data.engine_rpm == 6000:
-        self.blinkt_rgb(8)
+      elif data.engine_rpm >= 4500:
+        self.show_rgb(2)
+      elif data.engine_rpm >= 5000:
+        self.show_rgb(4)
+      elif data.engine_rpm >= 5500:
+        self.show_rgb(6)
+      elif data.engine_rpm >= 6000:
+        self.show_rgb(8)
 
   def clear_all_rgb(self):
     blinkt.clear()
     blinkt.show()
     self.count = 0
 
-  def blinkt_rgb(self, amount):
+  def show_rgb(self, amount):
     for i in range(amount//2):
       blinkt.set_pixel(i, self.colors[i][0], self.colors[i][1], self.colors[i][2])
       blinkt.set_pixel(blinkt.NUM_PIXELS - 1 - i, self.colors[i][0], self.colors[i][1], self.colors[i][2])
     blinkt.show()
 
-  def set_all_pixels(self, color):
+  def show_all_rgb(self, color):
     blinkt.set_all(color[0], color[1], color[2])
     blinkt.show()
-

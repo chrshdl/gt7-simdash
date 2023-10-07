@@ -28,8 +28,8 @@ class Dash:
       self.packet.car_speed = 0/3.6
       self.packet.current_gear = 1 
       self.packet.engine_rpm = 900.0
-      self.packet.rpm_alert.min = 7000
-      self.packet.rpm_alert.max = 8000
+      self.packet.rpm_alert.min = 6000
+      self.packet.rpm_alert.max = 7500
       self.packet.flags.rev_limiter_alert_active = False
       self.packet.last_lap_time = 165256
       
@@ -39,7 +39,7 @@ class Dash:
       self.listener.close = MagicMock(name='close')
     
     self.packet = self.listener.get()
-    self.hmi = HMI(self.packet.rpm_alert.min, self.packet.rpm_alert.max)
+    self.hmi = HMI(self.packet.rpm_alert.max)
 
 
   def close(self):

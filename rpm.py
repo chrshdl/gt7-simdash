@@ -10,8 +10,13 @@ BLUE = (0,0,255)
 
 
 class RPM(pygame.sprite.Sprite):
-  def __init__(self, w, h, pos, step):
+  def __init__(self, screen_width, y, rpm_max, step):
     super().__init__()
+    margin = 1
+    w = 3
+    h = 22
+    offset_center = (screen_width - rpm_max * (margin + w)) // 2
+    pos = ((offset_center + (margin + w) * step + margin), y)
     self.step = step
     if self.step % 10 == 0:
       self.image = pygame.Surface((w,h+5))
@@ -31,7 +36,6 @@ class RPM(pygame.sprite.Sprite):
       else:
         self.image.fill(GREEN)
     else:
-      #if self.step % 10 == 0 and self.step >= rpm_alert_min:
       if self.step >= rpm_alert_min:
         self.image.fill(DARK_RED)
       elif self.step % 10 == 0 and not self.step >= rpm_alert_min:

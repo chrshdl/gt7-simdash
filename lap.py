@@ -3,10 +3,11 @@ import time
 
 
 class LastLap(pygame.sprite.Sprite):
-  def __init__(self, w, h, pos):
+  def __init__(self, w, h):
     super().__init__()
+    screen = pygame.display.get_surface()
     self.image = pygame.Surface((w,h)).convert()
-    self.rect = self.image.get_rect(topleft=(610,160))
+    self.rect = self.image.get_rect(topleft=(610,160))  # (screen.get_size()[0]//2, 400)
     self.font = pygame.font.Font("digital-7-mono.ttf", 40)
     self.font2 = pygame.font.Font("pixeltype.ttf", 36)
 
@@ -29,4 +30,3 @@ class LastLap(pygame.sprite.Sprite):
     label = self.font2.render("Last Lap", False, (200,200,200))
     midtop = tuple(map(sum, zip(self.image.get_rect().midtop, (0,10))))
     self.image.blit(label, label.get_rect(midtop=midtop))
-
