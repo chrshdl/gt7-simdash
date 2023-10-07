@@ -41,7 +41,7 @@ class RGB(pygame.sprite.Sprite):
         self.show_rgb(4)
       elif data.engine_rpm in range(int(.92*data.rpm_alert.min),int(data.rpm_alert.min)):
         self.show_rgb(6)
-      elif data.engine_rpm in range(int(rpm_alert.min),int(rpm_alert.max)):
+      elif data.engine_rpm in range(int(data.rpm_alert.min),int(data.rpm_alert.max)):
         self.show_rgb(8)
 
   def clear_all_rgb(self):
