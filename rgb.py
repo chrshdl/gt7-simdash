@@ -35,11 +35,11 @@ class RGB(pygame.sprite.Sprite):
     else:
       if data.engine_rpm < 100:
         self.clear_all_rgb()
-      elif data.engine_rpm in range(.75*rpm_alert.min,.83*rpm_alert.min):
+      elif data.engine_rpm in range(.75*data.rpm_alert.min,.83*data.rpm_alert.min):
         self.show_rgb(2)
-      elif data.engine_rpm in range(.83*rpm_alert.min,.92*rpm_alert.min):
+      elif data.engine_rpm in range(.83*data.rpm_alert.min,.92*data.rpm_alert.min):
         self.show_rgb(4)
-      elif data.engine_rpm in range(.92*rpm_alert.min,rpm_alert.min):
+      elif data.engine_rpm in range(.92*data.rpm_alert.min,data.rpm_alert.min):
         self.show_rgb(6)
       elif data.engine_rpm in range(rpm_alert.min,rpm_alert.max):
         self.show_rgb(8)
