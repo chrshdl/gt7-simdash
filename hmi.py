@@ -24,10 +24,11 @@ class HMI:
     self.rpm.add(
       RPM(screen_width, y, rpm_max, step) for step in range(rpm_max + 1)
     )
-    import platform  # TODO: move to class RPM?
-    if platform.machine().lower() == 'aarch64':
-      from rgb import RGB
-      self.rpm.add(RGB(1,1,1,1))
+    # FIXME: DISPLAY GLITCHES ON RASPBERRY PI /W HYPERPIXEL
+    #import platform  # TODO: move to class RPM?
+    #if platform.machine().lower() == 'aarch64':
+    #  from rgb import RGB
+    #  self.rpm.add(RGB(1,1,1,1))
 
 
 
