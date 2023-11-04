@@ -2,21 +2,22 @@ import pygame
 from speed import Speedometer
 from gear import GearIndicator
 from rpm import RPM
-from lap import LastLap
+from lap import LastLap, BestLap
 
 
 class HMI:
   def __init__(self, rpm_max):
     self.screen = pygame.display.get_surface()
     self.sprites = pygame.sprite.Group()
-    self.sprites.add(Speedometer(180, 120))
+    self.sprites.add(Speedometer(180, 120, 310, 10))
     self.sprites.add(GearIndicator(180, 220))
-    self.sprites.add(LastLap(180, 80))
+    self.sprites.add(LastLap(180, 88, 610, 10))
+    self.sprites.add(BestLap(180, 88, 610, 120))
 
     rpm_max = int(rpm_max) // 100
 
     self.rpm = pygame.sprite.Group()
-    self.add_rpm(140, rpm_max)
+    self.add_rpm(145, rpm_max)
 
 
   def add_rpm(self, y, rpm_max):

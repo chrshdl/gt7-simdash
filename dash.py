@@ -29,7 +29,7 @@ class Dash:
       self.packet.current_gear = 1 
       self.packet.engine_rpm = 900.0
       self.packet.rpm_alert.min = 6000
-      self.packet.rpm_alert.max = 7500
+      self.packet.rpm_alert.max = 7000
       self.packet.flags.rev_limiter_alert_active = False
       self.packet.last_lap_time = 165256
       

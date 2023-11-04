@@ -13,13 +13,13 @@ class RPM(pygame.sprite.Sprite):
   def __init__(self, screen_width, y, rpm_max, step):
     super().__init__()
     margin = 1
-    w = 3
-    h = 22
+    w = 4
+    h = 55
     offset_center = (screen_width - rpm_max * (margin + w)) // 2
     pos = ((offset_center + (margin + w) * step + margin), y)
     self.step = step
     if self.step % 10 == 0:
-      self.image = pygame.Surface((w,h+5))
+      self.image = pygame.Surface((w,h+7))
     else:
       self.image = pygame.Surface((w,h))
     self.image = self.image.convert()

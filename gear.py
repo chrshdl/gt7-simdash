@@ -7,7 +7,7 @@ class GearIndicator(pygame.sprite.Sprite):
     super().__init__()
     screen = pygame.display.get_surface()
     self.image = pygame.Surface((w,h)).convert()
-    self.rect = self.image.get_rect(center=(screen.get_size()[0]//2, 310))
+    self.rect = self.image.get_rect(center=(screen.get_size()[0]//2, 330))
     self.font = pygame.font.Font("digital-7-mono.ttf", 240)
 
 
