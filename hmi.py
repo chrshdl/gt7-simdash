@@ -35,8 +35,7 @@ class HMI:
     def refresh_rpm(self, packet):
         self.remove_all_rpm()
         self.add_rpm(self._normalize(packet.rpm_alert.max))
-        self.update_rpm(packet)
-
+        
     def remove_all_rpm(self):
         for item in self.rpm:
             self.rpm.remove(item)
