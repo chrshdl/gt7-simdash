@@ -78,19 +78,19 @@ class Dash:
                 self.packet = self._get()
             else:
                 self.packet = self.listener.get()
-                for event in pygame.event.get():
-                    if event.type == Event.NEW_CAR_EVENT.name():
-                        self.hmi.car_id = self.packet.car_id
-                        self.hmi.refresh_rpm(self.packet)
-                    if event.type == pygame.QUIT:
+            for event in pygame.event.get():
+                if event.type == Event.NEW_CAR_EVENT.name():
+                    self.hmi.car_id = self.packet.car_id
+                    self.hmi.refresh_rpm(self.packet)
+                if event.type == pygame.QUIT:
+                    self.close()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
                         self.close()
-                    if event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_ESCAPE:
-                            self.close()
-                        if event.key == pygame.K_SPACE:
-                            screenshot = pygame.Surface((self.W, self.H))
-                            screenshot.blit(pygame.display.get_surface(), (0, 0))
-                            pygame.image.save(screenshot, "gt7-simdash.png")
+                    if event.key == pygame.K_SPACE:
+                        screenshot = pygame.Surface((self.W, self.H))
+                        screenshot.blit(pygame.display.get_surface(), (0, 0))
+                        pygame.image.save(screenshot, "gt7-simdash.png")
                 self.hmi.run(self.packet)
                 pygame.display.flip()
                 self.clock.tick(60)
