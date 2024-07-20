@@ -1,7 +1,7 @@
 # gt7-simdash
 A toy implementation of a gran turismo 7 dash.
 
-<img width=480px src="https://raw.githubusercontent.com/chrshdl/gt7-simdash/master/example.png" />
+<img width=480px src="https://raw.githubusercontent.com/chrshdl/gt7-simdash/master/gt7-simdash.png" />
 
 Installation
 -----
