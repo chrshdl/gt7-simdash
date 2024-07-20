@@ -43,6 +43,7 @@ class Dash:
         hmi = HMI()
         hmi.start()
 
+        import time
         from unittest.mock import Mock
 
         while True:
@@ -53,6 +54,7 @@ class Dash:
                 if event.type == Event.HMI_STARTED_EVENT.name():
 
                     hmi.draw_text("Initializing, please wait...")
+                    time.sleep(3)
 
                     if self.ip_address is not None:
                         from granturismo.intake import Feed
@@ -60,10 +62,7 @@ class Dash:
                         listener = Feed(self.ip_address)
                         listener.start()
                     else:
-                        import time
                         from unittest.mock import Mock, MagicMock
-
-                        time.sleep(3)
 
                         packet = Mock()
                         packet.car_speed = 0 / 3.6
