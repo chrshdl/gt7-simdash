@@ -40,7 +40,6 @@ class DebugSprite(AbstractSprite):
 
 class InitializingSprite(AbstractSprite):
     def update(self, data):
-        super().update(data)
         self.font = pygame.font.Font("pixeltype.ttf", 56)
         data_render = self.font.render(data, True, (200, 200, 200))
         center = self.image.get_rect().center

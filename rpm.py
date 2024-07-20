@@ -9,7 +9,7 @@ class RPM(pygame.sprite.Sprite):
         self.rpm_min = rpm_min
         self.rpm_max = rpm_max
         margin = 2
-        self.w = 3
+        self.w = 4
         self.h = 33
 
         offset_center = (screen_width - rpm_max * (margin + self.w)) // 2
