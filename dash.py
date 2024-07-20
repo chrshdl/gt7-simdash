@@ -68,8 +68,8 @@ class Dash:
                         packet.car_speed = 0 / 3.6
                         packet.current_gear = 1
                         packet.engine_rpm = 900.0
-                        packet.rpm_alert.min = 6000
-                        packet.rpm_alert.max = 7000
+                        packet.rpm_alert.min = 7800
+                        packet.rpm_alert.max = 8000
                         packet.flags.rev_limiter_alert_active = False
                         packet.last_lap_time = 165256
                         packet.best_lap_time = None
@@ -81,7 +81,6 @@ class Dash:
                         listener.get = MagicMock(name="get")
                         listener.get.return_value = packet
                         listener.close = MagicMock(name="close")
-                    packet = listener.get()
 
                 if event.type == pygame.QUIT:
                     listener.close()

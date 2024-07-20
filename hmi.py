@@ -32,7 +32,7 @@ class HMI:
     def add_rpm(self, rpm_min, rpm_max):
         y = 165
 
-        rpm_min = self._normalize(rpm_min)
+        rpm_min = self._normalize(rpm_min) - 3
         rpm_max = self._normalize(rpm_max) + 10
 
         screen_width = self.screen.get_size()[0]
