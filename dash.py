@@ -19,9 +19,10 @@ class Dash:
             pygame.display.Info().current_w,
             pygame.display.Info().current_h,
         )
-        screen = pygame.display.set_mode((self.W, self.H), pygame.RESIZABLE)
-        if fullscreen:
-            screen = pygame.display.set_mode(monitor_size, pygame.FULLSCREEN)
+        if not fullscreen:
+            pygame.display.set_mode((self.W, self.H), pygame.RESIZABLE)
+        else:
+            pygame.display.set_mode(monitor_size, pygame.FULLSCREEN)
 
         if ip_address is not None:
             from granturismo.intake import Feed
@@ -76,7 +77,6 @@ class Dash:
         while True:
             for event in pygame.event.get():
                 if event.type == Event.NEW_CAR_EVENT.name():
-                    self.hmi.car_id = self.packet.car_id
                     self.hmi.refresh_rpm(self.packet.rpm_alert.max)
                 if event.type == pygame.QUIT:
                     self.close()

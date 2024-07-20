@@ -18,7 +18,7 @@ class HMI:
         self.sprites.add(BestLap(180, 88, 610, 120))
         self.sprites.add(DebugSprite(180, 88, 610, 230, 26))
 
-        self.car_id = car_id
+        self._car_id = car_id
 
         rpm_max = self._normalize(rpm_max)
         self.rpm = pygame.sprite.Group()
@@ -48,9 +48,23 @@ class HMI:
         self.sprites.update(packet)
         self.sprites.draw(self.screen)
 
+    @property
+    def car_id(self):
+        return self._car_id
+
+    @car_id.setter
+    def car_id(self, new_car_id):
+        if self._car_id != new_car_id:
+            self._car_id = new_car_id
+            self.on_car_id_change()
+
+    def on_car_id_change(self):
+        print(f"car_id changed to: {self.car_id}")
+        pygame.event.post(pygame.event.Event(Event.NEW_CAR_EVENT.name()))
+        print(f"emmiting NEW_CAR_EVENT")
+
     def run(self, packet):
         self.screen.fill(Color.BLACK.rgb())
-        if self.car_id != packet.car_id:
-            pygame.event.post(pygame.event.Event(Event.NEW_CAR_EVENT.name()))
+        self.car_id = packet.car_id
         self.update_sprites(packet)
         self.update_rpm(packet)
