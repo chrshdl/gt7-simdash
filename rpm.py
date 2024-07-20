@@ -18,7 +18,7 @@ class RPM(pygame.sprite.Sprite):
         self.step = step
 
         if self.step % 10 == 0:
-            self.image = pygame.Surface((self.w, self.h + 5)).convert()
+            self.image = pygame.Surface((self.w, self.h + 6)).convert()
             if self.step < rpm_min:
                 self.image.fill(Color.LIGHT_GREY.rgb())
             else:
