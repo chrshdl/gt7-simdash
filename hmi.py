@@ -15,8 +15,8 @@ class HMI:
         self.sprites.add(Speedometer(180, 120, 310, 10))
         self.sprites.add(GearIndicator(180, 220, self.screen.get_size()[0] // 2, 350))
         self.sprites.add(LastLap(180, 88, 610, 10))
-        self.sprites.add(BestLap(180, 88, 610, 120))
-        self.sprites.add(DebugSprite(180, 88, 610, 230, 26))
+        self.sprites.add(BestLap(180, 88, 610, 372))
+        self.sprites.add(DebugSprite(180, 88, 610, 270))
 
         self._car_id = car_id
 
@@ -24,7 +24,7 @@ class HMI:
         self.add_rpm(rpm_min, rpm_max)
 
     def add_rpm(self, rpm_min, rpm_max):
-        y = 158
+        y = 162
 
         rpm_min = int(rpm_min - rpm_max * 0.04) // 100
         rpm_max = self._normalize(rpm_max)

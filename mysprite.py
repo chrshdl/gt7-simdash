@@ -2,7 +2,7 @@ import pygame
 
 
 class AbstractSprite(pygame.sprite.Sprite):
-    def __init__(self, w, h, x, y, fsize):
+    def __init__(self, w, h, x, y, fsize=26):
         super().__init__()
         self.image = pygame.Surface((w, h)).convert()
         self.rect = self.image.get_rect(topleft=(x, y))
