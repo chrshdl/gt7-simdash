@@ -36,3 +36,12 @@ class DebugSprite(AbstractSprite):
         dbg3 = self.font.render(dbg_paused, True, (200, 200, 200))
         midbottom = tuple(map(sum, zip(self.image.get_rect().midbottom, (0, -10))))
         self.image.blit(dbg3, dbg3.get_rect(midbottom=midbottom))
+
+
+class InitializingSprite(AbstractSprite):
+    def update(self, data):
+        super().update(data)
+        self.font = pygame.font.Font("pixeltype.ttf", 56)
+        data_render = self.font.render(data, True, (200, 200, 200))
+        center = self.image.get_rect().center
+        self.image.blit(data_render, data_render.get_rect(center=center))

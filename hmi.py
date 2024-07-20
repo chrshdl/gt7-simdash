@@ -4,7 +4,7 @@ from speed import Speedometer
 from gear import GearIndicator
 from rpm import RPM
 from lap import LastLap, BestLap
-from mysprite import DebugSprite
+from mysprite import DebugSprite, InitializingSprite
 from event import Event
 
 
@@ -12,11 +12,14 @@ class HMI:
     def __init__(self, rpm_min=1500, rpm_max=2000, car_id=-1):
         self.screen = pygame.display.get_surface()
         self.sprites = pygame.sprite.Group()
-        self.sprites.add(Speedometer(180, 120, 310, 10))
+        self.sprites.add(Speedometer(180, 130, 310, 10))
         self.sprites.add(GearIndicator(180, 220, self.screen.get_size()[0] // 2, 350))
         self.sprites.add(LastLap(180, 88, 610, 10))
         self.sprites.add(BestLap(180, 88, 610, 372))
         self.sprites.add(DebugSprite(180, 88, 610, 270))
+        self.initializing = InitializingSprite(
+            self.screen.get_size()[0], self.screen.get_size()[1], 0, 0
+        )
 
         self._car_id = car_id
 
@@ -24,7 +27,7 @@ class HMI:
         self.add_rpm(rpm_min, rpm_max)
 
     def add_rpm(self, rpm_min, rpm_max):
-        y = 162
+        y = 165
 
         rpm_min = self._normalize(rpm_min)
         rpm_max = self._normalize(rpm_max) + 10
@@ -66,7 +69,12 @@ class HMI:
     def on_car_id_change(self):
         print(f"car_id changed to: {self.car_id}")
         pygame.event.post(pygame.event.Event(Event.NEW_CAR_EVENT.name()))
-        print(f"emmiting NEW_CAR_EVENT")
+        print(f"emitting NEW_CAR_EVENT")
+
+    def draw_text(self, text):
+        self.initializing.update(text)
+        self.screen.blit(self.initializing.image, (0, 0))
+        pygame.display.update()
 
     def run(self, packet):
         self.screen.fill(Color.BLACK.rgb())

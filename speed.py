@@ -6,7 +6,7 @@ class Speedometer(pygame.sprite.Sprite):
         super().__init__()
         self.image = pygame.Surface((w, h)).convert()
         self.rect = self.image.get_rect(topleft=(x, y))
-        self.font = pygame.font.Font("digital-7-mono.ttf", 90)
+        self.font = pygame.font.Font("digital-7-mono.ttf", 108)
         self.font2 = pygame.font.Font("pixeltype.ttf", 46)
 
     def draw_overlay(self):
@@ -20,6 +20,6 @@ class Speedometer(pygame.sprite.Sprite):
         speed = self.font.render(f"{speed}", True, (0, 200, 0))
         res = tuple(map(sum, zip(self.image.get_rect().midbottom, (0, 4))))
         self.image.blit(speed, speed.get_rect(midbottom=res))
-        label = self.font2.render("Speed", False, (200, 200, 200))
+        label = self.font2.render("Speed", True, (200, 200, 200))
         midtop = tuple(map(sum, zip(self.image.get_rect().midtop, (0, 10))))
         self.image.blit(label, label.get_rect(midtop=midtop))

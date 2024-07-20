@@ -9,7 +9,10 @@ class Dash:
         self.W = conf["width"]
         self.H = conf["height"]
         fullscreen = conf["fullscreen"]
-        ip_address = conf["ps5_ip"]
+        self.ip_address = conf["ps5_ip"]
+
+        self.init_started = False
+        self.packet = None
 
         pygame.init()
         self.clock = pygame.time.Clock()
@@ -23,38 +26,9 @@ class Dash:
         else:
             pygame.display.set_mode(monitor_size, pygame.FULLSCREEN)
 
-        self.hmi = HMI()
-
-        if ip_address is not None:
-            from granturismo.intake import Feed
-
-            self.listener = Feed(ip_address)
-            self.listener.start()
-        else:
-            from unittest.mock import Mock, MagicMock
-
-            self.packet = Mock()
-            self.packet.car_speed = 0 / 3.6
-            self.packet.current_gear = 1
-            self.packet.engine_rpm = 900.0
-            self.packet.rpm_alert.min = 6000
-            self.packet.rpm_alert.max = 7000
-            self.packet.flags.rev_limiter_alert_active = False
-            self.packet.last_lap_time = 165256
-            self.packet.best_lap_time = None
-            self.packet.flags.paused = False
-            self.packet.flags.car_on_track = True
-            self.packet.car_id = 203
-
-            self.listener = Mock()
-            self.listener.get = MagicMock(name="get")
-            self.listener.get.return_value = self.packet
-            self.listener.close = MagicMock(name="close")
-
-        self.packet = self.listener.get()
+        pygame.event.post(pygame.event.Event(Event.INIT_EVENT.name()))
 
     def close(self):
-        self.listener.close()
         pygame.quit()
         sys.exit()
 
@@ -72,18 +46,62 @@ class Dash:
         return self.packet
 
     def run(self):
+
+        hmi = HMI()
+
         from unittest.mock import Mock
 
         while True:
             for event in pygame.event.get():
                 if event.type == Event.NEW_CAR_EVENT.name():
-                    self.hmi.set_rpm_alerts(
+                    hmi.set_rpm_alerts(
                         self.packet.rpm_alert.min, self.packet.rpm_alert.max
                     )
+
+                if event.type == Event.INIT_EVENT.name():
+
+                    if not self.init_started:
+
+                        self.init_started = True
+                        hmi.draw_text("Initializing, please wait...")
+
+                        if self.ip_address is not None:
+                            from granturismo.intake import Feed
+
+                            listener = Feed(self.ip_address)
+                            listener.start()
+                        else:
+                            import time
+                            from unittest.mock import Mock, MagicMock
+
+                            time.sleep(3)
+
+                            self.packet = Mock()
+                            self.packet.car_speed = 0 / 3.6
+                            self.packet.current_gear = 1
+                            self.packet.engine_rpm = 900.0
+                            self.packet.rpm_alert.min = 6000
+                            self.packet.rpm_alert.max = 7000
+                            self.packet.flags.rev_limiter_alert_active = False
+                            self.packet.last_lap_time = 165256
+                            self.packet.best_lap_time = None
+                            self.packet.flags.paused = False
+                            self.packet.flags.car_on_track = True
+                            self.packet.car_id = 203
+
+                            listener = Mock()
+                            listener.get = MagicMock(name="get")
+                            listener.get.return_value = self.packet
+                            listener.close = MagicMock(name="close")
+                        self.packet = listener.get()
+
                 if event.type == pygame.QUIT:
+                    listener.close()
                     self.close()
+
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
+                        listener.close()
                         self.close()
                     if event.key == pygame.K_SPACE:
                         screenshot = pygame.Surface((self.W, self.H))
@@ -92,7 +110,7 @@ class Dash:
             if isinstance(self.packet, Mock):
                 self.packet = self._get()
             else:
-                self.packet = self.listener.get()
-            self.hmi.run(self.packet)
+                self.packet = listener.get()
+            hmi.run(self.packet)
             pygame.display.flip()
             self.clock.tick(60)
