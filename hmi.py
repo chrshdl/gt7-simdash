@@ -9,7 +9,7 @@ from event import Event
 
 
 class HMI:
-    def __init__(self, car_id, rpm_min, rpm_max):
+    def __init__(self, rpm_min=1500, rpm_max=2000, car_id=-1):
         self.screen = pygame.display.get_surface()
         self.sprites = pygame.sprite.Group()
         self.sprites.add(Speedometer(180, 120, 310, 10))
@@ -26,18 +26,18 @@ class HMI:
     def add_rpm(self, rpm_min, rpm_max):
         y = 162
 
-        rpm_min = int(rpm_min - rpm_max * 0.04) // 100
-        rpm_max = self._normalize(rpm_max)
+        rpm_min = self._normalize(rpm_min)
+        rpm_max = self._normalize(rpm_max) + 10
 
         screen_width = self.screen.get_size()[0]
         self.rpm.add(
             RPM(screen_width, y, rpm_min, rpm_max, step) for step in range(rpm_max + 1)
         )
 
-    def _normalize(self, rpm):
-        return int(rpm * 0.01) + 10
+    def _normalize(self, value):
+        return int(value * 0.01)
 
-    def refresh_rpm(self, rpm_min, rpm_max):
+    def set_rpm_alerts(self, rpm_min, rpm_max):
         self.remove_all_rpm()
         self.add_rpm(rpm_min, rpm_max)
 
@@ -45,8 +45,8 @@ class HMI:
         for item in self.rpm:
             self.rpm.remove(item)
 
-    def update_rpm(self, packet):
-        self.rpm.update(packet)
+    def update_rpm(self, engine_rpm):
+        self.rpm.update(engine_rpm)
         self.rpm.draw(self.screen)
 
     def update_sprites(self, packet):
@@ -72,4 +72,4 @@ class HMI:
         self.screen.fill(Color.BLACK.rgb())
         self.car_id = packet.car_id
         self.update_sprites(packet)
-        self.update_rpm(int(packet.engine_rpm) // 100)
+        self.update_rpm(self._normalize(packet.engine_rpm))

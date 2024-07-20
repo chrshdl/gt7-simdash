@@ -10,7 +10,6 @@ class Dash:
         self.H = conf["height"]
         fullscreen = conf["fullscreen"]
         ip_address = conf["ps5_ip"]
-        car_id = -1
 
         pygame.init()
         self.clock = pygame.time.Clock()
@@ -23,6 +22,8 @@ class Dash:
             pygame.display.set_mode((self.W, self.H), pygame.RESIZABLE)
         else:
             pygame.display.set_mode(monitor_size, pygame.FULLSCREEN)
+
+        self.hmi = HMI()
 
         if ip_address is not None:
             from granturismo.intake import Feed
@@ -51,7 +52,6 @@ class Dash:
             self.listener.close = MagicMock(name="close")
 
         self.packet = self.listener.get()
-        self.hmi = HMI(car_id, self.packet.rpm_alert.min, self.packet.rpm_alert.max)
 
     def close(self):
         self.listener.close()
@@ -77,7 +77,7 @@ class Dash:
         while True:
             for event in pygame.event.get():
                 if event.type == Event.NEW_CAR_EVENT.name():
-                    self.hmi.refresh_rpm(
+                    self.hmi.set_rpm_alerts(
                         self.packet.rpm_alert.min, self.packet.rpm_alert.max
                     )
                 if event.type == pygame.QUIT:
