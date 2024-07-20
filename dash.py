@@ -11,8 +11,6 @@ class Dash:
         fullscreen = conf["fullscreen"]
         self.ip_address = conf["ps5_ip"]
 
-        self.packet = None
-
         pygame.init()
         self.clock = pygame.time.Clock()
 
@@ -29,18 +27,16 @@ class Dash:
         pygame.quit()
         sys.exit()
 
-    def _get(self):
-        self.packet.engine_rpm = (
-            self.packet.engine_rpm + 50
-        ) % self.packet.rpm_alert.max
-        if self.packet.engine_rpm >= self.packet.rpm_alert.min:
-            self.packet.flags.rev_limiter_alert_active = True
+    def _update_packet(self, packet):
+        packet.engine_rpm = (packet.engine_rpm + 50) % packet.rpm_alert.max
+        if packet.engine_rpm >= packet.rpm_alert.min:
+            packet.flags.rev_limiter_alert_active = True
         else:
-            self.packet.flags.rev_limiter_alert_active = False
-            if self.packet.engine_rpm < 50:
-                self.packet.current_gear = (self.packet.current_gear + 1) % 7
-        self.packet.car_speed = (self.packet.car_speed + 0.1) % (260 / 3.6)
-        return self.packet
+            packet.flags.rev_limiter_alert_active = False
+            if packet.engine_rpm < 50:
+                packet.current_gear = (packet.current_gear + 1) % 7
+        packet.car_speed = (packet.car_speed + 0.1) % (260 / 3.6)
+        return packet
 
     def run(self):
 
@@ -52,9 +48,7 @@ class Dash:
         while True:
             for event in pygame.event.get():
                 if event.type == Event.NEW_CAR_EVENT.name():
-                    hmi.set_rpm_alerts(
-                        self.packet.rpm_alert.min, self.packet.rpm_alert.max
-                    )
+                    hmi.set_rpm_alerts(packet.rpm_alert.min, packet.rpm_alert.max)
 
                 if event.type == Event.HMI_STARTED_EVENT.name():
 
@@ -71,24 +65,24 @@ class Dash:
 
                         time.sleep(3)
 
-                        self.packet = Mock()
-                        self.packet.car_speed = 0 / 3.6
-                        self.packet.current_gear = 1
-                        self.packet.engine_rpm = 900.0
-                        self.packet.rpm_alert.min = 6000
-                        self.packet.rpm_alert.max = 7000
-                        self.packet.flags.rev_limiter_alert_active = False
-                        self.packet.last_lap_time = 165256
-                        self.packet.best_lap_time = None
-                        self.packet.flags.paused = False
-                        self.packet.flags.car_on_track = True
-                        self.packet.car_id = 203
+                        packet = Mock()
+                        packet.car_speed = 0 / 3.6
+                        packet.current_gear = 1
+                        packet.engine_rpm = 900.0
+                        packet.rpm_alert.min = 6000
+                        packet.rpm_alert.max = 7000
+                        packet.flags.rev_limiter_alert_active = False
+                        packet.last_lap_time = 165256
+                        packet.best_lap_time = None
+                        packet.flags.paused = False
+                        packet.flags.car_on_track = True
+                        packet.car_id = 203
 
                         listener = Mock()
                         listener.get = MagicMock(name="get")
-                        listener.get.return_value = self.packet
+                        listener.get.return_value = packet
                         listener.close = MagicMock(name="close")
-                    self.packet = listener.get()
+                    packet = listener.get()
 
                 if event.type == pygame.QUIT:
                     listener.close()
@@ -102,10 +96,10 @@ class Dash:
                         screenshot = pygame.Surface((self.W, self.H))
                         screenshot.blit(pygame.display.get_surface(), (0, 0))
                         pygame.image.save(screenshot, "gt7-simdash.png")
-            if isinstance(self.packet, Mock):
-                self.packet = self._get()
+            if isinstance(packet, Mock):
+                packet = self._update_packet(packet)
             else:
-                self.packet = listener.get()
-            hmi.run(self.packet)
+                packet = listener.get()
+            hmi.run(packet)
             pygame.display.flip()
             self.clock.tick(60)
