@@ -20,12 +20,15 @@ class HMI:
 
         self._car_id = car_id
 
-        rpm_max = self._normalize(rpm_max)
         self.rpm = pygame.sprite.Group()
         self.add_rpm(rpm_min, rpm_max)
 
     def add_rpm(self, rpm_min, rpm_max):
         y = 158
+
+        rpm_min = int(rpm_min - rpm_max * 0.04) // 100
+        rpm_max = self._normalize(rpm_max)
+
         screen_width = self.screen.get_size()[0]
         self.rpm.add(
             RPM(screen_width, y, rpm_min, rpm_max, step) for step in range(rpm_max + 1)
@@ -36,7 +39,7 @@ class HMI:
 
     def refresh_rpm(self, rpm_min, rpm_max):
         self.remove_all_rpm()
-        self.add_rpm(rpm_min, self._normalize(rpm_max))
+        self.add_rpm(rpm_min, rpm_max)
 
     def remove_all_rpm(self):
         for item in self.rpm:
