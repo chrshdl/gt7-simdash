@@ -61,6 +61,7 @@ class Dash:
 
                         listener = Feed(self.ip_address)
                         listener.start()
+                        packet = listener.get()
                     else:
                         from unittest.mock import Mock, MagicMock
 
