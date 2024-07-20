@@ -4,7 +4,7 @@ from speed import Speedometer
 from gear import GearIndicator
 from rpm import RPM
 from lap import LastLap, BestLap
-from sprite import DebugSprite
+from mysprite import DebugSprite
 from event import Event
 
 
@@ -32,10 +32,10 @@ class HMI:
     def _normalize(self, rpm):
         return int(rpm * 0.01) + 10
 
-    def refresh_rpm(self, packet):
+    def refresh_rpm(self, rpm_max):
         self.remove_all_rpm()
-        self.add_rpm(self._normalize(packet.rpm_alert.max))
-        
+        self.add_rpm(self._normalize(rpm_max))
+
     def remove_all_rpm(self):
         for item in self.rpm:
             self.rpm.remove(item)

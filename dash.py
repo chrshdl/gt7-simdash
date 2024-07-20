@@ -74,14 +74,10 @@ class Dash:
         from unittest.mock import Mock
 
         while True:
-            if isinstance(self.packet, Mock):
-                self.packet = self._get()
-            else:
-                self.packet = self.listener.get()
             for event in pygame.event.get():
                 if event.type == Event.NEW_CAR_EVENT.name():
                     self.hmi.car_id = self.packet.car_id
-                    self.hmi.refresh_rpm(self.packet)
+                    self.hmi.refresh_rpm(self.packet.rpm_alert.max)
                 if event.type == pygame.QUIT:
                     self.close()
                 if event.type == pygame.KEYDOWN:
@@ -91,6 +87,10 @@ class Dash:
                         screenshot = pygame.Surface((self.W, self.H))
                         screenshot.blit(pygame.display.get_surface(), (0, 0))
                         pygame.image.save(screenshot, "gt7-simdash.png")
-                self.hmi.run(self.packet)
-                pygame.display.flip()
-                self.clock.tick(60)
+            if isinstance(self.packet, Mock):
+                self.packet = self._get()
+            else:
+                self.packet = self.listener.get()
+            self.hmi.run(self.packet)
+            pygame.display.flip()
+            self.clock.tick(60)
