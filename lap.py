@@ -67,10 +67,8 @@ class Lap(AbstractLap):
         all_laps = data.laps_in_race
 
         if current_lap is None and all_laps is None:
-            current_lap = "--"
-            all_laps = "--"
-        elif current_lap == 0:
-            current_lap = "--"
+            current_lap = 0
+            all_laps = 0
 
         blt_render = self.font.render(
             f"{min(current_lap, all_laps)} / {all_laps}", False, Color.GREEN.rgb()
