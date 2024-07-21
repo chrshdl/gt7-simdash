@@ -12,7 +12,7 @@ class AbstractLap(pygame.sprite.Sprite):
         self.font2 = pygame.font.Font("pixeltype.ttf", 46)
 
     def draw_overlay(self):
-        pygame.draw.rect(self.image, Color.DARK_GREY.rgb(), self.image.get_rect())
+        pygame.draw.rect(self.image, Color.DARK_GREY.rgb(), self.image.get_rect(), 0, 8)
         pygame.draw.rect(self.image, Color.GREY.rgb(), self.image.get_rect(), 1, 8)
 
     def update(self, data):
