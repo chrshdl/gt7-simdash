@@ -2,6 +2,6 @@
   "width": 800,
   "height": 480,
   "ps5_ip": null,
-  "fullscreen": true,
+  "fullscreen": false,
   "debug_mode": true
 }

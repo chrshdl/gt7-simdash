@@ -58,17 +58,15 @@ class Dash:
         while True:
             for event in pygame.event.get():
                 if event.type == Event.NEW_CAR_EVENT.type():
-                    if self.hmi.debug_mode:
-                        self.logger.info(
-                            f"received {Event.NEW_CAR_EVENT.name()}, car_id changed to: {event.message}"
-                        )
+                    self.logger.info(
+                        f"received {Event.NEW_CAR_EVENT.name()}, car_id changed to: {event.message}"
+                    )
                     self.hmi.set_rpm_alerts(packet.rpm_alert.min, packet.rpm_alert.max)
 
                 if event.type == Event.HMI_STARTED_EVENT.type():
-                    if self.hmi.debug_mode:
-                        self.logger.info(
-                            f"received {Event.HMI_STARTED_EVENT.name()}, initializing HMI: {event.message}"
-                        )
+                    self.logger.info(
+                        f"received {Event.HMI_STARTED_EVENT.name()}, initializing HMI: {event.message}"
+                    )
                     self.hmi.draw_text("Initializing, please wait...")
 
                     time.sleep(3)
