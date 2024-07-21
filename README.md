@@ -21,4 +21,4 @@ or set
 ```
 "ps5_ip": null
 ```
-to run the mockup. After that start the simdash with `(gt7-simdash) $ ./main.py`
+to run the mockup. Start the simdash with `(gt7-simdash) $ python dash.py`

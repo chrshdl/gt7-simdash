@@ -1,31 +1,38 @@
 import pygame
-from color import Color
-from speed import Speedometer
-from gear import GearIndicator
-from rpm import RPM
-from lap import Lap, LastLap, BestLap
-from mysprite import DebugSprite, InitializingSprite
-from event import Event
+from hmi.speed import Speedometer
+from hmi.debug import DebugScreen
+from hmi.popup import InitializingScreen
+from hmi.gear import GearIndicator
+from hmi.lap import Lap, LastLap, BestLap
+from hmi.rpm import RPM
+from hmi.event import Event
+from hmi.color import Color
+import logging
 
 
 class HMI:
-    def __init__(self, rpm_min=1500, rpm_max=2000, car_id=-1):
+    def __init__(self, ps5_ip, debug_mode=False, rpm_min=1500, rpm_max=2000, car_id=-1):
         self._started = False
         self._car_id = car_id
+        self._ps5_ip = ps5_ip
+        self._debug_mode = debug_mode
+
+        self.logger = logging.getLogger(self.__class__.__name__)
 
         self.screen = pygame.display.get_surface()
 
-        self.initializing = InitializingSprite(
-            self.screen.get_size()[0], self.screen.get_size()[1], 0, 0
+        self.initializing = InitializingScreen(
+            self.screen.get_size()[0], self.screen.get_size()[1], 0, 0, 40, 56
         )
 
         self.sprites = pygame.sprite.Group()
-        self.sprites.add(Speedometer(180, 130, 310, 10))
-        self.sprites.add(GearIndicator(180, 220, self.screen.get_size()[0] // 2, 350))
+        self.sprites.add(Speedometer(180, 130, 310, 10, 108))
+        self.sprites.add(GearIndicator(180, 220, 310, 240, 240))
         self.sprites.add(Lap(180, 88, 10, 10, 48))
         self.sprites.add(LastLap(180, 88, 610, 10))
         self.sprites.add(BestLap(180, 88, 610, 372))
-        self.sprites.add(DebugSprite(180, 110, 610, 250))
+        if self._debug_mode:
+            self.sprites.add(DebugScreen(180, 110, 610, 250, 40, 32))
 
         self.rpm = pygame.sprite.Group()
         self.add_rpm(rpm_min, rpm_max)
@@ -61,6 +68,22 @@ class HMI:
         self.sprites.draw(self.screen)
 
     @property
+    def debug_mode(self):
+        return self._debug_mode
+
+    @debug_mode.setter
+    def debug_mode(self, value):
+        self._debug_mode = value
+
+    @property
+    def ps5_ip(self):
+        return self._ps5_ip
+
+    @ps5_ip.setter
+    def ps5_ip(self, value):
+        self.ps5_ip = value
+
+    @property
     def car_id(self):
         return self._car_id
 
@@ -80,13 +103,16 @@ class HMI:
             self._on_started()
 
     def _on_car_id_change(self):
-        print(f"car_id changed to: {self.car_id}")
-        pygame.event.post(pygame.event.Event(Event.NEW_CAR_EVENT.name()))
-        print(f"emitting NEW_CAR_EVENT")
+        self.logger.info(f"emitting {Event.NEW_CAR_EVENT.name()}")
+        pygame.event.post(
+            pygame.event.Event(Event.NEW_CAR_EVENT.type(), message=self._car_id)
+        )
 
     def _on_started(self):
-        pygame.event.post(pygame.event.Event(Event.HMI_STARTED_EVENT.name()))
-        print(f"emitting HMI_STARTED_EVENT")
+        self.logger.info(f"emitting {Event.HMI_STARTED_EVENT.name()}")
+        pygame.event.post(
+            pygame.event.Event(Event.HMI_STARTED_EVENT.type(), message=self._started)
+        )
 
     def draw_text(self, text):
         self.initializing.update(text)

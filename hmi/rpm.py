@@ -1,5 +1,5 @@
 import pygame
-from color import Color
+from hmi.color import Color
 
 
 class RPM(pygame.sprite.Sprite):

@@ -1,7 +1,10 @@
 import pygame
 import sys
-from hmi import HMI
-from event import Event
+from hmi.hmi import HMI
+from hmi.event import Event
+import argparse
+import json
+import logging
 
 
 class Dash:
@@ -9,7 +12,12 @@ class Dash:
         self.W = conf["width"]
         self.H = conf["height"]
         fullscreen = conf["fullscreen"]
-        self.ip_address = conf["ps5_ip"]
+        ps5_ip = conf["ps5_ip"]
+        debug_mode = conf["debug_mode"]
+
+        logging.basicConfig()
+        logging.getLogger().setLevel(logging.DEBUG)
+        self.logger = logging.getLogger(self.__class__.__name__)
 
         pygame.init()
         self.clock = pygame.time.Clock()
@@ -22,6 +30,8 @@ class Dash:
             pygame.display.set_mode((self.W, self.H), pygame.RESIZABLE)
         else:
             pygame.display.set_mode(monitor_size, pygame.FULLSCREEN)
+
+        self.hmi = HMI(ps5_ip, debug_mode)
 
     def close(self):
         pygame.quit()
@@ -40,26 +50,33 @@ class Dash:
 
     def run(self):
 
-        hmi = HMI()
-        hmi.start()
+        self.hmi.start()
 
         import time
         from unittest.mock import Mock
 
         while True:
             for event in pygame.event.get():
-                if event.type == Event.NEW_CAR_EVENT.name():
-                    hmi.set_rpm_alerts(packet.rpm_alert.min, packet.rpm_alert.max)
+                if event.type == Event.NEW_CAR_EVENT.type():
+                    if self.hmi.debug_mode:
+                        self.logger.info(
+                            f"received {Event.NEW_CAR_EVENT.name()}, car_id changed to: {event.message}"
+                        )
+                    self.hmi.set_rpm_alerts(packet.rpm_alert.min, packet.rpm_alert.max)
 
-                if event.type == Event.HMI_STARTED_EVENT.name():
+                if event.type == Event.HMI_STARTED_EVENT.type():
+                    if self.hmi.debug_mode:
+                        self.logger.info(
+                            f"received {Event.HMI_STARTED_EVENT.name()}, initializing HMI: {event.message}"
+                        )
+                    self.hmi.draw_text("Initializing, please wait...")
 
-                    hmi.draw_text("Initializing, please wait...")
                     time.sleep(3)
 
-                    if self.ip_address is not None:
+                    if self.hmi.ps5_ip is not None:
                         from granturismo.intake import Feed
 
-                        listener = Feed(self.ip_address)
+                        listener = Feed(self.ps5_ip)
                         listener.start()
                         packet = listener.get()
                     else:
@@ -102,6 +119,18 @@ class Dash:
                 packet = self._update_packet(packet)
             else:
                 packet = listener.get()
-            hmi.run(packet)
+            self.hmi.run(packet)
             pygame.display.flip()
             self.clock.tick(60)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="PS5 sim dash")
+    parser.add_argument("--config", help="json with the config", default="config.json")
+    args = parser.parse_args()
+
+    with open(args.config, "r") as fid:
+        config = json.load(fid)
+
+    dash = Dash(config)
+    dash.run()
