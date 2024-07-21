@@ -77,8 +77,8 @@ class Dash:
                         packet.flags.paused = False
                         packet.flags.car_on_track = True
                         packet.flags.loading_or_processing = False
-                        packet.lap_count = 3
-                        packet.laps_in_race = 1
+                        packet.lap_count = 1
+                        packet.laps_in_race = 3
                         packet.car_id = 203
 
                         listener = Mock()
