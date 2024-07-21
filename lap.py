@@ -63,11 +63,17 @@ class Lap(AbstractLap):
     def update(self, data):
         super().update(data)
 
-        current_lap = data.laps_in_race
-        all_laps = data.lap_count
+        current_lap = data.lap_count
+        all_laps = data.laps_in_race
+
+        if current_lap is None and all_laps is None:
+            current_lap = "--"
+            all_laps = "--"
+        elif current_lap == 0:
+            current_lap = "--"
 
         blt_render = self.font.render(
-            f"{current_lap} / {all_laps}", False, Color.GREEN.rgb()
+            f"{min(current_lap, all_laps)} / {all_laps}", False, Color.GREEN.rgb()
         )
         res = tuple(map(sum, zip(self.image.get_rect().midbottom, (0, 0))))
         self.image.blit(blt_render, blt_render.get_rect(midbottom=res))
