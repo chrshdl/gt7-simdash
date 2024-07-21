@@ -76,6 +76,9 @@ class Dash:
                         packet.best_lap_time = None
                         packet.flags.paused = False
                         packet.flags.car_on_track = True
+                        packet.flags.loading_or_processing = False
+                        packet.lap_count = 3
+                        packet.laps_in_race = 1
                         packet.car_id = 203
 
                         listener = Mock()

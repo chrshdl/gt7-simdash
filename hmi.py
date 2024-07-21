@@ -3,7 +3,7 @@ from color import Color
 from speed import Speedometer
 from gear import GearIndicator
 from rpm import RPM
-from lap import LastLap, BestLap
+from lap import Lap, LastLap, BestLap
 from mysprite import DebugSprite, InitializingSprite
 from event import Event
 
@@ -22,9 +22,10 @@ class HMI:
         self.sprites = pygame.sprite.Group()
         self.sprites.add(Speedometer(180, 130, 310, 10))
         self.sprites.add(GearIndicator(180, 220, self.screen.get_size()[0] // 2, 350))
+        self.sprites.add(Lap(180, 88, 10, 10, 48))
         self.sprites.add(LastLap(180, 88, 610, 10))
         self.sprites.add(BestLap(180, 88, 610, 372))
-        self.sprites.add(DebugSprite(180, 88, 610, 270))
+        self.sprites.add(DebugSprite(180, 110, 610, 250))
 
         self.rpm = pygame.sprite.Group()
         self.add_rpm(rpm_min, rpm_max)

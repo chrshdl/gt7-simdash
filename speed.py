@@ -1,4 +1,5 @@
 import pygame
+from color import Color
 
 
 class Speedometer(pygame.sprite.Sprite):
@@ -17,9 +18,9 @@ class Speedometer(pygame.sprite.Sprite):
         self.draw_overlay()
         speed = str(int(data.car_speed * 3.6))
         speed = speed.center(len(speed))
-        speed = self.font.render(f"{speed}", True, (0, 200, 0))
+        speed = self.font.render(f"{speed}", False, Color.GREEN.rgb())
         res = tuple(map(sum, zip(self.image.get_rect().midbottom, (0, 4))))
         self.image.blit(speed, speed.get_rect(midbottom=res))
-        label = self.font2.render("Speed", True, (200, 200, 200))
+        label = self.font2.render("Speed", False, Color.WHITE.rgb())
         midtop = tuple(map(sum, zip(self.image.get_rect().midtop, (0, 10))))
         self.image.blit(label, label.get_rect(midtop=midtop))

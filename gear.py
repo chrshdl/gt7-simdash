@@ -1,4 +1,5 @@
 import pygame
+from color import Color
 
 
 class GearIndicator(pygame.sprite.Sprite):
@@ -25,8 +26,8 @@ class GearIndicator(pygame.sprite.Sprite):
         if data.flags.rev_limiter_alert_active:
             color = (250, 50, 50)
         else:
-            color = (255, 255, 255)
-        gear_render = self.font.render(f"{gear}", True, color)
+            color = Color.WHITE.rgb()
+        gear_render = self.font.render(f"{gear}", False, color)
         self.image.blit(
             gear_render, gear_render.get_rect(center=self.image.get_rect().center)
         )
