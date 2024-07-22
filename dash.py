@@ -33,10 +33,6 @@ class Dash:
 
         self.hmi = HMI(ps5_ip, debug_mode)
 
-    def close(self):
-        pygame.quit()
-        sys.exit()
-
     def _update_packet(self, packet):
         packet.engine_rpm = (packet.engine_rpm + 50) % packet.rpm_alert.max
         if packet.engine_rpm >= packet.rpm_alert.min:
@@ -74,7 +70,7 @@ class Dash:
                     if self.hmi.ps5_ip is not None:
                         from granturismo.intake import Feed
 
-                        listener = Feed(self.ps5_ip)
+                        listener = Feed(self.hmi.ps5_ip)
                         listener.start()
                         packet = listener.get()
                     else:
@@ -104,7 +100,6 @@ class Dash:
                 if event.type == pygame.QUIT:
                     listener.close()
                     self.close()
-
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         listener.close()
@@ -119,7 +114,12 @@ class Dash:
                 packet = listener.get()
             self.hmi.run(packet)
             pygame.display.flip()
-            self.clock.tick(60)
+            frametime = self.clock.tick(60)
+            print(frametime)
+
+    def close(self):
+        pygame.quit()
+        sys.exit()
 
 
 if __name__ == "__main__":
