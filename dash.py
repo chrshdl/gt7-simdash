@@ -5,7 +5,7 @@ from hmi.event import Event
 import argparse
 import json
 import logging
-
+from logformatter import LogFormatter
 
 class Dash:
     def __init__(self, conf):
@@ -15,9 +15,13 @@ class Dash:
         ps5_ip = conf["ps5_ip"]
         debug_mode = conf["debug_mode"]
 
-        logging.basicConfig()
-        logging.getLogger().setLevel(logging.DEBUG)
         self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger.setLevel(logging.DEBUG)
+        
+        ch = logging.StreamHandler()
+        ch.setLevel(logging.DEBUG)
+        ch.setFormatter(LogFormatter())
+        self.logger.addHandler(ch)
 
         pygame.init()
         self.clock = pygame.time.Clock()
@@ -54,13 +58,25 @@ class Dash:
         while True:
             for event in pygame.event.get():
                 if event.type == Event.NEW_CAR_EVENT.type():
-                    self.logger.info(
+                    self.logger.debug(
                         f"received {Event.NEW_CAR_EVENT.name()}, car_id changed to: {event.message}"
                     )
                     self.hmi.set_rpm_alerts(packet.rpm_alert.min, packet.rpm_alert.max)
 
-                if event.type == Event.HMI_STARTED_EVENT.type():
+                if event.type == Event.LEDS_SHOW_ALL_RED.type():
+                    self.logger.error(
+                        f"received {Event.LEDS_SHOW_ALL_RED.name()}"
+                    )
+                    self.hmi.show_all_leds_red()
+
+                if event.type == Event.LEDS_CLEAR_ALL.type():
                     self.logger.info(
+                        f"received {Event.LEDS_CLEAR_ALL.name()}"
+                    )
+                    self.hmi.clear_all_leds()
+
+                if event.type == Event.HMI_STARTED_EVENT.type():
+                    self.logger.debug(
                         f"received {Event.HMI_STARTED_EVENT.name()}, initializing HMI: {event.message}"
                     )
                     self.hmi.draw_text("Initializing, please wait...")

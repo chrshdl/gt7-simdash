@@ -8,6 +8,10 @@ from hmi.rpm import RPM
 from hmi.event import Event
 from hmi.color import Color
 import logging
+import platform
+
+if platform.machine() == "aarch64":
+    import blinkt
 
 
 class HMI:
@@ -36,6 +40,11 @@ class HMI:
 
         self.rpm = pygame.sprite.Group()
         self.add_rpm(rpm_min, rpm_max)
+
+        if platform.machine() == "aarch64":
+            blinkt.set_brightness(0.05)
+
+        self.in_state = False
 
     def add_rpm(self, rpm_min, rpm_max):
         y = 165
@@ -67,6 +76,20 @@ class HMI:
         self.sprites.update(packet)
         self.sprites.draw(self.screen)
 
+    def update_leds(self, packet):
+        if packet.engine_rpm in range(
+            int(0.95 * packet.rpm_alert.min), int(packet.rpm_alert.max)
+        ):
+            if not self.in_state:
+                self.in_state = True
+                # self.logger.info(f"emitting {Event.LEDS_SHOW_ALL_RED.name()}")
+                pygame.event.post(pygame.event.Event(Event.LEDS_SHOW_ALL_RED.type()))
+        else:
+            if packet.engine_rpm < 0.92 * packet.rpm_alert.min and self.in_state:
+                self.in_state = False
+                # self.logger.info(f"emitting {Event.LEDS_CLEAR_ALL.name()}")
+                pygame.event.post(pygame.event.Event(Event.LEDS_CLEAR_ALL.type()))
+
     @property
     def debug_mode(self):
         return self._debug_mode
@@ -91,7 +114,10 @@ class HMI:
     def car_id(self, new_car_id):
         if self._car_id != new_car_id:
             self._car_id = new_car_id
-            self._on_car_id_change()
+            # self.logger.info(f"emitting {Event.NEW_CAR_EVENT.name()}")
+            pygame.event.post(
+                pygame.event.Event(Event.NEW_CAR_EVENT.type(), message=self._car_id)
+            )
 
     @property
     def started(self):
@@ -100,19 +126,29 @@ class HMI:
     def start(self):
         if not self._started:
             self._started = True
-            self._on_started()
+            # self.logger.info(f"emitting {Event.HMI_STARTED_EVENT.name()}")
+            pygame.event.post(
+                pygame.event.Event(
+                    Event.HMI_STARTED_EVENT.type(), message=self._started
+                )
+            )
 
-    def _on_car_id_change(self):
-        self.logger.info(f"emitting {Event.NEW_CAR_EVENT.name()}")
-        pygame.event.post(
-            pygame.event.Event(Event.NEW_CAR_EVENT.type(), message=self._car_id)
-        )
+    def show_all_leds_red(self):
+        if self.in_state and platform.machine() == "aarch64":
+            blinkt.set_pixel(
+                0, Color.RED.rgb()[0], Color.RED.rgb()[1], Color.RED.rgb()[2]
+            )
+            # blinkt.show()
+            # FIXME:
+            # blinkt.show() causes stuttering in the eventloop in dash
+            # even setting only 1 pixel red is not performant at all.
 
-    def _on_started(self):
-        self.logger.info(f"emitting {Event.HMI_STARTED_EVENT.name()}")
-        pygame.event.post(
-            pygame.event.Event(Event.HMI_STARTED_EVENT.type(), message=self._started)
-        )
+    def clear_all_leds(self):
+        if platform.machine() == "aarch64":
+            blinkt.clear()
+            # blinkt.show()
+            # FIXME:
+            # blinkt.show() causes stuttering in the eventloop in dash
 
     def draw_text(self, text):
         self.initializing.update(text)
@@ -122,5 +158,6 @@ class HMI:
     def run(self, packet):
         self.screen.fill(Color.BLACK.rgb())
         self.car_id = packet.car_id
+        self.update_leds(packet)
         self.update_sprites(packet)
         self.update_rpm(self._normalize(packet.engine_rpm))
