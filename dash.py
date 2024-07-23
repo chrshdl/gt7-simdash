@@ -114,8 +114,7 @@ class Dash:
                 packet = listener.get()
             self.hmi.run(packet)
             pygame.display.flip()
-            frametime = self.clock.tick(60)
-            print(frametime)
+            self.clock.tick(60)
 
     def close(self):
         pygame.quit()
