@@ -14,7 +14,7 @@ class HMI:
         self.telemetry = pygame.sprite.Group()
 
         Speedometer(self.telemetry, 180, 130)
-        #GearIndicator(self.telemetry, 180, 220)
+        GearIndicator(self.telemetry, 180, 220)
         # self.sprites.add(Lap(180, 88, 10, 10, 48))
         # self.sprites.add(LastLap(180, 88, 610, 10))
         # self.sprites.add(BestLap(180, 88, 610, 372))
