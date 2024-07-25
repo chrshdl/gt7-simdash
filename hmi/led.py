@@ -34,7 +34,7 @@ class LED:
         for e in events:
             if e.type == Event.LEDS_SHOW_ALL_RED.type():
                 if platform.machine() == "aarch64":
-                    self.show_leds(e.message)
+                    self.show(e.message)
 
             if e.type == Event.LEDS_CLEAR_ALL.type():
                 if platform.machine() == "aarch64":
@@ -42,7 +42,13 @@ class LED:
                     blinkt.clear()
                     blinkt.show()
 
-    def show_leds(self, target):
+    def clear_all(self):
+        self.logger.info("LEDS CLEARED")
+        blinkt.clear()
+        blinkt.show()
+
+    def show(self, target):
+        self.logger.info("LEDS ARE ACTIVE")
         if target == 10:
             if self.leds_to_set != target:
                 self.leds_to_set = target
@@ -53,11 +59,9 @@ class LED:
                 )
                 blinkt.show()
         else:
-            if (self.leds_to_set < target):
-                self.leds_to_set = target
-                for i in range(target // 2):
-                    blinkt.set_pixel(i, self.colors[i][0], self.colors[i][1], self.colors[i][2])
-                    blinkt.set_pixel(
-                        blinkt.NUM_PIXELS - 1 - i, self.colors[i][0], self.colors[i][1], self.colors[i][2]
-                    )
-                blinkt.show()
+            for i in range(target // 2):
+                blinkt.set_pixel(i, self.colors[i][0], self.colors[i][1], self.colors[i][2])
+                blinkt.set_pixel(
+                    blinkt.NUM_PIXELS - 1 - i, self.colors[i][0], self.colors[i][1], self.colors[i][2]
+                )
+            blinkt.show()
