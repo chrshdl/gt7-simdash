@@ -12,7 +12,7 @@ class LogFormatter(logging.Formatter):
 
     FORMATS = {
         logging.DEBUG: grey + format + reset,
-        logging.INFO: green + format + reset,
+        logging.INFO: grey + format + reset,
         logging.WARNING: yellow + format + reset,
         logging.ERROR: bright_red + format + reset,
         logging.CRITICAL: bold_red + format + reset
