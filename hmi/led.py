@@ -14,7 +14,7 @@ class LED:
     def __init__(self):
 
         if platform.machine() == "aarch64":
-            blinkt.set_brightness(0.1)
+            blinkt.set_brightness(0.05)
 
         self.logger = logging.getLogger(self.__class__.__name__)
         self.logger.setLevel(logging.DEBUG)
@@ -25,14 +25,14 @@ class LED:
         self.logger.addHandler(sh)
         self.colors = list()
         self.colors.append(Color.BLUE.rgb())
+        self.colors.append(Color.BLUE.rgb())
         self.colors.append(Color.GREEN.rgb())
-        self.colors.append(Color.RED.rgb())
-        self.colors.append(Color.RED.rgb())
+        self.colors.append(Color.GREEN.rgb())
         self.leds_to_set = 0
 
     def update(self, events):
         for e in events:
-            if e.type == Event.LEDS_SHOW_ALL_RED.type():
+            if e.type == Event.LEDS_SHOW.type():
                 if platform.machine() == "aarch64":
                     self.show(e.message)
 
@@ -48,7 +48,7 @@ class LED:
         blinkt.show()
 
     def show(self, target):
-        self.logger.info("LEDS ARE ACTIVE")
+        self.logger.info(f"LEDS ARE ACTIVE: {target}")
         if target == 10:
             if self.leds_to_set != target:
                 self.leds_to_set = target
