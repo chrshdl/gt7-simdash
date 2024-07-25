@@ -9,35 +9,31 @@ class Speedometer(Widget):
         super().__init__(groups, w, h, main_fsize, header_fsize)
         self.rect.topleft = POS["speed"]
         self.car_speed = 0
+        self.led_active = False
 
     def update(self, dt, packet=None):
         super().update()
 
-        self.car_speed = (self.car_speed + (dt * 25)) % 400
         if packet is not None:
             self.car_speed = packet.car_speed * 3.6
-        if self.car_speed < 10:
-            pygame.event.post(pygame.event.Event(Event.LEDS_CLEAR_ALL.type()))
-        elif self.car_speed > 150 and self.car_speed < 200:
-            pygame.event.post(
-                pygame.event.Event(Event.LEDS_SHOW_ALL_RED.type(), message=2)
-            )
-        elif self.car_speed > 201 and self.car_speed < 250:
-            pygame.event.post(
-                pygame.event.Event(Event.LEDS_SHOW_ALL_RED.type(), message=4)
-            )
-        elif self.car_speed > 251 and self.car_speed < 300:
-            pygame.event.post(
-                pygame.event.Event(Event.LEDS_SHOW_ALL_RED.type(), message=6)
-            )
-        elif self.car_speed > 301 and self.car_speed < 350:
-            pygame.event.post(
-                pygame.event.Event(Event.LEDS_SHOW_ALL_RED.type(), message=8)
-            )
-        elif self.car_speed > 351:
-            pygame.event.post(
-                pygame.event.Event(Event.LEDS_SHOW_ALL_RED.type(), message=10)
-            )
+        else:
+            self.car_speed = (self.car_speed + (dt * 25)) % 400
+
+        if self.led_active:
+            if self.car_speed < 60:
+                self.led_active = False
+                pygame.event.post(pygame.event.Event(Event.LEDS_CLEAR_ALL.type()))
+        else:
+            if self.car_speed > 65 and self.car_speed < 75:
+                self.led_active = True
+                pygame.event.post(
+                    pygame.event.Event(Event.LEDS_SHOW_ALL_RED.type(), message=2)
+                )
+            elif self.car_speed > 76 and self.car_speed < 90:
+                self.led_active = True
+                pygame.event.post(
+                    pygame.event.Event(Event.LEDS_SHOW_ALL_RED.type(), message=4)
+                )
 
         speed = str(int(self.car_speed))
         speed = speed.center(len(speed))
