@@ -53,9 +53,13 @@ class Dash:
 
         self.listener.start()
 
+        self.logger.info("SENDING HEARTBEAT")
+        self.listener.send_heartbeat()
+        last_heartbeat = time.time()
+
         while self.running:
 
-            dt = clock.tick() / 1000
+            dt = clock.tick(60) / 1000
 
             events = pygame.event.get()
 
@@ -71,7 +75,12 @@ class Dash:
                         pygame.image.save(screenshot, "gt7-simdash.png")
 
             packet = self.listener.get()
-            #packet = None
+
+            curr_time = packet.received_time
+            if curr_time - last_heartbeat >= 10:
+                last_heartbeat = curr_time
+                self.logger.info("SENDING HEARTBEAT")
+                self.listener.send_heartbeat()
 
             hmi.draw(dt, packet)
             led.update(events)
