@@ -1,7 +1,7 @@
 {
   "width": 800,
   "height": 480,
-  "ps5_ip": null,
+  "ps5_ip": "10.22.33.37",
   "fullscreen": false,
   "debug_mode": true
 }

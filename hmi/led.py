@@ -1,45 +1,63 @@
-import blinkt
-import time
 from hmi.color import Color
+from hmi.event import Event
+import platform
+import logging
+import time
+
+from logformatter import LogFormatter
+
+if platform.machine() == "aarch64":
+    import blinkt
 
 
-colors = list()
+class LED:
+    def __init__(self):
 
+        if platform.machine() == "aarch64":
+            blinkt.set_brightness(0.1)
 
-def init():
-    colors.append(Color.BLUE.rgb())
-    colors.append(Color.GREEN.rgb())
-    colors.append(Color.GREEN.rgb())
-    colors.append(Color.RED.rgb())
-    blinkt.set_brightness(0.05)
-    clear_all()
+        self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger.setLevel(logging.DEBUG)
 
+        sh = logging.StreamHandler()
+        sh.setLevel(logging.DEBUG)
+        sh.setFormatter(LogFormatter())
+        self.logger.addHandler(sh)
+        self.colors = list()
+        self.colors.append(Color.BLUE.rgb())
+        self.colors.append(Color.GREEN.rgb())
+        self.colors.append(Color.RED.rgb())
+        self.colors.append(Color.RED.rgb())
+        self.leds_to_set = 0
 
-def clear_all():
-    blinkt.clear()
-    blinkt.show()
+    def update(self, events):
+        for e in events:
+            if e.type == Event.LEDS_SHOW_ALL_RED.type():
+                if platform.machine() == "aarch64":
+                    self.show_leds(e.message)
 
+            if e.type == Event.LEDS_CLEAR_ALL.type():
+                if platform.machine() == "aarch64":
+                    self.leds_to_set = 0
+                    blinkt.clear()
+                    blinkt.show()
 
-if __name__ == "__main__":
-
-    init()
-
-    while True:
-        for i in range(blinkt.NUM_PIXELS // 2):
-            blinkt.set_pixel(i, colors[i][0], colors[i][1], colors[i][2])
-            blinkt.set_pixel(
-                blinkt.NUM_PIXELS - 1 - i, colors[i][0], colors[i][1], colors[i][2]
-            )
-            blinkt.show()
-            time.sleep(0.5)
-
-        for _ in range(4):
-            clear_all()
-            for i in range(blinkt.NUM_PIXELS // 2):
-                blinkt.set_pixel(i, colors[i][0], colors[i][1], colors[i][2])
-                blinkt.set_pixel(
-                    blinkt.NUM_PIXELS - 1 - i, colors[i][0], colors[i][1], colors[i][2]
+    def show_leds(self, target):
+        if target == 10:
+            if self.leds_to_set != target:
+                self.leds_to_set = target
+                blinkt.set_all(
+                        self.colors[3][0],
+                        self.colors[3][1],
+                        self.colors[3][2]
                 )
-            blinkt.show()
-            time.sleep(0.05)
-        clear_all()
+                blinkt.show()
+        else:
+            if (self.leds_to_set < target):
+                self.leds_to_set = target
+                for i in range(target // 2):
+                    blinkt.set_pixel(i, self.colors[i][0], self.colors[i][1], self.colors[i][2])
+                    blinkt.set_pixel(
+                        blinkt.NUM_PIXELS - 1 - i, self.colors[i][0], self.colors[i][1], self.colors[i][2]
+                    )
+                blinkt.show()

@@ -1,9 +1,9 @@
 import time
 from hmi.color import Color
-from hmi.widget import AbstractWidget
+from hmi.widget import Widget
 
 
-class LastLap(AbstractWidget):
+class LastLap(Widget):
     def update(self, data):
         super().update(data)
 
@@ -15,7 +15,7 @@ class LastLap(AbstractWidget):
             llt_str = time.strftime(
                 "%M:%S.{}".format(llt % 1000), time.gmtime(llt / 1000.0)
             )
-        llt_render = self.primary_font.render(llt_str, False, Color.GREEN.rgb())
+        llt_render = self.main_font.render(llt_str, False, Color.GREEN.rgb())
         res = tuple(map(sum, zip(self.image.get_rect().midbottom, (0, 0))))
         self.image.blit(llt_render, llt_render.get_rect(midbottom=res))
         label = self.recondary_font.render("Last Lap", False, Color.WHITE.rgb())
@@ -23,7 +23,7 @@ class LastLap(AbstractWidget):
         self.image.blit(label, label.get_rect(midtop=midtop))
 
 
-class BestLap(AbstractWidget):
+class BestLap(Widget):
     def update(self, data):
         super().update(data)
 
@@ -35,7 +35,7 @@ class BestLap(AbstractWidget):
             blt_str = time.strftime(
                 "%M:%S.{}".format(blt % 1000), time.gmtime(blt / 1000.0)
             )
-        blt_render = self.primary_font.render(blt_str, False, Color.GREEN.rgb())
+        blt_render = self.main_font.render(blt_str, False, Color.GREEN.rgb())
         res = tuple(map(sum, zip(self.image.get_rect().midbottom, (0, 0))))
         self.image.blit(blt_render, blt_render.get_rect(midbottom=res))
         label = self.recondary_font.render("Best Lap", False, Color.WHITE.rgb())
@@ -43,7 +43,7 @@ class BestLap(AbstractWidget):
         self.image.blit(label, label.get_rect(midtop=midtop))
 
 
-class Lap(AbstractWidget):
+class Lap(Widget):
     def update(self, data):
         super().update(data)
 
@@ -54,7 +54,7 @@ class Lap(AbstractWidget):
             current_lap = 0
             all_laps = 0
 
-        blt_render = self.primary_font.render(
+        blt_render = self.main_font.render(
             f"{min(current_lap, all_laps)} / {all_laps}", False, Color.GREEN.rgb()
         )
         res = tuple(map(sum, zip(self.image.get_rect().midbottom, (0, 0))))
