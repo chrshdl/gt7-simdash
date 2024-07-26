@@ -22,3 +22,11 @@ or set
 "ps5_ip": null
 ```
 to run the mockup. Start the simdash with `(gt7-simdash) $ python dash.py`
+
+Whats next?
+- [x] Improve Feed performance
+- [ ] Efficient RPM gauge
+- [ ] Fix LED bugs
+- [ ] Calculate current lap time
+
+
