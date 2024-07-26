@@ -23,7 +23,7 @@ class Dash:
         self.running = False
 
         ps5_ip = conf["ps5_ip"]
-        debug_mode = conf["debug_mode"]
+        self.listener = Feed(ps5_ip)
 
         self.logger = logging.getLogger(self.__class__.__name__)
         self.logger.setLevel(logging.DEBUG)
@@ -44,8 +44,6 @@ class Dash:
         else:
             pygame.display.set_mode(monitor_size, pygame.FULLSCREEN)
 
-        self.listener = Feed(ps5_ip)
-
     def run(self):
 
         self.running = True
@@ -62,7 +60,7 @@ class Dash:
 
         while self.running:
 
-            dt = clock.tick(60) / 1000
+            dt = clock.tick() / 1000
 
             events = pygame.event.get()
 
@@ -85,7 +83,7 @@ class Dash:
                 self.listener.send_heartbeat()
 
             hmi.draw(dt, packet)
-            led.update(events)
+            led.draw(events)
             pygame.display.flip()
 
         self.close()
