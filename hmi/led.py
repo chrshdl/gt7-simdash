@@ -31,14 +31,12 @@ class LED:
 
     def draw(self, events):
         for e in events:
-            if e.type == Event.LEDS_SHOW.type():
+            if e.type == Event.HMI_RPM_LEDS_CHANGED.type():
                 if platform.machine() == RASPBERRY_PI:
-                    self.show(e.message)
-
-            if e.type == Event.LEDS_CLEAR_ALL.type():
-                if platform.machine() == RASPBERRY_PI:
-                    blinkt.clear()
-                    blinkt.show()
+                    if e.message == 0:
+                        self.clear_all()
+                    else:
+                        self.show(e.message)
 
     def clear_all(self):
         # self.logger.info("LEDS CLEARED")

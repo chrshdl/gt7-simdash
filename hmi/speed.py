@@ -8,7 +8,6 @@ class Speedometer(Widget):
         super().__init__(groups, w, h, main_fsize, header_fsize)
         self.rect.center = POS["speed"]
         self.car_speed = 0
-        self.led_active = False
 
     def update(self, dt, packet=None):
         super().update()

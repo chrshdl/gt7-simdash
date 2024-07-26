@@ -1,13 +1,18 @@
 import time
+from hmi.settings import *
 from hmi.color import Color
 from hmi.widget import Widget
 
 
-class LastLap(Widget):
-    def update(self, data):
-        super().update(data)
+class CurrentLap(Widget):
+    def __init__(self, groups, w, h):
+        super().__init__(groups, w, h)
+        self.rect.center = POS["curr_lap"]
 
-        llt = data.last_lap_time
+    def update(self, dt, packet=None):
+        super().update()
+
+        llt = packet.last_lap_time
 
         if llt is None:
             llt_str = "--:--"
@@ -18,16 +23,20 @@ class LastLap(Widget):
         llt_render = self.main_font.render(llt_str, False, Color.GREEN.rgb())
         res = tuple(map(sum, zip(self.image.get_rect().midbottom, (0, 0))))
         self.image.blit(llt_render, llt_render.get_rect(midbottom=res))
-        label = self.recondary_font.render("Last Lap", False, Color.WHITE.rgb())
+        label = self.header_font.render("Last Lap", False, Color.WHITE.rgb())
         midtop = tuple(map(sum, zip(self.image.get_rect().midtop, (0, 10))))
         self.image.blit(label, label.get_rect(midtop=midtop))
 
 
 class BestLap(Widget):
-    def update(self, data):
-        super().update(data)
+    def __init__(self, groups, w, h):
+        super().__init__(groups, w, h)
+        self.rect.center = POS["best_lap"]
 
-        blt = data.best_lap_time
+    def update(self, dt, packet=None):
+        super().update()
+
+        blt = packet.best_lap_time
 
         if blt is None:
             blt_str = "--:--"
@@ -38,27 +47,31 @@ class BestLap(Widget):
         blt_render = self.main_font.render(blt_str, False, Color.GREEN.rgb())
         res = tuple(map(sum, zip(self.image.get_rect().midbottom, (0, 0))))
         self.image.blit(blt_render, blt_render.get_rect(midbottom=res))
-        label = self.recondary_font.render("Best Lap", False, Color.WHITE.rgb())
+        label = self.header_font.render("Best Lap", False, Color.WHITE.rgb())
         midtop = tuple(map(sum, zip(self.image.get_rect().midtop, (0, 10))))
         self.image.blit(label, label.get_rect(midtop=midtop))
 
 
 class Lap(Widget):
-    def update(self, data):
-        super().update(data)
+    def __init__(self, groups, w, h, main_fsize=48):
+        super().__init__(groups, w, h, main_fsize)
+        self.rect.center = POS["lap"]
 
-        current_lap = data.lap_count
-        all_laps = data.laps_in_race
+    def update(self, dt, packet=None):
+        super().update()
 
-        if current_lap is None and all_laps is None:
-            current_lap = 0
-            all_laps = 0
+        curr_lap = packet.lap_count
+        total_laps = packet.laps_in_race
 
-        blt_render = self.main_font.render(
-            f"{min(current_lap, all_laps)} / {all_laps}", False, Color.GREEN.rgb()
+        if curr_lap is None and total_laps is None:
+            curr_lap = 0
+            total_laps = 0
+
+        lap_render = self.main_font.render(
+            f"{min(curr_lap, total_laps)} / {total_laps}", False, Color.GREEN.rgb()
         )
         res = tuple(map(sum, zip(self.image.get_rect().midbottom, (0, 0))))
-        self.image.blit(blt_render, blt_render.get_rect(midbottom=res))
-        label = self.recondary_font.render("Lap", False, Color.WHITE.rgb())
+        self.image.blit(lap_render, lap_render.get_rect(midbottom=res))
+        label = self.header_font.render("Lap", False, Color.WHITE.rgb())
         midtop = tuple(map(sum, zip(self.image.get_rect().midtop, (0, 10))))
         self.image.blit(label, label.get_rect(midtop=midtop))
