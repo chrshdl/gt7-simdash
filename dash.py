@@ -12,9 +12,9 @@ from granturismo.intake import Feed
 
 
 class Dash:
-    
+
     HEARTBEAT_DELAY = 10
-    
+
     def __init__(self, conf):
         self.W = conf["width"]
         self.H = conf["height"]
@@ -79,8 +79,8 @@ class Dash:
 
             packet = self.listener.get()
 
-            if packet.received_time - last_heartbeat >= HEARTBEAT_DELAY:
-                last_heartbeat = curr_time
+            if packet.received_time - last_heartbeat >= Dash.HEARTBEAT_DELAY:
+                last_heartbeat = packet.received_time
                 self.logger.info("SENDING HEARTBEAT")
                 self.listener.send_heartbeat()
 
