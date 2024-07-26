@@ -26,8 +26,8 @@ class LED:
         self.colors = list()
         self.colors.append(Color.BLUE.rgb())
         self.colors.append(Color.BLUE.rgb())
-        self.colors.append(Color.GREEN.rgb())
-        self.colors.append(Color.GREEN.rgb())
+        self.colors.append(Color.RED.rgb())
+        self.colors.append(Color.RED.rgb())
 
     def draw(self, events):
         for e in events:
