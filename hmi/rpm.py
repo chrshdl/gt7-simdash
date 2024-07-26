@@ -7,9 +7,8 @@ from hmi.color import Color
 class RPM(Widget):
 
     LED_OFF = 0
-    LED_2_ON = 1
-    LED_4_ON = 2
-    LED_6_ON = 4
+    LED_2_ON = 2
+    LED_4_ON = 4
     LED_8_ON = 8
 
     def __init__(self, groups, w, h, main_fsize=28):
@@ -39,28 +38,36 @@ class RPM(Widget):
             if self.curr_rpm < self.alert_min - self.delta:
                 self.LED_STATE = RPM.LED_OFF
                 pygame.event.post(
-                    pygame.event.Event(Event.HMI_RPM_LEDS_CHANGED.type(), message=0)
+                    pygame.event.Event(
+                        Event.HMI_RPM_LEDS_CHANGED.type(), message=self.LED_STATE
+                    )
                 )
         if not packet.flags.rev_limiter_alert_active:
             if self.curr_rpm in range(
                 self.alert_min - self.delta, self.alert_min - self.delta // 2
             ):
                 if not bool(self.LED_STATE & RPM.LED_2_ON):
-                    pygame.event.post(
-                        pygame.event.Event(Event.HMI_RPM_LEDS_CHANGED.type(), message=2)
-                    )
                     self.LED_STATE = RPM.LED_2_ON
+                    pygame.event.post(
+                        pygame.event.Event(
+                            Event.HMI_RPM_LEDS_CHANGED.type(), message=self.LED_STATE
+                        )
+                    )
             elif self.curr_rpm in range(
                 self.alert_min - self.delta // 2, self.alert_min
             ):
                 if not bool(self.LED_STATE & RPM.LED_4_ON):
-                    pygame.event.post(
-                        pygame.event.Event(Event.HMI_RPM_LEDS_CHANGED.type(), message=4)
-                    )
                     self.LED_STATE = RPM.LED_4_ON
-            elif self.curr_rpm in range(self.alert_min, self.alert_max):
-                if not bool(self.LED_STATE & RPM.LED_6_ON):
                     pygame.event.post(
-                        pygame.event.Event(Event.HMI_RPM_LEDS_CHANGED.type(), message=8)
+                        pygame.event.Event(
+                            Event.HMI_RPM_LEDS_CHANGED.type(), message=self.LED_STATE
+                        )
                     )
-                    self.LED_STATE = RPM.LED_6_ON
+            elif self.curr_rpm in range(self.alert_min, self.alert_max):
+                if not bool(self.LED_STATE & RPM.LED_8_ON):
+                    self.LED_STATE = RPM.LED_8_ON
+                    pygame.event.post(
+                        pygame.event.Event(
+                            Event.HMI_RPM_LEDS_CHANGED.type(), message=self.LED_STATE
+                        )
+                    )
