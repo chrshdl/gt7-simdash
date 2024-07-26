@@ -17,11 +17,7 @@ Consider adding the IP address of your PS5 in the `config.json` like
 ```
 "ps5_ip": "192.168.1.30"
 ```
-or set
-```
-"ps5_ip": null
-```
-to run the mockup. Start the simdash with `(gt7-simdash) $ python dash.py`
+Start the simdash with `(gt7-simdash) $ python dash.py`
 
 Whats next
 -----
