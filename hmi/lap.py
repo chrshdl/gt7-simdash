@@ -15,6 +15,9 @@ class CurrentLap(Widget):
         self.previous_lap = 0
         self.previous_lap_time = 0
 
+        self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger.setLevel(logging.DEBUG)
+
         sh = logging.StreamHandler()
         sh.setLevel(logging.DEBUG)
         sh.setFormatter(LogFormatter())
@@ -34,7 +37,7 @@ class CurrentLap(Widget):
                 datetime.fromtimestamp(self.previous_lap_time, tz=timezone.utc),
                 "%M:%S.%f",
             )[:-3]
-            print(f"previous lap time: {previous_time}")
+            self.logger.debug(f"PREVIOUS LAP TIME WAS: {previous_time}")
         if (
             packet.laps_in_race != None
             and packet.lap_count != None
