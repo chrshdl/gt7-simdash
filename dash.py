@@ -24,7 +24,6 @@ class Dash:
         self._car_id = -1
 
         ps5_ip = conf["ps5_ip"]
-        self.listener = Feed(ps5_ip)
 
         self.logger = logging.getLogger(self.__class__.__name__)
         self.logger.setLevel(logging.DEBUG)
@@ -45,6 +44,11 @@ class Dash:
         else:
             pygame.display.set_mode(monitor_size, pygame.FULLSCREEN)
 
+        self.listener = Feed(ps5_ip)
+        self.listener.start()
+        self.logger.info("SENDING HEARTBEAT")
+        self.listener.send_heartbeat()
+
     def run(self):
 
         self.running = True
@@ -53,17 +57,21 @@ class Dash:
         hmi = HMI()
         led = LED()
 
-        self.listener.start()
-
-        self.logger.info("SENDING HEARTBEAT")
-        self.listener.send_heartbeat()
-        last_heartbeat = time.time()
+        last_heartbeat = 0
 
         while self.running:
 
             dt = clock.tick() / 1000
 
-            packet = self.listener.get()
+            try:
+                packet = self.listener.get()
+            except Exception as e:
+                self.logger.warning(f"CONNECTION ISSUE: {e}")
+                self.logger.info("TRYING TO RECONNECT...")
+                self.logger.info("SENDING HEARTBEAT")
+                self.listener.send_heartbeat()
+                last_heartbeat = 0
+                continue
 
             if packet.received_time - last_heartbeat >= Dash.HEARTBEAT_DELAY:
                 last_heartbeat = packet.received_time
