@@ -1,5 +1,5 @@
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from hmi.settings import *
 from hmi.color import Color
 from hmi.widget import Widget
@@ -23,15 +23,24 @@ class CurrentLap(Widget):
         if packet.lap_count != 0 and packet.lap_count == self.previous_lap + 1:
             self.delta_time = packet.received_time
             self.previous_lap = packet.lap_count
-            previous_time = datetime.strftime(datetime.utcfromtimestamp(self.previous_lap_time), "%M:%S.%f")[:-3]
+            previous_time = datetime.strftime(
+                datetime.fromtimestamp(self.previous_lap_time, tz=timezone.utc),
+                "%M:%S.%f",
+            )[:-3]
             print(f"previous lap time: {previous_time}")
-        if packet.laps_in_race != None and packet.lap_count != None and packet.laps_in_race < packet.lap_count:
+        if (
+            packet.laps_in_race != None
+            and packet.lap_count != None
+            and packet.laps_in_race < packet.lap_count
+        ):
             lap_time = self.previous_lap_time
             self.previous_lap = 0
         else:
             lap_time = packet.received_time - self.delta_time
             self.previous_lap_time = lap_time
-        lap_time_str = datetime.strftime(datetime.utcfromtimestamp(lap_time), "%M:%S.%f")[:-3]
+        lap_time_str = datetime.strftime(
+            datetime.fromtimestamp(lap_time, tz=timezone.utc), "%M:%S.%f"
+        )[:-3]
 
         llt_render = self.main_font.render(lap_time_str, False, Color.GREEN.rgb())
         res = tuple(map(sum, zip(self.image.get_rect().midbottom, (0, 0))))
@@ -54,9 +63,10 @@ class BestLap(Widget):
         if blt is None:
             blt_str = "--:--"
         else:
-            blt_str = time.strftime(
-                    "%M:%S.{}".format(blt % 1000), time.gmtime(blt / 1000.0)
-            )
+            blt_str = datetime.strftime(
+                datetime.fromtimestamp(blt, tz=timezone.utc),
+                "%M:%S.%f",
+            )[:-3]
         blt_render = self.main_font.render(blt_str, False, Color.GREEN.rgb())
         res = tuple(map(sum, zip(self.image.get_rect().midbottom, (0, 0))))
         self.image.blit(blt_render, blt_render.get_rect(midbottom=res))
