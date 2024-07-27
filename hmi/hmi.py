@@ -1,5 +1,4 @@
 import pygame
-from hmi.event import Event
 from hmi.speed import Speedometer
 from hmi.gear import GearIndicator
 from hmi.rpm import RPM

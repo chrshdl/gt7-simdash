@@ -1,7 +1,10 @@
-from datetime import datetime, timezone
 from hmi.settings import *
 from hmi.color import Color
 from hmi.widget import Widget
+from datetime import datetime, timezone
+import logging
+
+from logformatter import LogFormatter
 
 
 class CurrentLap(Widget):
@@ -11,6 +14,11 @@ class CurrentLap(Widget):
         self.delta_time = 0
         self.previous_lap = 0
         self.previous_lap_time = 0
+
+        sh = logging.StreamHandler()
+        sh.setLevel(logging.DEBUG)
+        sh.setFormatter(LogFormatter())
+        self.logger.addHandler(sh)
 
     def update(self, dt, packet=None):
         super().update()

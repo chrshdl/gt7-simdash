@@ -1,5 +1,5 @@
-from posixpath import join
 import pygame
+from posixpath import join
 from hmi.color import Color
 
 
@@ -12,7 +12,9 @@ class Widget(pygame.sprite.Sprite):
         self.main_font = pygame.font.Font(
             join("fonts", "digital-7-mono.ttf"), main_fsize
         )
-        self.header_font = pygame.font.Font("fonts/pixeltype.ttf", header_fsize)
+        self.header_font = pygame.font.Font(
+            join("fonts", "pixeltype.ttf", header_fsize)
+        )
 
     def draw_overlay(self):
         pygame.draw.rect(self.image, Color.DARK_GREY.rgb(), self.image.get_rect(), 0, 8)
