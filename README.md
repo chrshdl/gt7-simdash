@@ -17,12 +17,14 @@ Consider adding the IP address of your PS5 in the `config.json` like
 ```
 "ps5_ip": "192.168.1.30"
 ```
-Start the simdash with `(gt7-simdash) $ python dash.py`
+Start the simdash with `python dash.py`
 
 Whats next
 -----
 - [x] Improve Feed performance
 - [ ] Efficient RPM gauge
 - [x] Fix LED bugs
-- [ ] Calculate current lap time
-- [ ] Show simdash in action
+- [x] Calculate current lap time
+- [ ] Pause current lap measurement if game paused
+- [x] Show simdash in action
+
