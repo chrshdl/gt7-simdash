@@ -1,4 +1,5 @@
 import pygame
+from hmi.event import Event
 from hmi.speed import Speedometer
 from hmi.gear import GearIndicator
 from hmi.rpm import RPM
@@ -26,3 +27,8 @@ class HMI:
         self.screen.fill(Color.BLACK.rgb())
         self.telemetry.update(dt, packet)
         self.telemetry.draw(self.screen)
+
+    def update_rpm_alerts(self, rpm_min, rpm_max):
+        rpm = self.telemetry.sprites()[2]
+        rpm.alert_min(rpm_min)
+        rpm.alert_max(rpm_max)

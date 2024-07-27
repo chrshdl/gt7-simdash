@@ -21,6 +21,7 @@ class Dash:
         fullscreen = conf["fullscreen"]
 
         self.running = False
+        self._car_id = -1
 
         ps5_ip = conf["ps5_ip"]
         self.listener = Feed(ps5_ip)
@@ -62,9 +63,19 @@ class Dash:
 
             dt = clock.tick() / 1000
 
+            packet = self.listener.get()
+
+            if packet.received_time - last_heartbeat >= Dash.HEARTBEAT_DELAY:
+                last_heartbeat = packet.received_time
+                self.logger.info("SENDING HEARTBEAT")
+                self.listener.send_heartbeat()
+
             events = pygame.event.get()
 
             for event in events:
+                if event.type == Event.HMI_CAR_CHANGED.type():
+                    hmi.update_rpm_alerts(packet.rpm_alert.min, packet.rpm_alert.max)
+
                 if event.type == pygame.QUIT:
                     self.running = False
                 if event.type == pygame.KEYDOWN:
@@ -75,15 +86,9 @@ class Dash:
                         screenshot.blit(pygame.display.get_surface(), (0, 0))
                         pygame.image.save(screenshot, "gt7-simdash.png")
 
-            packet = self.listener.get()
-
-            if packet.received_time - last_heartbeat >= Dash.HEARTBEAT_DELAY:
-                last_heartbeat = packet.received_time
-                self.logger.info("SENDING HEARTBEAT")
-                self.listener.send_heartbeat()
-
             hmi.draw(dt, packet)
             led.draw(events)
+            self.car_id(packet.car_id)
             pygame.display.flip()
 
         self.close()
@@ -92,6 +97,13 @@ class Dash:
         self.listener.close()
         pygame.quit()
         sys.exit()
+
+    def car_id(self, id):
+        if self._car_id != id:
+            self._car_id = id
+            pygame.event.post(
+                pygame.event.Event(Event.HMI_CAR_CHANGED.type(), message=self._car_id)
+            )
 
 
 if __name__ == "__main__":
