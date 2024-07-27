@@ -74,8 +74,8 @@ class RPM(Widget):
 
     def alert_min(self, value):
         self._alert_min = value
-        self.logger.info(f"rpm_alert.min is now = {self._alert_min}")
+        self.logger.info(f"RPM_ALERT.MIN is now: {self._alert_min}")
 
     def alert_max(self, value):
         self._alert_max = value
-        self.logger.info(f"rpm_alert.max is now = {self._alert_max}")
+        self.logger.info(f"RPM_ALERT.MAX is now: {self._alert_max}")
