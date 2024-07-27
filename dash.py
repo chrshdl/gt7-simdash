@@ -45,9 +45,6 @@ class Dash:
             pygame.display.set_mode(monitor_size, pygame.FULLSCREEN)
 
         self.listener = Feed(ps5_ip)
-        self.listener.start()
-        self.logger.info("SENDING HEARTBEAT")
-        self.listener.send_heartbeat()
 
     def run(self):
 
@@ -57,6 +54,9 @@ class Dash:
         hmi = HMI()
         led = LED()
 
+        self.listener.start()
+        self.logger.info("SENDING HEARTBEAT")
+        self.listener.send_heartbeat()
         last_heartbeat = 0
 
         while self.running:
@@ -67,8 +67,7 @@ class Dash:
                 packet = self.listener.get()
             except Exception as e:
                 self.logger.warning(f"CONNECTION ISSUE: {e}")
-                self.logger.info("TRYING TO RECONNECT...")
-                self.logger.info("SENDING HEARTBEAT")
+                self.logger.info("TRYING TO RECONNECT, SENDING HEARTBEAT")
                 self.listener.send_heartbeat()
                 last_heartbeat = 0
                 continue
