@@ -7,8 +7,10 @@ name = "pypi"
 pygame = "*"
 granturismo = {git = "https://github.com/chrshdl/granturismo.git"}
 blinkt = "*"
+rpi-lgpio = "*"
 
 [dev-packages]
+pre-commit = "*"
 
 [requires]
 python_version = "3.10"

@@ -1,45 +1,44 @@
-import blinkt
-import time
 from hmi.color import Color
+from hmi.event import Event
+import platform
+
+RASPBERRY_PI = "aarch64"
+if platform.machine() == RASPBERRY_PI:
+    import blinkt
 
 
-colors = list()
+class LED:
+    def __init__(self):
 
+        if platform.machine() == RASPBERRY_PI:
+            blinkt.set_brightness(0.05)
 
-def init():
-    colors.append(Color.BLUE.rgb())
-    colors.append(Color.GREEN.rgb())
-    colors.append(Color.GREEN.rgb())
-    colors.append(Color.RED.rgb())
-    blinkt.set_brightness(0.05)
-    clear_all()
+        self.colors = list()
+        self.colors.append(Color.BLUE.rgb())
+        self.colors.append(Color.BLUE.rgb())
+        self.colors.append(Color.RED.rgb())
+        self.colors.append(Color.RED.rgb())
 
+    def draw(self, events):
+        for e in events:
+            if e.type == Event.HMI_RPM_LEDS_CHANGED.type():
+                if platform.machine() == RASPBERRY_PI:
+                    if e.message == 0:
+                        self.clear_all()
+                    else:
+                        self.show(e.message)
 
-def clear_all():
-    blinkt.clear()
-    blinkt.show()
+    def clear_all(self):
+        blinkt.clear()
+        blinkt.show()
 
-
-if __name__ == "__main__":
-
-    init()
-
-    while True:
-        for i in range(blinkt.NUM_PIXELS // 2):
-            blinkt.set_pixel(i, colors[i][0], colors[i][1], colors[i][2])
+    def show(self, target):
+        for i in range(target // 2):
+            blinkt.set_pixel(i, self.colors[i][0], self.colors[i][1], self.colors[i][2])
             blinkt.set_pixel(
-                blinkt.NUM_PIXELS - 1 - i, colors[i][0], colors[i][1], colors[i][2]
+                blinkt.NUM_PIXELS - 1 - i,
+                self.colors[i][0],
+                self.colors[i][1],
+                self.colors[i][2],
             )
-            blinkt.show()
-            time.sleep(0.5)
-
-        for _ in range(4):
-            clear_all()
-            for i in range(blinkt.NUM_PIXELS // 2):
-                blinkt.set_pixel(i, colors[i][0], colors[i][1], colors[i][2])
-                blinkt.set_pixel(
-                    blinkt.NUM_PIXELS - 1 - i, colors[i][0], colors[i][1], colors[i][2]
-                )
-            blinkt.show()
-            time.sleep(0.05)
-        clear_all()
+        blinkt.show()

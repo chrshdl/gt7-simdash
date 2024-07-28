@@ -2,29 +2,37 @@ import pygame
 import sys
 from hmi.hmi import HMI
 from hmi.event import Event
+from hmi.led import LED
 import argparse
 import json
 import logging
 from logformatter import LogFormatter
+from granturismo.intake import Feed
+
 
 class Dash:
+
+    HEARTBEAT_DELAY = 10
+
     def __init__(self, conf):
         self.W = conf["width"]
         self.H = conf["height"]
         fullscreen = conf["fullscreen"]
+
+        self.running = False
+        self._car_id = -1
+
         ps5_ip = conf["ps5_ip"]
-        debug_mode = conf["debug_mode"]
 
         self.logger = logging.getLogger(self.__class__.__name__)
         self.logger.setLevel(logging.DEBUG)
-        
+
         ch = logging.StreamHandler()
         ch.setLevel(logging.DEBUG)
         ch.setFormatter(LogFormatter())
         self.logger.addHandler(ch)
 
         pygame.init()
-        self.clock = pygame.time.Clock()
 
         monitor_size = (
             pygame.display.Info().current_w,
@@ -35,106 +43,76 @@ class Dash:
         else:
             pygame.display.set_mode(monitor_size, pygame.FULLSCREEN)
 
-        self.hmi = HMI(ps5_ip, debug_mode)
-
-    def _update_packet(self, packet):
-        packet.engine_rpm = (packet.engine_rpm + 50) % packet.rpm_alert.max
-        if packet.engine_rpm >= packet.rpm_alert.min:
-            packet.flags.rev_limiter_alert_active = True
-        else:
-            packet.flags.rev_limiter_alert_active = False
-            if packet.engine_rpm < 50:
-                packet.current_gear = (packet.current_gear + 1) % 7
-        packet.car_speed = (packet.car_speed + 0.1) % (260 / 3.6)
-        return packet
+        self.listener = Feed(ps5_ip)
 
     def run(self):
 
-        self.hmi.start()
+        self.running = True
 
-        import time
-        from unittest.mock import Mock
+        clock = pygame.time.Clock()
+        hmi = HMI()
+        led = LED()
 
-        while True:
-            for event in pygame.event.get():
-                if event.type == Event.NEW_CAR_EVENT.type():
-                    self.logger.debug(
-                        f"received {Event.NEW_CAR_EVENT.name()}, car_id changed to: {event.message}"
-                    )
-                    self.hmi.set_rpm_alerts(packet.rpm_alert.min, packet.rpm_alert.max)
+        self.listener.start()
+        self.logger.info("SENDING HEARTBEAT")
+        self.listener.send_heartbeat()
+        last_heartbeat = 0
 
-                if event.type == Event.LEDS_SHOW_ALL_RED.type():
-                    self.logger.error(
-                        f"received {Event.LEDS_SHOW_ALL_RED.name()}"
-                    )
-                    self.hmi.show_all_leds_red()
+        while self.running:
 
-                if event.type == Event.LEDS_CLEAR_ALL.type():
-                    self.logger.info(
-                        f"received {Event.LEDS_CLEAR_ALL.name()}"
-                    )
-                    self.hmi.clear_all_leds()
+            clock.tick()
 
-                if event.type == Event.HMI_STARTED_EVENT.type():
-                    self.logger.debug(
-                        f"received {Event.HMI_STARTED_EVENT.name()}, initializing HMI: {event.message}"
-                    )
-                    self.hmi.draw_text("Initializing, please wait...")
+            try:
+                packet = self.listener.get()
+            except Exception as e:
+                self.logger.warning(f"CONNECTION ISSUE: {e}")
+                self.logger.info("RECONNECTING...")
+                self.listener.send_heartbeat()
+                last_heartbeat = 0
+                continue
 
-                    time.sleep(3)
+            if packet.received_time - last_heartbeat >= Dash.HEARTBEAT_DELAY:
+                last_heartbeat = packet.received_time
+                self.logger.info("SENDING HEARTBEAT")
+                self.listener.send_heartbeat()
 
-                    if self.hmi.ps5_ip is not None:
-                        from granturismo.intake import Feed
+            events = pygame.event.get()
 
-                        listener = Feed(self.hmi.ps5_ip)
-                        listener.start()
-                        packet = listener.get()
-                    else:
-                        from unittest.mock import Mock, MagicMock
-
-                        packet = Mock()
-                        packet.car_speed = 0 / 3.6
-                        packet.current_gear = 1
-                        packet.engine_rpm = 900.0
-                        packet.rpm_alert.min = 7800
-                        packet.rpm_alert.max = 8000
-                        packet.flags.rev_limiter_alert_active = False
-                        packet.last_lap_time = 165256
-                        packet.best_lap_time = None
-                        packet.flags.paused = False
-                        packet.flags.car_on_track = True
-                        packet.flags.loading_or_processing = False
-                        packet.lap_count = 1
-                        packet.laps_in_race = 3
-                        packet.car_id = 203
-
-                        listener = Mock()
-                        listener.get = MagicMock(name="get")
-                        listener.get.return_value = packet
-                        listener.close = MagicMock(name="close")
+            for event in events:
+                if event.type == Event.HMI_CAR_CHANGED.type():
+                    rpm_min = packet.rpm_alert.min
+                    rpm_max = packet.rpm_alert.max
+                    self.logger.info(f"RPM MIN: {rpm_min} MAX: {rpm_max}")
+                    hmi.update_rpm_alerts(rpm_min, rpm_max)
 
                 if event.type == pygame.QUIT:
-                    listener.close()
-                    self.close()
+                    self.running = False
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
-                        listener.close()
-                        self.close()
+                        self.running = False
                     if event.key == pygame.K_SPACE:
                         screenshot = pygame.Surface((self.W, self.H))
                         screenshot.blit(pygame.display.get_surface(), (0, 0))
                         pygame.image.save(screenshot, "gt7-simdash.png")
-            if isinstance(packet, Mock):
-                packet = self._update_packet(packet)
-            else:
-                packet = listener.get()
-            self.hmi.run(packet)
+
+            hmi.draw(packet)
+            led.draw(events)
+            self.car_id(packet.car_id)
             pygame.display.flip()
-            self.clock.tick(60)
+
+        self.close()
 
     def close(self):
+        self.listener.close()
         pygame.quit()
         sys.exit()
+
+    def car_id(self, id):
+        if self._car_id != id:
+            self._car_id = id
+            pygame.event.post(
+                pygame.event.Event(Event.HMI_CAR_CHANGED.type(), message=self._car_id)
+            )
 
 
 if __name__ == "__main__":

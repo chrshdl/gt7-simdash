@@ -1,43 +1,68 @@
-import pygame
+from hmi.settings import *
+from hmi.widget import Widget
+from hmi.event import Event
 from hmi.color import Color
 
 
-class RPM(pygame.sprite.Sprite):
-    def __init__(self, screen_width, y, rpm_min, rpm_max, step):
-        super().__init__()
+class RPM(Widget):
 
-        self.rpm_min = rpm_min
-        self.rpm_max = rpm_max
-        margin = 2
-        self.w = 4
-        self.h = 33
+    LED_OFF = 0
+    LED_2_ON = 2
+    LED_4_ON = 4
+    LED_8_ON = 8
 
-        offset_center = (screen_width - rpm_max * (margin + self.w)) // 2
-        pos = ((offset_center + (margin + self.w) * step + margin), y)
+    def __init__(self, groups, w, h, main_fsize=28):
+        super().__init__(groups, w, h, main_fsize)
+        self.rect.center = POS["rpm"]
 
-        self.step = step
+        self._led_state = RPM.LED_OFF
 
-        if self.step % 10 == 0:
-            self.image = pygame.Surface((self.w, self.h + 6)).convert()
-            if self.step < rpm_min:
-                self.image.fill(Color.LIGHT_GREY.rgb())
-            else:
-                self.image.fill(Color.RED.rgb())
-        else:
-            self.image = pygame.Surface((self.w, self.h)).convert()
+        self.curr_rpm = 0
+        self._alert_min = 0
+        self._alert_max = 0
+        self.delta = 1000
 
-        self.rect = self.image.get_rect(topleft=pos)
+    def update(self, packet):
+        super().update()
 
-    def update(self, current_rpm):
-        if self.step <= current_rpm:
-            if current_rpm >= self.rpm_min and self.step >= self.rpm_min:
-                self.image.fill(Color.RED.rgb())
-            else:
-                self.image.fill(Color.GREY.rgb(), (0, 0, self.w, self.h))
-        else:
-            if self.step >= self.rpm_min:
-                self.image.fill(Color.DARK_RED.rgb(), (0, 0, self.w, self.h))
-            elif self.step % 10 == 0 and not self.step >= self.rpm_min:
-                self.image.fill(Color.BLACK.rgb(), (0, 0, self.w, self.h))  # GREY
-            else:
-                self.image.fill(Color.BLACK.rgb(), (0, 0, self.w, self.h))  # DARK_GREY
+        curr_rpm = int(packet.engine_rpm)
+        limiter_active = packet.flags.rev_limiter_alert_active
+
+        rpm_render = self.main_font.render(f"{curr_rpm}", False, Color.GREEN.rgb())
+        self.image.blit(
+            rpm_render, rpm_render.get_rect(center=rpm_render.get_rect().center)
+        )
+
+        self.update_leds(curr_rpm, limiter_active)
+
+    def update_leds(self, curr_rpm, limiter_active):
+        if bool(self._led_state | RPM.LED_OFF):
+            if curr_rpm < self._alert_min - self.delta:
+                self.led(RPM.LED_OFF)
+        if not limiter_active:
+            if curr_rpm in range(
+                self._alert_min - self.delta, self._alert_min - self.delta // 2
+            ):
+                if not bool(self._led_state & RPM.LED_2_ON):
+                    self.led(RPM.LED_2_ON)
+            elif curr_rpm in range(self._alert_min - self.delta // 2, self._alert_min):
+                if not bool(self._led_state & RPM.LED_4_ON):
+                    self.led(RPM.LED_4_ON)
+            elif curr_rpm in range(self._alert_min, self._alert_max):
+                if not bool(self._led_state & RPM.LED_8_ON):
+                    self.led(RPM.LED_8_ON)
+
+    def led(self, state):
+        if self._led_state != state:
+            self._led_state = state
+            pygame.event.post(
+                pygame.event.Event(
+                    Event.HMI_RPM_LEDS_CHANGED.type(), message=self._led_state
+                )
+            )
+
+    def alert_min(self, value):
+        self._alert_min = value
+
+    def alert_max(self, value):
+        self._alert_max = value
