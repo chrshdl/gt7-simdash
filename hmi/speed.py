@@ -12,10 +12,7 @@ class Speedometer(Widget):
     def update(self, dt, packet=None):
         super().update()
 
-        if packet is not None:
-            self.car_speed = packet.car_speed * 3.6
-        else:
-            self.car_speed = (self.car_speed + (dt * 25)) % 400
+        self.car_speed = packet.car_speed * 3.6
 
         speed = str(int(self.car_speed))
         speed = speed.center(len(speed))
