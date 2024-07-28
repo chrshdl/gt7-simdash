@@ -26,8 +26,7 @@ class HMI:
         self.telemetry.draw(self.screen)
 
     def update_rpm_alerts(self, rpm_min, rpm_max):
-        sprites = self.telemetry.sprites()
-        for sprite in sprites:
+        for sprite in self.telemetry.sprites():
             if isinstance(sprite, RPM):
                 sprite.alert_min(rpm_min)
                 sprite.alert_max(rpm_max)
