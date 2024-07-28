@@ -5,12 +5,10 @@ from hmi.rpm import RPM
 from hmi.debug import DebugScreen
 from hmi.lap import Laps, CurrentLap, BestLap
 from hmi.color import Color
-import logging
 
 
 class HMI:
     def __init__(self):
-        self.logger = logging.getLogger(self.__class__.__name__)
         self.screen = pygame.display.get_surface()
         self.telemetry = pygame.sprite.Group()
 
