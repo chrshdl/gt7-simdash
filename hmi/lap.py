@@ -53,8 +53,9 @@ class CurrentLap(Widget):
         )[:-3]
 
         llt_render = self.main_font.render(lap_time_str, False, Color.GREEN.rgb())
-        res = tuple(map(sum, zip(self.image.get_rect().midbottom, (0, 0))))
-        self.image.blit(llt_render, llt_render.get_rect(midbottom=res))
+        midbottom = tuple(map(sum, zip(self.image.get_rect().midbottom, (0, 0))))
+        self.image.blit(llt_render, llt_render.get_rect(midbottom=midbottom))
+
         label = self.header_font.render("Current Lap", False, Color.WHITE.rgb())
         midtop = tuple(map(sum, zip(self.image.get_rect().midtop, (2, 10))))
         self.image.blit(label, label.get_rect(midtop=midtop))
@@ -70,16 +71,16 @@ class BestLap(Widget):
 
         blt = packet.best_lap_time
 
-        if blt is None:
+        if blt is None or blt == 0:
             blt_str = "--:--"
         else:
             blt_str = datetime.strftime(
-                datetime.fromtimestamp(blt, tz=timezone.utc),
-                "%M:%S.%f",
+                datetime.fromtimestamp(blt / 1000, tz=timezone.utc), "%M:%S.%f"
             )[:-3]
         blt_render = self.main_font.render(blt_str, False, Color.GREEN.rgb())
-        res = tuple(map(sum, zip(self.image.get_rect().midbottom, (0, 0))))
-        self.image.blit(blt_render, blt_render.get_rect(midbottom=res))
+        midbottom = tuple(map(sum, zip(self.image.get_rect().midbottom, (0, 0))))
+        self.image.blit(blt_render, blt_render.get_rect(midbottom=midbottom))
+
         label = self.header_font.render("Best Lap", False, Color.WHITE.rgb())
         midtop = tuple(map(sum, zip(self.image.get_rect().midtop, (0, 10))))
         self.image.blit(label, label.get_rect(midtop=midtop))
@@ -102,8 +103,9 @@ class Laps(Widget):
         lap_render = self.main_font.render(
             f"{min(current, total)} / {total}", False, Color.GREEN.rgb()
         )
-        res = tuple(map(sum, zip(self.image.get_rect().midbottom, (0, 0))))
-        self.image.blit(lap_render, lap_render.get_rect(midbottom=res))
+        midbottom = tuple(map(sum, zip(self.image.get_rect().midbottom, (0, 0))))
+        self.image.blit(lap_render, lap_render.get_rect(midbottom=midbottom))
+
         label = self.header_font.render("Lap", False, Color.WHITE.rgb())
         midtop = tuple(map(sum, zip(self.image.get_rect().midtop, (0, 10))))
         self.image.blit(label, label.get_rect(midtop=midtop))
