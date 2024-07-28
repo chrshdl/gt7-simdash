@@ -2,9 +2,6 @@ from hmi.settings import *
 from hmi.widget import Widget
 from hmi.event import Event
 from hmi.color import Color
-import logging
-
-from logformatter import LogFormatter
 
 
 class RPM(Widget):
@@ -24,14 +21,6 @@ class RPM(Widget):
         self._alert_min = 0
         self._alert_max = 0
         self.delta = 1000
-
-        self.logger = logging.getLogger(self.__class__.__name__)
-        self.logger.setLevel(logging.DEBUG)
-
-        sh = logging.StreamHandler()
-        sh.setLevel(logging.DEBUG)
-        sh.setFormatter(LogFormatter())
-        self.logger.addHandler(sh)
 
     def update(self, dt, packet=None):
         super().update()
@@ -74,8 +63,6 @@ class RPM(Widget):
 
     def alert_min(self, value):
         self._alert_min = value
-        self.logger.info(f"RPM_ALERT.MIN is now: {self._alert_min}")
 
     def alert_max(self, value):
         self._alert_max = value
-        self.logger.info(f"RPM_ALERT.MAX is now: {self._alert_max}")

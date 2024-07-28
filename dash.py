@@ -81,7 +81,10 @@ class Dash:
 
             for event in events:
                 if event.type == Event.HMI_CAR_CHANGED.type():
-                    hmi.update_rpm_alerts(packet.rpm_alert.min, packet.rpm_alert.max)
+                    rpm_min = packet.rpm_alert.min
+                    rpm_max = packet.rpm_alert.max
+                    self.logger.info(f"RPM MIN: {rpm_min} MAX: {rpm_max}")
+                    hmi.update_rpm_alerts(rpm_min, rpm_max)
 
                 if event.type == pygame.QUIT:
                     self.running = False
