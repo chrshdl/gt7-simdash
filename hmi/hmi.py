@@ -20,9 +20,9 @@ class HMI:
         BestLap(self.telemetry, 180, 88)
         DebugScreen(self.telemetry, 180, 110)
 
-    def draw(self, dt, packet=None):
+    def draw(self, packet):
         self.screen.fill(Color.BLACK.rgb())
-        self.telemetry.update(dt, packet)
+        self.telemetry.update(packet)
         self.telemetry.draw(self.screen)
 
     def update_rpm_alerts(self, rpm_min, rpm_max):

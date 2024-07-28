@@ -13,7 +13,7 @@ class Widget(pygame.sprite.Sprite):
             join("fonts", "digital-7-mono.ttf"), main_fsize
         )
         self.header_font = pygame.font.Font(
-            join("fonts", "pixeltype.ttf", header_fsize)
+            join("fonts", "pixeltype.ttf"), header_fsize
         )
 
     def draw_overlay(self):

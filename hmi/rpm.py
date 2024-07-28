@@ -22,7 +22,7 @@ class RPM(Widget):
         self._alert_max = 0
         self.delta = 1000
 
-    def update(self, dt, packet=None):
+    def update(self, packet):
         super().update()
 
         curr_rpm = int(packet.engine_rpm)

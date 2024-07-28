@@ -11,7 +11,7 @@ class DebugScreen(Widget):
         self.loading_or_processing = False
         self.paused = False
 
-    def update(self, dt, packet):
+    def update(self, packet):
         super().update()
 
         self.car_on_track = packet.flags.car_on_track

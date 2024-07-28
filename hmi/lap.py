@@ -23,7 +23,7 @@ class CurrentLap(Widget):
         sh.setFormatter(LogFormatter())
         self.logger.addHandler(sh)
 
-    def update(self, dt, packet=None):
+    def update(self, packet):
         super().update()
 
         lap_time_str = "--:--"
@@ -65,7 +65,7 @@ class BestLap(Widget):
         super().__init__(groups, w, h, main_fsize, header_fsize)
         self.rect.center = POS["best_lap_time"]
 
-    def update(self, dt, packet=None):
+    def update(self, packet):
         super().update()
 
         blt = packet.best_lap_time
@@ -90,7 +90,7 @@ class Laps(Widget):
         super().__init__(groups, w, h, main_fsize, header_fsize)
         self.rect.center = POS["laps"]
 
-    def update(self, dt, packet=None):
+    def update(self, packet):
         super().update()
 
         current = packet.lap_count

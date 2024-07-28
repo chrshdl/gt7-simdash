@@ -9,7 +9,7 @@ class Speedometer(Widget):
         self.rect.center = POS["speed"]
         self.car_speed = 0
 
-    def update(self, dt, packet=None):
+    def update(self, packet):
         super().update()
 
         self.car_speed = packet.car_speed * 3.6

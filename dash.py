@@ -5,7 +5,6 @@ from hmi.event import Event
 from hmi.led import LED
 import argparse
 import json
-import time
 import logging
 from logformatter import LogFormatter
 from granturismo.intake import Feed
@@ -61,13 +60,13 @@ class Dash:
 
         while self.running:
 
-            dt = clock.tick() / 1000
+            clock.tick()
 
             try:
                 packet = self.listener.get()
             except Exception as e:
                 self.logger.warning(f"CONNECTION ISSUE: {e}")
-                self.logger.info("TRYING TO RECONNECT, SENDING HEARTBEAT")
+                self.logger.info("RECONNECTING...")
                 self.listener.send_heartbeat()
                 last_heartbeat = 0
                 continue
@@ -96,7 +95,7 @@ class Dash:
                         screenshot.blit(pygame.display.get_surface(), (0, 0))
                         pygame.image.save(screenshot, "gt7-simdash.png")
 
-            hmi.draw(dt, packet)
+            hmi.draw(packet)
             led.draw(events)
             self.car_id(packet.car_id)
             pygame.display.flip()

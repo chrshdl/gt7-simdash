@@ -8,7 +8,7 @@ class GearIndicator(Widget):
         super().__init__(groups, w, h, main_fsize)
         self.rect.topleft = POS["gear"]
 
-    def update(self, dt, packet):
+    def update(self, packet):
         super().update()
 
         if not packet.flags.in_gear:
