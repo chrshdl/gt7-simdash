@@ -10,6 +10,7 @@ blinkt = "*"
 rpi-lgpio = "*"
 
 [dev-packages]
+pre-commit = "*"
 
 [requires]
 python_version = "3.10"
