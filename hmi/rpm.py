@@ -1,7 +1,8 @@
-from hmi.settings import *
+import pygame
+from hmi.settings import POS
 from hmi.widget import Widget
 from hmi.event import Event
-from hmi.color import Color
+from hmi.properties import Color
 
 
 class RPM(Widget):

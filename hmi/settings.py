@@ -1,5 +1,3 @@
-import pygame
-
 POS = {
     "speed": (400, 80),
     "debug": (610, 250),

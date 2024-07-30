@@ -1,5 +1,5 @@
-from hmi.settings import *
-from hmi.color import Color
+from hmi.settings import POS
+from hmi.properties import Color
 from hmi.widget import Widget
 
 

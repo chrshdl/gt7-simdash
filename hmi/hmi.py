@@ -4,7 +4,7 @@ from hmi.gear import GearIndicator
 from hmi.rpm import RPM
 from hmi.debug import DebugScreen
 from hmi.lap import Laps, CurrentLap, BestLap
-from hmi.color import Color
+from hmi.properties import Color
 
 
 class HMI:

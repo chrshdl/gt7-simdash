@@ -1,4 +1,4 @@
-from hmi.color import Color
+from hmi.properties import Color
 from hmi.widget import Widget
 
 
