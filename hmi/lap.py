@@ -54,9 +54,6 @@ class EstimatedLap(Widget):
 
         self.body_text = estimated_laptime
 
-    def new_lap_started(self, lap):
-        return self.lap != lap
-
 
 class BestLap(Widget):
     def __init__(self, groups, w, h, main_fsize=40, header_fsize=42):
