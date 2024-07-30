@@ -34,7 +34,7 @@ Start with `python dash.py`
 - [ ] Efficient RPM gauge
 - [x] Fix LED bugs
 - [x] Calculate current lap time
-- [ ] Pause current lap measurement if game paused
+- [x] Pause current lap measurement if game paused
 - [x] Show simdash in action
 - [ ] Draw "init" screen on boot / errors
 
