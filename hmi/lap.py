@@ -1,9 +1,6 @@
 from hmi.settings import POS
 from hmi.widget import Widget
 from datetime import datetime, timezone
-import logging
-
-from logformatter import LogFormatter
 
 
 class EstimatedLap(Widget):
@@ -12,26 +9,19 @@ class EstimatedLap(Widget):
         self.rect.center = POS["est_lap_time"]
         self.header_text = "Estimated"
 
-        self.prev_lap = 0
         self.lap = -1
         self.curr_laptime = 0
-
-        self.logger = logging.getLogger(self.__class__.__name__)
-        self.logger.setLevel(logging.DEBUG)
-
-        sh = logging.StreamHandler()
-        sh.setLevel(logging.DEBUG)
-        sh.setFormatter(LogFormatter())
-        self.logger.addHandler(sh)
 
     def update(self, packet):
         super().update()
 
         paused = packet.flags.paused
         current_lap = packet.lap_count
+
         laps_in_race = packet.laps_in_race
         total_laps = packet.lap_count
-        self.race_over = (
+
+        race_over = (
             laps_in_race < total_laps
             if laps_in_race and total_laps is not None
             else True
@@ -40,14 +30,13 @@ class EstimatedLap(Widget):
         if current_lap == 0:
             estimated_laptime = "--:--"
             self.curr_laptime = 0
-            self.prev_lap = 0
         else:
             if self.lap != current_lap:
-                if not self.race_over:
+                if not race_over:
                     self.lap = current_lap
                     self.curr_laptime = 0
             if self.lap != 0:
-                self.curr_laptime += 1 / 60 if not paused and not self.race_over else 0
+                self.curr_laptime += 1 / 60 if not paused and not race_over else 0
             estimated_laptime = datetime.strftime(
                 datetime.fromtimestamp(self.curr_laptime, tz=timezone.utc), "%M:%S.%f"
             )[:-3]
