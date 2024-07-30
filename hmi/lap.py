@@ -6,14 +6,15 @@ import logging
 from logformatter import LogFormatter
 
 
-class CurrentLap(Widget):
+class EstimatedLap(Widget):
     def __init__(self, groups, w, h, main_fsize=40, header_fsize=42):
         super().__init__(groups, w, h, main_fsize, header_fsize)
-        self.rect.center = POS["curr_lap_time"]
-        self.header = "Current Lap"
-        self.delta_time = 0
-        self.previous_lap = 0
-        self.previous_lap_time = 0
+        self.rect.center = POS["est_lap_time"]
+        self.header_text = "Estimated"
+
+        self.prev_lap = 0
+        self.lap = -1
+        self.curr_laptime = 0
 
         self.logger = logging.getLogger(self.__class__.__name__)
         self.logger.setLevel(logging.DEBUG)
@@ -26,40 +27,42 @@ class CurrentLap(Widget):
     def update(self, packet):
         super().update()
 
-        lap_time_str = "--:--"
+        paused = packet.flags.paused
+        current_lap = packet.lap_count
+        laps_in_race = packet.laps_in_race
+        total_laps = packet.lap_count
+        self.race_over = (
+            laps_in_race < total_laps
+            if laps_in_race and total_laps is not None
+            else True
+        )
 
-        if packet.lap_count == 0 or packet.lap_count == None:
-            self.delta_time = packet.received_time
-        if packet.lap_count != 0 and packet.lap_count == self.previous_lap + 1:
-            self.delta_time = packet.received_time
-            self.previous_lap = packet.lap_count
-            previous_time = datetime.strftime(
-                datetime.fromtimestamp(self.previous_lap_time, tz=timezone.utc),
-                "%M:%S.%f",
-            )[:-3]
-            self.logger.debug(f"PREVIOUS LAP TIME WAS: {previous_time}")
-        if (
-            packet.laps_in_race != None
-            and packet.lap_count != None
-            and packet.laps_in_race < packet.lap_count
-        ):
-            lap_time = self.previous_lap_time
-            self.previous_lap = 0
+        if current_lap == 0:
+            estimated_laptime = "--:--"
+            self.curr_laptime = 0
+            self.prev_lap = 0
         else:
-            lap_time = packet.received_time - self.delta_time
-            self.previous_lap_time = lap_time
-        lap_time_str = datetime.strftime(
-            datetime.fromtimestamp(lap_time, tz=timezone.utc), "%M:%S.%f"
-        )[:-3]
+            if self.lap != current_lap:
+                if not self.race_over:
+                    self.lap = current_lap
+                    self.curr_laptime = 0
+            if self.lap != 0:
+                self.curr_laptime += 1 / 60 if not paused and not self.race_over else 0
+            estimated_laptime = datetime.strftime(
+                datetime.fromtimestamp(self.curr_laptime, tz=timezone.utc), "%M:%S.%f"
+            )[:-3]
 
-        self.value = lap_time_str
+        self.body_text = estimated_laptime
+
+    def new_lap_started(self, lap):
+        return self.lap != lap
 
 
 class BestLap(Widget):
     def __init__(self, groups, w, h, main_fsize=40, header_fsize=42):
         super().__init__(groups, w, h, main_fsize, header_fsize)
         self.rect.center = POS["best_lap_time"]
-        self.header = "Best Lap"
+        self.header_text = "Best"
 
     def update(self, packet):
         super().update()
@@ -72,14 +75,14 @@ class BestLap(Widget):
             best_lap_time = datetime.strftime(
                 datetime.fromtimestamp(blt / 1000, tz=timezone.utc), "%M:%S.%f"
             )[:-3]
-        self.value = best_lap_time
+        self.body_text = best_lap_time
 
 
 class Laps(Widget):
     def __init__(self, groups, w, h, main_fsize=48, header_fsize=42):
         super().__init__(groups, w, h, main_fsize, header_fsize)
         self.rect.center = POS["laps"]
-        self.header = "Laps"
+        self.header_text = "Laps"
 
     def update(self, packet):
         super().update()
@@ -90,4 +93,4 @@ class Laps(Widget):
         current = 0 if current is None else current
         total = 0 if total is None else total
 
-        self.value = f"{min(current, total)} / {total}"
+        self.body_text = f"{min(current, total):01d} / {total:01d}"

@@ -2,7 +2,7 @@ import pygame
 from hmi.settings import POS
 from hmi.widget import Widget
 from hmi.event import Event
-from hmi.properties import Color
+from hmi.properties import Alignment
 
 
 class RPM(Widget):
@@ -15,13 +15,19 @@ class RPM(Widget):
     def __init__(self, groups, w, h, main_fsize=28):
         super().__init__(groups, w, h, main_fsize)
         self.rect.center = POS["rpm"]
+        self.body_alignment = Alignment.CENTER
 
         self._led_state = RPM.LED_OFF
 
         self.curr_rpm = 0
-        self._alert_min = 0
-        self._alert_max = 0
+        self._alert_min = 6000
+        self._alert_max = 7000
         self.delta = 1000
+
+        self.RPM_LEVEL_0 = self._alert_min - self.delta
+        self.RPM_LEVEL_1 = self.RPM_LEVEL_0 // 2
+        self.RPM_LEVEL_2 = self._alert_min
+        self.RPM_LEVEL_3 = self._alert_max
 
     def update(self, packet):
         super().update()
@@ -29,27 +35,22 @@ class RPM(Widget):
         curr_rpm = int(packet.engine_rpm)
         limiter_active = packet.flags.rev_limiter_alert_active
 
-        rpm_render = self.main_font.render(f"{curr_rpm}", False, Color.GREEN.rgb())
-        self.image.blit(
-            rpm_render, rpm_render.get_rect(center=rpm_render.get_rect().center)
-        )
+        self.body_text = f"{curr_rpm}"
 
         self.update_leds(curr_rpm, limiter_active)
 
     def update_leds(self, curr_rpm, limiter_active):
         if bool(self._led_state | RPM.LED_OFF):
-            if curr_rpm < self._alert_min - self.delta:
+            if curr_rpm < self.RPM_LEVEL_0:
                 self.led(RPM.LED_OFF)
         if not limiter_active:
-            if curr_rpm in range(
-                self._alert_min - self.delta, self._alert_min - self.delta // 2
-            ):
+            if curr_rpm in range(self.RPM_LEVEL_0, self.RPM_LEVEL_1):
                 if not bool(self._led_state & RPM.LED_2_ON):
                     self.led(RPM.LED_2_ON)
-            elif curr_rpm in range(self._alert_min - self.delta // 2, self._alert_min):
+            elif curr_rpm in range(self.RPM_LEVEL_1, self.RPM_LEVEL_2):
                 if not bool(self._led_state & RPM.LED_4_ON):
                     self.led(RPM.LED_4_ON)
-            elif curr_rpm in range(self._alert_min, self._alert_max):
+            elif curr_rpm in range(self.RPM_LEVEL_2, self.RPM_LEVEL_3):
                 if not bool(self._led_state & RPM.LED_8_ON):
                     self.led(RPM.LED_8_ON)
 

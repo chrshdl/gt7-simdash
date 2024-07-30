@@ -3,7 +3,7 @@ from hmi.speed import Speedometer
 from hmi.gear import GearIndicator
 from hmi.rpm import RPM
 from hmi.debug import DebugScreen
-from hmi.lap import Laps, CurrentLap, BestLap
+from hmi.lap import Laps, EstimatedLap, BestLap
 from hmi.properties import Color
 
 
@@ -14,10 +14,10 @@ class HMI:
 
         Speedometer(self.telemetry, 180, 130)
         GearIndicator(self.telemetry, 180, 220)
-        RPM(self.telemetry, 400, 30)
-        Laps(self.telemetry, 180, 88)
-        CurrentLap(self.telemetry, 180, 88)
-        BestLap(self.telemetry, 180, 88)
+        RPM(self.telemetry, 300, 33)
+        Laps(self.telemetry, 180, 85)
+        EstimatedLap(self.telemetry, 185, 85)
+        BestLap(self.telemetry, 185, 85)
         DebugScreen(self.telemetry, 180, 110)
 
     def draw(self, packet):

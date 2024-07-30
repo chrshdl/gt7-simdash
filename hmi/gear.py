@@ -7,7 +7,7 @@ class GearIndicator(Widget):
     def __init__(self, groups, w, h, main_fsize=240):
         super().__init__(groups, w, h, main_fsize)
         self.rect.topleft = POS["gear"]
-        self.alignment = Alignment.CENTER
+        self.body_alignment = Alignment.CENTER
 
     def update(self, packet):
         super().update()
@@ -17,12 +17,14 @@ class GearIndicator(Widget):
         else:
             if int(packet.current_gear) == 0:
                 gear = "R"
-            elif int(packet.current_gear) == None:
+            elif packet.current_gear == None:
                 gear = "N"
             else:
-                gear = str(int(packet.current_gear))
-        if packet.flags.rev_limiter_alert_active:
-            self.value_color = Color.LIGHT_RED.rgb()
-        else:
-            self.value_color = Color.WHITE.rgb()
-        self.value = f"{gear}"
+                gear = int(packet.current_gear)
+
+        self.body_color = (
+            Color.LIGHT_RED.rgb()
+            if packet.flags.rev_limiter_alert_active
+            else Color.WHITE.rgb()
+        )
+        self.body_text = f"{gear}"
