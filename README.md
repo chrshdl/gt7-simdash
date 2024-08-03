@@ -24,7 +24,7 @@ pipenv install
 Consider adding the IP address of your Playstation 5 in the `config.json` like
 
 ```json
-"ps5_ip": "192.168.1.30"
+"playstation_ip": "192.168.1.30"
 ```
 Start with `python main.py`
 
