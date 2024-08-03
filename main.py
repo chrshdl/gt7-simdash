@@ -14,8 +14,6 @@ HEARTBEAT_DELAY = 10
 
 class Dash:
 
-    HEARTBEAT_DELAY = 10
-
     def __init__(self, conf):
         w = conf["width"]
         h = conf["height"]
@@ -45,9 +43,7 @@ class Dash:
 
         EventDispatcher()
 
-        EventDispatcher.add_listener(
-            HMI_CONNECTION_ESTABLISHED, self.on_connection_established
-        )
+        EventDispatcher.add_listener(HMI_CONNECTION_ESTABLISHED, self.on_connection)
 
     def run(self):
         self.running = True
@@ -97,7 +93,7 @@ class Dash:
                 data = (packet.rpm_alert.min, packet.rpm_alert.max)
                 EventDispatcher.dispatch(Event(HMI_CAR_CHANGED, data))
 
-    def on_connection_established(self, event):
+    def on_connection(self, event):
         self.state = "DASH"
         self.listener = event.data
 
