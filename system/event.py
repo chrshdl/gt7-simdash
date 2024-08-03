@@ -1,14 +1,13 @@
-import pygame
-from enum import Enum
+class Event(object):
+    def __init__(self, type, data=None):
+        self.type = type
+        self.data = data
 
-
-class Event(Enum):
-    HMI_STARTED = (1, pygame.USEREVENT + 1, "HMI_DASH_STARTED")
-    HMI_CAR_CHANGED = (2, pygame.USEREVENT + 2, "HMI_CAR_CHANGED")
-    HMI_RPM_LEDS_CHANGED = (3, pygame.USEREVENT + 3, "HMI_RPM_LEDS_CHANGED")
-
+    @property
     def type(self):
-        return self.value[1]
+        return self.type
 
-    def name(self):
-        return self.value[2]
+    @property
+    def data(self):
+        return self.data
+
