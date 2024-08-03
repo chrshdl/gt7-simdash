@@ -1,5 +1,5 @@
 from hmi.settings import POS
-from system.event import Event
+from common.event import Event
 from hmi.properties import TextAlignment
 from . import Widget, EventDispatcher, Logger
 from events import HMI_RPM_LEVEL_CHANGED, HMI_CAR_CHANGED
@@ -93,4 +93,3 @@ class RPM(Widget):
             f"New RPM levels: {self.RPM_LEVEL_0} | {self.RPM_LEVEL_1} | {self.RPM_LEVEL_2} | {self.RPM_LEVEL_3} | {self.RPM_LEVEL_4}"
         )
         self.logger.info(f"New RPM delta: {self.delta}")
-

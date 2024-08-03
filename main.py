@@ -3,7 +3,7 @@ import pygame
 from hmi.view import View
 from common.event import Event
 from common.logger import Logger
-from common.eventdispatcher import EventDispatcher
+from common.evendispatcher import EventDispatcher
 from granturismo.intake import Feed
 from events import HMI_CAR_CHANGED, DASH_STARTED
 
@@ -114,4 +114,3 @@ if __name__ == "__main__":
         config = json.load(fid)
 
     Dash(config).run()
-

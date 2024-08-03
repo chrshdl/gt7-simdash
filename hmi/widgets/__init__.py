@@ -1,4 +1,3 @@
-from system.logger import Logger
+from common.logger import Logger
 from hmi.widgets.widget import Widget
-from system.eventdispatcher import EventDispatcher
-
+from common.evendispatcher import EventDispatcher
