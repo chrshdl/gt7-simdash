@@ -1,26 +1,22 @@
 import pygame
-from posixpath import join
-from hmi.properties import Color, Alignment
+from os.path import join
+from hmi.properties import Color, TextAlignment
 
 
 class Widget(pygame.sprite.Sprite):
-    def __init__(self, groups, w, h, main_fsize=40, header_fsize=46):
+    def __init__(self, groups, w, h, mfs=40, hfs=46):
         super().__init__(groups)
 
         self.header_text = None
         self.header_color = Color.WHITE.rgb()
         self.body_text = None
-        self.body_color = Color.GREEN.rgb()
-        self.body_alignment = Alignment.MIDBOTTOM
+        self.body_text_color = Color.GREEN.rgb()
+        self.body_text_alignment = TextAlignment.MIDBOTTOM
 
         self.image = pygame.Surface((w, h)).convert()
         self.rect = self.image.get_rect(topleft=(0, 0))
-        self.main_font = pygame.font.Font(
-            join("fonts", "digital-7-mono.ttf"), main_fsize
-        )
-        self.header_font = pygame.font.Font(
-            join("fonts", "pixeltype.ttf"), header_fsize
-        )
+        self.main_font = pygame.font.Font(join("fonts", "digital-7-mono.ttf"), mfs)
+        self.header_font = pygame.font.Font(join("fonts", "pixeltype.ttf"), hfs)
         self.antialiased = False
 
     def draw_overlay(self):
@@ -38,13 +34,13 @@ class Widget(pygame.sprite.Sprite):
     def draw_body(self):
         if self.body_text is not None:
             result = self.main_font.render(
-                f"{self.body_text}", self.antialiased, self.body_color
+                f"{self.body_text}", self.antialiased, self.body_text_color
             )
-            if self.body_alignment == Alignment.CENTER:
+            if self.body_text_alignment == TextAlignment.CENTER:
                 self.image.blit(
                     result, result.get_rect(center=self.image.get_rect().center)
                 )
-            elif self.body_alignment == Alignment.MIDBOTTOM:
+            elif self.body_text_alignment == TextAlignment.MIDBOTTOM:
                 self.image.blit(
                     result, result.get_rect(midbottom=self.image.get_rect().midbottom)
                 )
@@ -53,3 +49,4 @@ class Widget(pygame.sprite.Sprite):
         self.draw_overlay()
         self.draw_header()
         self.draw_body()
+

@@ -1,13 +1,14 @@
+from . import Widget
 from hmi.settings import POS
-from hmi.properties import Color, Alignment
-from hmi.widget import Widget
+from hmi.properties import Color, TextAlignment
 
 
 class GearIndicator(Widget):
-    def __init__(self, groups, w, h, main_fsize=240):
-        super().__init__(groups, w, h, main_fsize)
+    def __init__(self, groups, w, h, mfs=240):
+        super().__init__(groups, w, h, mfs)
         self.rect.topleft = POS["gear"]
-        self.body_alignment = Alignment.CENTER
+        self.body_text_alignment = TextAlignment.CENTER
+        self.body_text_color = Color.WHITE.rgb()
 
     def update(self, packet):
         super().update()
@@ -22,9 +23,10 @@ class GearIndicator(Widget):
             else:
                 gear = int(packet.current_gear)
 
-        self.body_color = (
+        self.body_text_color = (
             Color.LIGHT_RED.rgb()
             if packet.flags.rev_limiter_alert_active
             else Color.WHITE.rgb()
         )
         self.body_text = f"{gear}"
+

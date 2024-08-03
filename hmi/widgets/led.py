@@ -1,6 +1,8 @@
-from hmi.properties import Color
-from hmi.event import Event
 import platform
+from . import EventDispatcher, Logger
+from events import HMI_RPM_LEVEL_CHANGED
+from hmi.properties import Color
+
 
 RASPBERRY_PI = "aarch64"
 if platform.machine() == RASPBERRY_PI:
@@ -9,24 +11,28 @@ if platform.machine() == RASPBERRY_PI:
 
 class LED:
     def __init__(self):
-
         if platform.machine() == RASPBERRY_PI:
             blinkt.set_brightness(0.05)
 
         self.colors = list()
         self.colors.append(Color.BLUE.rgb())
         self.colors.append(Color.BLUE.rgb())
-        self.colors.append(Color.RED.rgb())
+        self.colors.append(Color.GREEN.rgb())
         self.colors.append(Color.RED.rgb())
 
-    def draw(self, events):
-        for e in events:
-            if e.type == Event.HMI_RPM_LEDS_CHANGED.type():
-                if platform.machine() == RASPBERRY_PI:
-                    if e.message == 0:
-                        self.clear_all()
-                    else:
-                        self.show(e.message)
+        self.logger = Logger(self.__class__.__name__).get()
+
+        EventDispatcher.add_listener(HMI_RPM_LEVEL_CHANGED, self.on_rpm_changed)
+
+    def on_rpm_changed(self, event):
+        if event.data == 0:
+            self.logger.info("clear all LEDs")
+            if platform.machine() == RASPBERRY_PI:
+                self.clear_all()
+        else:
+            self.logger.info(f"show {event.data} LEDs")
+            if platform.machine() == RASPBERRY_PI:
+                self.show(event.data)
 
     def clear_all(self):
         blinkt.clear()
@@ -41,4 +47,8 @@ class LED:
                 self.colors[i][1],
                 self.colors[i][2],
             )
+        for i in range(target // 2, blinkt.NUM_PIXELS // 2):
+            blinkt.set_pixel(i, 0, 0, 0)
+            blinkt.set_pixel(blinkt.NUM_PIXELS - 1 - i, 0, 0, 0)
         blinkt.show()
+
