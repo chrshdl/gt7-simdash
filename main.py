@@ -1,11 +1,11 @@
 import sys
 import pygame
 from hmi.view import View
-from system.event import Event
-from system.logger import Logger
-from system.eventdispatcher import EventDispatcher
+from common.event import Event
+from common.logger import Logger
+from common.eventdispatcher import EventDispatcher
 from granturismo.intake import Feed
-from events import HMI_CAR_CHANGED
+from events import HMI_CAR_CHANGED, DASH_STARTED
 
 
 class Dash:
@@ -35,12 +35,14 @@ class Dash:
         self.listener = Feed(ps_ip)
         self.logger = Logger(self.__class__.__name__).get()
         EventDispatcher()
+        EventDispatcher.add_listener(DASH_STARTED, self.on_dash_started)
 
     def run(self):
         self.running = True
+        EventDispatcher.dispatch(Event(DASH_STARTED, "Initializing, please wait..."))
         clock = pygame.time.Clock()
 
-        view = View()
+        dash = View()
 
         last_heartbeat = self.send_handshake()
 
@@ -69,7 +71,7 @@ class Dash:
                     if event.key == pygame.K_ESCAPE:
                         self.running = False
 
-            view.update(packet)
+            dash.update(packet)
             self.car_id(packet)
             pygame.display.update()
 
@@ -92,6 +94,12 @@ class Dash:
             self._car_id = packet.car_id
             data = (packet.rpm_alert.min, packet.rpm_alert.max)
             EventDispatcher.dispatch(Event(HMI_CAR_CHANGED, data))
+
+    def on_dash_started(self, event):
+        self.logger.info(f"dash started: {event.data}")
+        from hmi.widgets.popup import Popup
+
+        Popup(pygame.sprite.Group(), 500, 50, text=event.data).update(None)
 
 
 if __name__ == "__main__":
