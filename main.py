@@ -22,7 +22,6 @@ class Dash:
 
         self.listener = None
         self.running = False
-        self.last_heartbeat = 0
         self._car_id = -1
 
         pygame.init()
@@ -49,6 +48,7 @@ class Dash:
         self.running = True
         clock = pygame.time.Clock()
         packet = None
+        last_heartbeat = 0
 
         while self.running:
 
@@ -61,8 +61,8 @@ class Dash:
                     self.logger.info(f"💀 CONNECTION ISSUE: {e}")
                     self.state = "SPLASH"
 
-                if packet.received_time - self.last_heartbeat >= HEARTBEAT_DELAY:
-                    self.last_heartbeat = packet.received_time
+                if packet.received_time - last_heartbeat >= HEARTBEAT_DELAY:
+                    last_heartbeat = packet.received_time
                     self.logger.info(f"💗")
                     self.listener.send_heartbeat()
 
