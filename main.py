@@ -40,7 +40,7 @@ class Dash:
         self.running = True
         clock = pygame.time.Clock()
 
-        dash = View()
+        view = View()
 
         last_heartbeat = self.send_handshake()
 
@@ -69,7 +69,7 @@ class Dash:
                     if event.key == pygame.K_ESCAPE:
                         self.running = False
 
-            dash.update(packet)
+            view.update(packet)
             self.car_id(packet)
             pygame.display.update()
 
