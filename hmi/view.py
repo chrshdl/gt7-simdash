@@ -31,4 +31,3 @@ class View:
             if isinstance(sprite, RPM):
                 sprite.alert_min(rpmin)
                 sprite.alert_max(rpmax)
-

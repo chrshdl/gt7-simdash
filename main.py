@@ -1,11 +1,15 @@
 import sys
 import pygame
 from hmi.view import View
-from common.event import Event
+from hmi.popup import Popup
+
 from common.logger import Logger
+
+from common.event import Event
 from common.evendispatcher import EventDispatcher
-from granturismo.intake import Feed
-from events import HMI_CAR_CHANGED, DASH_STARTED
+from events import HMI_CAR_CHANGED, HMI_CONNECTION_ESTABLISHED
+
+HEARTBEAT_DELAY = 10
 
 
 class Dash:
@@ -16,9 +20,11 @@ class Dash:
         w = conf["width"]
         h = conf["height"]
         fullscreen = conf["fullscreen"]
-        ps_ip = conf["playstation_ip"]
+        playstation_ip = conf["playstation_ip"]
 
+        self.listener = None
         self.running = False
+        self.last_heartbeat = 0
         self._car_id = -1
 
         pygame.init()
@@ -32,35 +38,37 @@ class Dash:
         else:
             pygame.display.set_mode(monitor_size, pygame.FULLSCREEN)
 
-        self.listener = Feed(ps_ip)
+        self.states = {"SPLASH": Popup(playstation_ip), "DASH": View()}
+        self.state = next(iter(self.states))
+
         self.logger = Logger(self.__class__.__name__).get()
+
         EventDispatcher()
-        EventDispatcher.add_listener(DASH_STARTED, self.on_dash_started)
+
+        EventDispatcher.add_listener(
+            HMI_CONNECTION_ESTABLISHED, self.on_connection_established
+        )
 
     def run(self):
         self.running = True
-        EventDispatcher.dispatch(Event(DASH_STARTED, "Initializing, please wait..."))
         clock = pygame.time.Clock()
-
-        dash = View()
-
-        last_heartbeat = self.send_handshake()
+        packet = None
 
         while self.running:
 
             clock.tick()
 
-            try:
-                packet = self.listener.get()
-            except Exception as e:
-                self.logger.info(f"💀 CONNECTION ISSUE: {e}")
-                last_heartbeat = self.send_handshake()
-                continue
+            if self.listener is not None:
+                try:
+                    packet = self.listener.get()
+                except Exception as e:
+                    self.logger.info(f"💀 CONNECTION ISSUE: {e}")
+                    self.state = "SPLASH"
 
-            if packet.received_time - last_heartbeat >= Dash.HEARTBEAT_DELAY:
-                last_heartbeat = packet.received_time
-                self.logger.info(f"💗")
-                self.listener.send_heartbeat()
+                if packet.received_time - self.last_heartbeat >= HEARTBEAT_DELAY:
+                    self.last_heartbeat = packet.received_time
+                    self.logger.info(f"💗")
+                    self.listener.send_heartbeat()
 
             events = pygame.event.get()
 
@@ -71,18 +79,11 @@ class Dash:
                     if event.key == pygame.K_ESCAPE:
                         self.running = False
 
-            dash.update(packet)
+            self.states[self.state].update(packet)
             self.car_id(packet)
             pygame.display.update()
 
         self.close()
-
-    def send_handshake(self):
-        if not self.listener._sock_bounded:
-            self.listener.start()
-        self.logger.info("🤝 SENDING HANDSHAKE...")
-        self.listener.send_heartbeat()
-        return 0
 
     def close(self):
         self.listener.close()
@@ -90,16 +91,15 @@ class Dash:
         sys.exit()
 
     def car_id(self, packet):
-        if self._car_id != packet.car_id:
-            self._car_id = packet.car_id
-            data = (packet.rpm_alert.min, packet.rpm_alert.max)
-            EventDispatcher.dispatch(Event(HMI_CAR_CHANGED, data))
+        if packet is not None:
+            if self._car_id != packet.car_id:
+                self._car_id = packet.car_id
+                data = (packet.rpm_alert.min, packet.rpm_alert.max)
+                EventDispatcher.dispatch(Event(HMI_CAR_CHANGED, data))
 
-    def on_dash_started(self, event):
-        self.logger.info(f"dash started: {event.data}")
-        from hmi.widgets.popup import Popup
-
-        Popup(pygame.sprite.Group(), 500, 50, text=event.data).update(None)
+    def on_connection_established(self, event):
+        self.state = "DASH"
+        self.listener = event.data
 
 
 if __name__ == "__main__":

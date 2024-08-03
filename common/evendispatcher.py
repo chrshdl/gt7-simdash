@@ -20,4 +20,3 @@ class EventDispatcher:
             listeners = cls.events.get(event, [])
             listeners.append(listener)
             cls.events[event] = listeners
-
