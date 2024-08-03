@@ -23,4 +23,3 @@ class TextAlignment(Enum):
 
     def type(self):
         return self.value[1]
-

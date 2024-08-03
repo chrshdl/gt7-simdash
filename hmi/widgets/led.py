@@ -51,4 +51,3 @@ class LED:
             blinkt.set_pixel(i, 0, 0, 0)
             blinkt.set_pixel(blinkt.NUM_PIXELS - 1 - i, 0, 0, 0)
         blinkt.show()
-

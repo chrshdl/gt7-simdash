@@ -49,4 +49,3 @@ class Widget(pygame.sprite.Sprite):
         self.draw_overlay()
         self.draw_header()
         self.draw_body()
-

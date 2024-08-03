@@ -29,4 +29,3 @@ class GearIndicator(Widget):
             else Color.WHITE.rgb()
         )
         self.body_text = f"{gear}"
-

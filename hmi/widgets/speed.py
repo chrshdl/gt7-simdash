@@ -15,4 +15,3 @@ class Speedometer(Widget):
 
         speed = f"{int(packet.car_speed * 3.6)}"
         self.body_text = speed.center(len(speed))
-

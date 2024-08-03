@@ -80,4 +80,3 @@ class Laps(Widget):
         total = 0 if total is None else total
 
         self.body_text = f"{min(current, total):01d} / {total:01d}"
-
