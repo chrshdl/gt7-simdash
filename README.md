@@ -36,7 +36,7 @@ Start with `python dash.py`
 - [x] Calculate current lap time
 - [x] Pause current lap measurement if game paused
 - [x] Show simdash in action
-- [ ] Draw "init" screen on boot / errors
+- [x] Draw "init" screen on boot / errors
 
 ## License
 All of my code is MIT licensed. Libraries follow their respective licenses.
