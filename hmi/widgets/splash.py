@@ -26,7 +26,6 @@ class Splash(Widget):
             packet = self.listener.get()
         except Exception as e:
             self.logger.info(f"💀 CONNECTION ISSUE: {e}")
-            self.send_handshake()
         if packet is not None:
             EventDispatcher.dispatch(Event(HMI_CONNECTION_ESTABLISHED, self.listener))
 
