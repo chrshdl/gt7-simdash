@@ -1,13 +1,13 @@
 class Event(object):
     def __init__(self, type, data=None):
-        self.type = type
-        self.data = data
+        self._type = type
+        self._data = data
 
     @property
     def type(self):
-        return self.type
+        return self._type
 
     @property
     def data(self):
-        return self.data
+        return self._data
 
