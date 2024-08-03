@@ -17,9 +17,10 @@ class Color(Enum):
         return self.value[1]
 
 
-class Alignment(Enum):
+class TextAlignment(Enum):
     CENTER = (auto(), "center")
     MIDBOTTOM = (auto(), "midbottom")
 
     def type(self):
         return self.value[1]
+

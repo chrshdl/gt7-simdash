@@ -1,11 +1,11 @@
+from . import Widget
 from hmi.settings import POS
-from hmi.widget import Widget
 from datetime import datetime, timezone
 
 
 class EstimatedLap(Widget):
-    def __init__(self, groups, w, h, main_fsize=40, header_fsize=42):
-        super().__init__(groups, w, h, main_fsize, header_fsize)
+    def __init__(self, groups, w, h, mfs=40, hfs=42):
+        super().__init__(groups, w, h, mfs, hfs)
         self.rect.center = POS["est_lap_time"]
         self.header_text = "Estimated"
 
@@ -45,8 +45,8 @@ class EstimatedLap(Widget):
 
 
 class BestLap(Widget):
-    def __init__(self, groups, w, h, main_fsize=40, header_fsize=42):
-        super().__init__(groups, w, h, main_fsize, header_fsize)
+    def __init__(self, groups, w, h, mfs=40, hfs=42):
+        super().__init__(groups, w, h, mfs, hfs)
         self.rect.center = POS["best_lap_time"]
         self.header_text = "Best"
 
@@ -65,8 +65,8 @@ class BestLap(Widget):
 
 
 class Laps(Widget):
-    def __init__(self, groups, w, h, main_fsize=48, header_fsize=42):
-        super().__init__(groups, w, h, main_fsize, header_fsize)
+    def __init__(self, groups, w, h, mfs=48, hfs=42):
+        super().__init__(groups, w, h, mfs, hfs)
         self.rect.center = POS["laps"]
         self.header_text = "Laps"
 
@@ -80,3 +80,4 @@ class Laps(Widget):
         total = 0 if total is None else total
 
         self.body_text = f"{min(current, total):01d} / {total:01d}"
+

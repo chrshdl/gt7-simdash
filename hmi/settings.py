@@ -6,4 +6,5 @@ POS = {
     "laps": (100, 60),
     "est_lap_time": (700, 60),
     "best_lap_time": (700, 417),
+    "splash": (400, 240),
 }

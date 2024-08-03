@@ -1,9 +1,16 @@
+import pygame
+from hmi.widgets.splash import Splash
 from hmi.properties import Color
-from hmi.widget import Widget
 
 
-class InitializingScreen(Widget):
-    def update(self, data):
-        data_render = self.header_font.render(data, True, Color.WHITE.rgb())
-        center = self.image.get_rect().center
-        self.image.blit(data_render, data_render.get_rect(center=center))
+class Popup:
+    def __init__(self, playstation_ip):
+        self.screen = pygame.display.get_surface()
+        self.popups = pygame.sprite.Group()
+
+        Splash(self.popups, playstation_ip, 500, 45)
+
+    def update(self, packet):
+        self.screen.fill(Color.BLACK.rgb())
+        self.popups.update(packet)
+        self.popups.draw(self.screen)

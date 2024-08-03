@@ -24,9 +24,9 @@ pipenv install
 Consider adding the IP address of your Playstation 5 in the `config.json` like
 
 ```json
-"ps5_ip": "192.168.1.30"
+"playstation_ip": "192.168.1.30"
 ```
-Start with `python dash.py`
+Start with `python main.py`
 
 ## Whats next
 
@@ -36,7 +36,7 @@ Start with `python dash.py`
 - [x] Calculate current lap time
 - [x] Pause current lap measurement if game paused
 - [x] Show simdash in action
-- [ ] Draw "init" screen on boot / errors
+- [x] Draw "init" screen on boot / errors
 
 ## License
 All of my code is MIT licensed. Libraries follow their respective licenses.
