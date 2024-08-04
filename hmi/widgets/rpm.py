@@ -144,7 +144,6 @@ class GraphicalRPM(RPM):
         return int(value * 0.01)
 
     def update(self, packet):
-        super().update()
         current_rpm = self._normalize(packet.engine_rpm)
 
         for unit in self.units:
