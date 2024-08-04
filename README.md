@@ -37,7 +37,8 @@ Start with `python main.py`
 - [x] Pause current lap measurement if game paused
 - [x] Show simdash in action
 - [x] Draw "init" screen on boot / errors
-- [ ] Set up a new device
+- [ ] Implement "Set up a new device"
+- [ ] Documentation + quick start guide
 
 ## License
 All of my code is MIT licensed. Libraries follow their respective licenses.
