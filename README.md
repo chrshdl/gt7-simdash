@@ -31,12 +31,13 @@ Start with `python main.py`
 ## Whats next
 
 - [x] Improve Feed performance
-- [ ] Efficient RPM gauge
+- [x] Efficient RPM gauge
 - [x] Fix LED bugs
 - [x] Calculate current lap time
 - [x] Pause current lap measurement if game paused
 - [x] Show simdash in action
 - [x] Draw "init" screen on boot / errors
+- [ ] Set up a new device
 
 ## License
 All of my code is MIT licensed. Libraries follow their respective licenses.

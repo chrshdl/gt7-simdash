@@ -15,8 +15,8 @@ HEARTBEAT_DELAY = 10
 class Dash:
 
     def __init__(self, conf):
-        w = conf["width"]
-        h = conf["height"]
+        self.w = conf["width"]
+        self.h = conf["height"]
         fullscreen = conf["fullscreen"]
         playstation_ip = conf["playstation_ip"]
 
@@ -31,12 +31,12 @@ class Dash:
             pygame.display.Info().current_h,
         )
         if not fullscreen:
-            pygame.display.set_mode((w, h), pygame.RESIZABLE)
+            pygame.display.set_mode((self.w, self.h), pygame.RESIZABLE)
         else:
             pygame.display.set_mode(monitor_size, pygame.FULLSCREEN)
 
-        self.states = {"SPLASH": Popup(playstation_ip), "DASH": View()}
-        self.state = next(iter(self.states))
+        self.views = {"SPLASH": Popup(playstation_ip), "DASH": View()}
+        self.state = next(iter(self.views))
 
         self.logger = Logger(self.__class__.__name__).get()
 
@@ -63,7 +63,7 @@ class Dash:
 
                 if packet.received_time - last_heartbeat >= HEARTBEAT_DELAY:
                     last_heartbeat = packet.received_time
-                    self.logger.info(f"💗")
+                    self.logger.info("💗")
                     self.listener.send_heartbeat()
 
             events = pygame.event.get()
@@ -74,8 +74,12 @@ class Dash:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         self.running = False
+                    if event.key == pygame.K_SPACE:
+                        screenshot = pygame.Surface((self.w, self.h))
+                        screenshot.blit(pygame.display.get_surface(), (0, 0))
+                        pygame.image.save(screenshot, "gt7-simdash.png")
 
-            self.states[self.state].update(packet)
+            self.views[self.state].update(packet)
             self.car_id(packet)
             pygame.display.update()
 

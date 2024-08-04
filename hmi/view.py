@@ -1,7 +1,7 @@
 import pygame
 
 from hmi.widgets.led import LED
-from hmi.widgets.rpm import RPM
+from hmi.widgets.rpm import SimpleRPM, GraphicalRPM
 from hmi.widgets.gear import GearIndicator
 from hmi.widgets.speed import Speedometer
 from hmi.widgets.lap import Laps, BestLap, EstimatedLap
@@ -13,7 +13,8 @@ class View:
         self.screen = pygame.display.get_surface()
         self.telemetry = pygame.sprite.Group()
 
-        RPM(self.telemetry, 300, 33)
+        SimpleRPM(self.telemetry, 75, 33)
+        GraphicalRPM(self.telemetry, 100, 40)
         GearIndicator(self.telemetry, 180, 220)
         Speedometer(self.telemetry, 180, 130)
         Laps(self.telemetry, 180, 85)
@@ -28,6 +29,6 @@ class View:
 
     def update_rpm_alerts(self, rpmin, rpmax):
         for sprite in self.telemetry.sprites():
-            if isinstance(sprite, RPM):
+            if isinstance(sprite, SimpleRPM):
                 sprite.alert_min(rpmin)
                 sprite.alert_max(rpmax)
