@@ -151,12 +151,14 @@ class GraphicalRPM(RPM):
                 if current_rpm >= self.alert_min and unit.step >= self.alert_min:
                     unit.image.fill(Color.RED.rgb())
                 else:
-                    unit.image.fill(Color.GREY.rgb(), (0, 0, self.w, self.h))
+                    unit.image.fill(Color.GREY.rgb(), (0, 0, self.w, self.h - 8))
             else:
                 if unit.step >= self.alert_min:
-                    unit.image.fill(Color.DARK_RED.rgb(), (0, 0, self.w, self.h))
+                    unit.image.fill(Color.DARK_RED.rgb(), (0, 0, self.w, self.h - 8))
                 elif unit.step % 10 == 0 and not unit.step >= self.alert_min:
-                    unit.image.fill(Color.BLACK.rgb(), (0, 0, self.w, self.h))  # GREY
+                    unit.image.fill(
+                        Color.BLACK.rgb(), (0, 0, self.w, self.h - 8)
+                    )  # GREY
                 else:
                     unit.image.fill(
                         Color.BLACK.rgb(), (0, 0, self.w, self.h)
@@ -166,16 +168,16 @@ class GraphicalRPM(RPM):
 class RPMUnit(pygame.sprite.Sprite):
     def __init__(self, groups, screen_width, y, alert_min, alert_max, name):
         super().__init__(groups)
-        w = 2
+        w = 3
         h = 30
-        margin = 2
+        margin = 1
         offset_center = (screen_width - alert_max * (margin + w)) // 2
         pos = ((offset_center + (margin + w) * name + margin), y)
 
         self.step = name
 
         if name % 10 == 0:
-            self.image = pygame.Surface((w, h + 5)).convert()
+            self.image = pygame.Surface((w, h + 6)).convert()
             if name < alert_min:
                 self.image.fill(Color.LIGHT_GREY.rgb())
             else:
