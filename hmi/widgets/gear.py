@@ -4,9 +4,9 @@ from hmi.properties import Color, TextAlignment
 
 
 class GearIndicator(Widget):
-    def __init__(self, groups, w, h, mfs=240):
+    def __init__(self, groups, w, h, mfs=300):
         super().__init__(groups, w, h, mfs)
-        self.rect.topleft = POS["gear"]
+        self.rect.center = POS["gear"]
         self.body_text_alignment = TextAlignment.CENTER
         self.body_text_color = Color.WHITE.rgb()
 

@@ -111,7 +111,7 @@ class GraphicalRPM(RPM):
         self.alert_min = 0
         self.alert_max = 0
 
-        self.y = 170
+        self.y = 174
         self.units = []
         self.create_rpm_units(self.alert_min, self.alert_max)
         EventDispatcher.add_listener(HMI_CAR_CHANGED, self.on_car_changed)
@@ -151,13 +151,13 @@ class GraphicalRPM(RPM):
                 if current_rpm >= self.alert_min and unit.step >= self.alert_min:
                     unit.image.fill(Color.RED.rgb())
                 else:
-                    unit.image.fill(Color.GREY.rgb(), (0, 0, self.w, self.h - 8))
+                    unit.image.fill(Color.GREY.rgb(), (0, 0, self.w, self.h - 2))
             else:
                 if unit.step >= self.alert_min:
-                    unit.image.fill(Color.DARK_RED.rgb(), (0, 0, self.w, self.h - 8))
+                    unit.image.fill(Color.DARK_RED.rgb(), (0, 0, self.w, self.h - 2))
                 elif unit.step % 10 == 0 and not unit.step >= self.alert_min:
                     unit.image.fill(
-                        Color.BLACK.rgb(), (0, 0, self.w, self.h - 8)
+                        Color.BLACK.rgb(), (0, 0, self.w, self.h - 2)
                     )  # GREY
                 else:
                     unit.image.fill(
@@ -169,7 +169,7 @@ class RPMUnit(pygame.sprite.Sprite):
     def __init__(self, groups, screen_width, y, alert_min, alert_max, name):
         super().__init__(groups)
         w = 3
-        h = 30
+        h = 35
         margin = 1
         offset_center = (screen_width - alert_max * (margin + w)) // 2
         pos = ((offset_center + (margin + w) * name + margin), y)
@@ -177,11 +177,11 @@ class RPMUnit(pygame.sprite.Sprite):
         self.step = name
 
         if name % 10 == 0:
-            self.image = pygame.Surface((w, h + 6)).convert()
+            self.image = pygame.Surface((w, h + 8)).convert()
             if name < alert_min:
                 self.image.fill(Color.LIGHT_GREY.rgb())
             else:
-                self.image.fill(Color.RED.rgb())
+                self.image.fill(Color.DARK_RED.rgb())
         else:
             self.image = pygame.Surface((w, h)).convert()
         self.rect = self.image.get_rect(topleft=pos)

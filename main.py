@@ -1,13 +1,13 @@
 import sys
 import pygame
-from hmi.view import View
+from hmi.views.view import Dashboard
 from hmi.popup import Popup
 
 from common.logger import Logger
 
 from common.event import Event
 from common.evendispatcher import EventDispatcher
-from events import HMI_CAR_CHANGED, HMI_CONNECTION_ESTABLISHED
+from events import HMI_CAR_CHANGED, HMI_CONNECTION_ESTABLISHED, HMI_VIEW_BUTTON_PRESSED
 
 HEARTBEAT_DELAY = 10
 
@@ -35,7 +35,7 @@ class Dash:
         else:
             pygame.display.set_mode(monitor_size, pygame.FULLSCREEN)
 
-        self.views = {"SPLASH": Popup(playstation_ip), "DASH": View()}
+        self.views = {"SPLASH": Popup(playstation_ip), "DASH": Dashboard()}
         self.state = next(iter(self.views))
 
         self.logger = Logger(self.__class__.__name__).get()
@@ -69,6 +69,8 @@ class Dash:
             events = pygame.event.get()
 
             for event in events:
+                if event.type == HMI_VIEW_BUTTON_PRESSED:
+                    self.logger.info(f"Button {event.message} was clicked")
                 if event.type == pygame.QUIT:
                     self.running = False
                 if event.type == pygame.KEYDOWN:
@@ -79,7 +81,7 @@ class Dash:
                         screenshot.blit(pygame.display.get_surface(), (0, 0))
                         pygame.image.save(screenshot, "gt7-simdash.png")
 
-            self.views[self.state].update(packet)
+            self.views[self.state].update(packet, events)
             self.car_id(packet)
             pygame.display.update()
 

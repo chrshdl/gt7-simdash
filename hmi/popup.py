@@ -10,7 +10,7 @@ class Popup:
 
         Splash(self.popups, playstation_ip, 500, 45)
 
-    def update(self, packet):
+    def update(self, packet, events):
         self.screen.fill(Color.BLACK.rgb())
         self.popups.update(packet)
         self.popups.draw(self.screen)

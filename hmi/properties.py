@@ -8,10 +8,11 @@ class Color(Enum):
     RED = (auto(), (200, 0, 0))
     DARK_RED = (auto(), (90, 0, 0))
     GREY = (auto(), (40, 40, 40))
-    DARK_GREY = (auto(), (5, 5, 5))
+    DARK_GREY = (auto(), (30, 30, 30))
     LIGHT_GREY = (auto(), (120, 120, 120))
     BLUE = (auto(), (0, 120, 255))
     WHITE = (auto(), (210, 210, 210))
+    WHITE_OPACITY = (auto(), (210, 210, 210, 80))
 
     def rgb(self):
         return self.value[1]
