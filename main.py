@@ -1,7 +1,7 @@
 import sys
 import pygame
-from hmi.views.view import Dashboard
-from hmi.popup import Popup
+from hmi.views.dashboard import Dashboard
+from hmi.boot import Boot
 
 from common.logger import Logger
 
@@ -35,7 +35,7 @@ class Dash:
         else:
             pygame.display.set_mode(monitor_size, pygame.FULLSCREEN)
 
-        self.views = {"SPLASH": Popup(playstation_ip), "DASH": Dashboard()}
+        self.views = {"SPLASH": Boot(playstation_ip), "DASH": Dashboard()}
         self.state = next(iter(self.views))
 
         self.logger = Logger(self.__class__.__name__).get()

@@ -8,7 +8,7 @@ from common.evendispatcher import EventDispatcher
 from events import HMI_CONNECTION_ESTABLISHED
 
 
-class Splash(Widget):
+class Connection(Widget):
     def __init__(self, groups, playstation_ip, w, h, mfs=40, hfs=46):
         super().__init__(groups, w, h, mfs, hfs)
         self.listener = Feed(playstation_ip)
