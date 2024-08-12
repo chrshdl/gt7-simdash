@@ -8,7 +8,7 @@ class Boot:
         self.screen = pygame.display.get_surface()
         self.popups = pygame.sprite.Group()
 
-        Connection(self.popups, playstation_ip, 500, 45)
+        Connection(self.popups, playstation_ip, 600, 46)
 
     def update(self, packet, events):
         self.screen.fill(Color.BLACK.rgb())

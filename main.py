@@ -1,7 +1,7 @@
 import sys
 import pygame
 from hmi.views.dashboard import Dashboard
-from hmi.boot import Boot
+from hmi.views.boot import Boot
 
 from common.logger import Logger
 
