@@ -7,7 +7,7 @@
 
 <h3>
 
-[Video 1](https://youtu.be/OyOWb_0-tvY) | [Video 2](https://youtu.be/qh3pYMYFU8I?) | [Documentation](https://github.com/chrshdl/gt7-simdash/wiki)
+[Video 1](https://youtu.be/OyOWb_0-tvY) | [Video 2](https://youtu.be/qh3pYMYFU8I) | [Video 3](https://youtu.be/APH87gxN9HU) | [Documentation](https://github.com/chrshdl/gt7-simdash/wiki)
 
 </h3>
 
