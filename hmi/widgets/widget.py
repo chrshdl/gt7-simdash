@@ -24,7 +24,7 @@ class Widget(pygame.sprite.Sprite):
             self.draw_gradient(
                 top=pygame.Color(0, 50, 124), bottom=pygame.Color(0, 3, 8)
             )
-            pygame.draw.rect(self.image, Color.W_.rgb(), self.image.get_rect(), 2, 4)
+            pygame.draw.rect(self.image, Color.BLUE.rgb(), self.image.get_rect(), 2, 4)
         else:
             pygame.draw.rect(self.image, Color.BLACK.rgb(), self.image.get_rect(), 0, 4)
             if use_border:

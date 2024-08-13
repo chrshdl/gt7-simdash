@@ -11,7 +11,7 @@ class GearIndicator(Widget):
         self.body_text_color = Color.WHITE.rgb()
 
     def update(self, packet):
-        super().update()
+        super().update(use_gradient=True)
 
         if not packet.flags.in_gear:
             gear = "N"
