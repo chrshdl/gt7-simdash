@@ -32,7 +32,10 @@ class Minimap(Widget):
             self.px, self.pz = x, z
             return
 
-        speed = min(1, packet.car_speed / packet.car_max_speed) * 2
+        if packet.car_max_speed > 0:
+            speed = min(1, packet.car_speed / packet.car_max_speed) * 2
+        else:
+            speed = 0
 
         pygame.draw.line(
             self.image,
@@ -51,7 +54,7 @@ class Minimap(Widget):
     def on_new_lap_started(self, event):
         print(f"lap: {event.data}, driven distance: {self.driven_distance / 10}")
         self.driven_distance = 0
-        self.clear_map = True
+        self.clear_map = False
 
     def on_new_try_started(self, event):
         self.driven_distance = 0

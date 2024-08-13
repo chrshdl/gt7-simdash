@@ -181,7 +181,7 @@ class RPMUnit(pygame.sprite.Sprite):
             if name < alert_min:
                 self.image.fill(Color.LIGHT_GREY.rgb())
             else:
-                self.image.fill(Color.DARK_RED.rgb())
+                self.image.fill(Color.RED.rgb())
         else:
             self.image = pygame.Surface((w, h)).convert()
         self.rect = self.image.get_rect(topleft=pos)

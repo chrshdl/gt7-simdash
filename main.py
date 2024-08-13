@@ -1,7 +1,7 @@
 import sys
 import pygame
 from hmi.views.dashboard import Dashboard
-from hmi.views.boot import Boot
+from hmi.views.startup import Startup
 
 from common.logger import Logger
 
@@ -9,10 +9,11 @@ from common.event import Event
 from common.evendispatcher import EventDispatcher
 from events import HMI_CAR_CHANGED, HMI_CONNECTION_ESTABLISHED, HMI_VIEW_BUTTON_PRESSED
 
-HEARTBEAT_DELAY = 10
 
-
-class Dash:
+class Main:
+    HEARTBEAT_DELAY = 10
+    STATE_STARTUP = "STARTUP"
+    STATE_DASHBOARD = "DASHBOARD"
 
     def __init__(self, conf):
         self.w = conf["width"]
@@ -35,12 +36,13 @@ class Dash:
         else:
             pygame.display.set_mode(monitor_size, pygame.FULLSCREEN)
 
-        self.views = {"SPLASH": Boot(playstation_ip), "DASH": Dashboard()}
-        self.state = next(iter(self.views))
+        self.states = {
+            Main.STATE_STARTUP: Startup(playstation_ip),
+            Main.STATE_DASHBOARD: Dashboard(),
+        }
+        self.state = next(iter(self.states))
 
         self.logger = Logger(self.__class__.__name__).get()
-
-        EventDispatcher()
 
         EventDispatcher.add_listener(HMI_CONNECTION_ESTABLISHED, self.on_connection)
 
@@ -59,9 +61,9 @@ class Dash:
                     packet = self.listener.get()
                 except Exception as e:
                     self.logger.info(f"💀 CONNECTION ISSUE: {e}")
-                    self.state = "SPLASH"
+                    self.state = Main.STATE_STARTUP
 
-                if packet.received_time - last_heartbeat >= HEARTBEAT_DELAY:
+                if packet.received_time - last_heartbeat >= Main.HEARTBEAT_DELAY:
                     last_heartbeat = packet.received_time
                     self.logger.info("💗")
                     self.listener.send_heartbeat()
@@ -70,7 +72,7 @@ class Dash:
 
             for event in events:
                 if event.type == HMI_VIEW_BUTTON_PRESSED:
-                    self.logger.info(f"Button {event.message} was clicked")
+                    self.logger.info(f"Button {event.message} was pressed")
                 if event.type == pygame.QUIT:
                     self.running = False
                 if event.type == pygame.KEYDOWN:
@@ -81,7 +83,7 @@ class Dash:
                         screenshot.blit(pygame.display.get_surface(), (0, 0))
                         pygame.image.save(screenshot, "gt7-simdash.png")
 
-            self.views[self.state].update(packet, events)
+            self.states[self.state].update(packet, events)
             self.car_id(packet)
             pygame.display.update()
 
@@ -100,7 +102,7 @@ class Dash:
                 EventDispatcher.dispatch(Event(HMI_CAR_CHANGED, data))
 
     def on_connection(self, event):
-        self.state = "DASH"
+        self.state = Main.STATE_DASHBOARD
         self.listener = event.data
 
 
@@ -115,4 +117,6 @@ if __name__ == "__main__":
     with open(args.config, "r") as fid:
         config = json.load(fid)
 
-    Dash(config).run()
+    EventDispatcher()
+
+    Main(config).run()

@@ -26,9 +26,10 @@ class Dashboard:
         Minimap(self.telemetry, 300, 300)
         LED()
 
+        # PSL = Pit Speed Limiter
         # ASM = Active Stability Management
         # TCS = Traction Control System
-        labels = ["PSL", "AC", "TCS", "LIGHTS"]
+        labels = ["PSL", "ASM", "TCS", "BEAM"]
         self.buttons = [
             Button(f"{labels[i]}", ((130 * (i % 4) + 100), 562))
             for i in range(len(labels))

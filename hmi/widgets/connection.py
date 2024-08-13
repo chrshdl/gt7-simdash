@@ -12,7 +12,7 @@ class Connection(Widget):
     def __init__(self, groups, playstation_ip, w, h, mfs=40, hfs=46):
         super().__init__(groups, w, h, mfs, hfs)
         self.listener = Feed(playstation_ip)
-        self.rect.center = POS["splash"]
+        self.rect.center = POS["connection"]
         self.header_text = "Connecting, please wait..."
         self.body_text_alignment = TextAlignment.CENTER
         self.logger = Logger(self.__class__.__name__).get()
