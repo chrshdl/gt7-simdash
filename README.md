@@ -1,8 +1,8 @@
 # Gran Turismo 7 digital display
-<div align="center">
 
+<div align="center">
 <picture>
-<img width=480px src="https://raw.githubusercontent.com/chrshdl/gt7-simdash/main/assets/thumbnail.png" />
+  <img width=600px src="https://raw.githubusercontent.com/chrshdl/gt7-simdash/main/assets/gt7-simdash.png" />
 </picture>
 
 <h3>
@@ -38,12 +38,21 @@ pipenv install
 
 ## Usage
 
-Consider adding the IP address of your Playstation 5 in the `config.json` like
+Start the application from inside the virtual environment with `python main.py`. Enter the IP of your Playstation using the buttons and press OK. The application will attempt to establish a connection with the Playstation. 
 
-```json
-"playstation_ip": "192.168.1.30"
-```
-Start the application from inside the virtual environment with `python main.py`
+<div align="left">
+<picture>
+  <img width=600px src="https://raw.githubusercontent.com/chrshdl/gt7-simdash/main/assets/gt7-simdash-enter-ip.png" />
+</picture>
+
+If the Playstation isn't ready to connect yet (because powered off) you will see a waiting screen. Once the Playstation is powered on and ready to connect the application will change automatically to the initial state view. Now you are ready to go. Start a race to trigger a car update and the dashboard will show the corresponding telemetry data.
+
+<picture>
+  <img width=600px src="https://raw.githubusercontent.com/chrshdl/gt7-simdash/main/assets/gt7-simdash-connecting.png" />
+</picture>
+</div>
+
+
 
 ## Whats next
 
@@ -54,7 +63,7 @@ Start the application from inside the virtual environment with `python main.py`
 - [x] ~~Pause current lap measurement if game paused~~
 - [x] ~~Show simdash in action~~
 - [x] ~~Draw "init" screen on boot / errors~~
-- [ ] Implement "Set up a new device"
+- [x] ~~Implement "Set up a new device"~~
 - [ ] Documentation + quick start guide
 
 ## License
