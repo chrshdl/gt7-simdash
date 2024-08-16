@@ -8,6 +8,7 @@ from hmi.widgets.lap import Laps, BestLap, EstimatedLap
 from hmi.properties import Color
 from hmi.widgets.button import Button
 from hmi.widgets.minimap import Minimap
+
 from events import HMI_VIEW_BUTTON_PRESSED
 
 
@@ -18,12 +19,12 @@ class Dashboard:
 
         SimpleRPM(self.telemetry, 76, 33)
         GraphicalRPM(self.telemetry, 100, 40)
-        GearIndicator(self.telemetry, 200, 240)
+        GearIndicator(self.telemetry, 200, 248)
         Speedometer(self.telemetry, 200, 150)
-        Laps(self.telemetry, 120, 104)
+        Laps(self.telemetry, 120, 96)
         EstimatedLap(self.telemetry, 260, 104)
         BestLap(self.telemetry, 260, 104)
-        Minimap(self.telemetry, 300, 300)
+        Minimap(self.telemetry, 324, 324)
         LED()
 
         # PSL = Pit Speed Limiter
@@ -31,11 +32,18 @@ class Dashboard:
         # TCS = Traction Control System
         labels = ["PSL", "ASM", "TCS", "BEAM"]
         self.buttons = [
-            Button(f"{labels[i]}", ((130 * (i % 4) + 100), 562))
+            Button(f"{labels[i]}", ((110 * (i % 4) + 120), 558), (100, 50), 40)
             for i in range(len(labels))
         ]
 
-    def update(self, packet, events):
+    def handle_events(self, events):
+        for button in self.buttons:
+            if button.is_pressed(events):
+                pygame.event.post(
+                    pygame.event.Event(HMI_VIEW_BUTTON_PRESSED, message=button.text)
+                )
+
+    def update(self, packet):
         self.screen.fill(Color.BLACK.rgb())
         self.telemetry.update(packet)
         self.telemetry.draw(self.screen)
@@ -43,10 +51,6 @@ class Dashboard:
         for button in self.buttons:
             button.update(packet)
             button.render(self.screen)
-            if button.is_pressed(events):
-                pygame.event.post(
-                    pygame.event.Event(HMI_VIEW_BUTTON_PRESSED, message=button.text)
-                )
 
     def update_rpm_alerts(self, rpmin, rpmax):
         for sprite in self.telemetry.sprites():

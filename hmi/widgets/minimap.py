@@ -1,17 +1,19 @@
 import math
 import pygame
-from common.evendispatcher import EventDispatcher
-from events import RACE_NEW_LAP_STARTED, RACE_NEW_TRY_STARTED
 from . import Widget
 from hmi.settings import POS
+from common.evendispatcher import EventDispatcher
 
-SCALE_FACTOR = 6
+from events import RACE_NEW_LAP_STARTED, RACE_RETRY_STARTED
+
+SCALE_FACTOR = 4
+DELTA = 20
 
 
 class Minimap(Widget):
-    def __init__(self, groups, w, h, mfs=300):
-        super().__init__(groups, w, h, mfs)
-        self.rect.center = POS["map"]
+    def __init__(self, groups, w, h):
+        super().__init__(groups, w, h)
+        self.rect.center = POS["minimap"]
         self.px = None
         self.pz = None
         self.w = w
@@ -19,8 +21,8 @@ class Minimap(Widget):
         self.driven_distance = 0
         self.clear_map = False
 
-        EventDispatcher.add_listener(RACE_NEW_LAP_STARTED, self.on_new_lap_started)
-        EventDispatcher.add_listener(RACE_NEW_TRY_STARTED, self.on_new_try_started)
+        EventDispatcher.add_listener(RACE_NEW_LAP_STARTED, self.on_new_lap)
+        EventDispatcher.add_listener(RACE_RETRY_STARTED, self.on_retry)
 
     def update(self, packet):
         if self.clear_map:
@@ -41,22 +43,25 @@ class Minimap(Widget):
             self.image,
             self.colormap(speed),
             [
-                self.px / SCALE_FACTOR + self.w // 2,
-                self.pz / SCALE_FACTOR + self.w // 2,
+                self.px / SCALE_FACTOR + self.h // 2 + DELTA,
+                self.pz / SCALE_FACTOR + self.h // 2 + DELTA,
             ],
-            [x / SCALE_FACTOR + self.h // 2, z / SCALE_FACTOR + self.h // 2],
+            [
+                x / SCALE_FACTOR + self.h // 2 + DELTA,
+                z / SCALE_FACTOR + self.h // 2 + DELTA,
+            ],
             SCALE_FACTOR,
         )
         self.driven_distance += abs(x - self.px) * 1 / 60
         self.px = x
         self.pz = z
 
-    def on_new_lap_started(self, event):
+    def on_new_lap(self, event):
         print(f"lap: {event.data}, driven distance: {self.driven_distance / 10}")
         self.driven_distance = 0
         self.clear_map = False
 
-    def on_new_try_started(self, event):
+    def on_retry(self, event):
         self.driven_distance = 0
         self.clear_map = True
 
@@ -64,11 +69,33 @@ class Minimap(Widget):
         """
         https://www.particleincell.com/2014/colormap/
         """
-        a = 1 - f
-        Y = math.floor(255 * a)
-
-        r = 255 - Y
-        g = 0
-        b = 255
+        a = (1 - f) / 0.2
+        X = math.floor(a)
+        Y = math.floor(255 * (a - X))
+        match X:
+            case 0:
+                r = 255
+                g = Y
+                b = 0
+            case 1:
+                r = 255 - Y
+                g = 255
+                b = 0
+            case 2:
+                r = 0
+                g = 255
+                b = Y
+            case 3:
+                r = 0
+                g = 255 - Y
+                b = 255
+            case 4:
+                r = Y
+                g = 0
+                b = 255
+            case 5:
+                r = 255
+                g = 0
+                b = 255
 
         return (r, g, b)

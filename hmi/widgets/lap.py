@@ -1,10 +1,11 @@
+from . import Widget
 from common.evendispatcher import EventDispatcher
 from common.event import Event
-from events import RACE_NEW_LAP_STARTED, RACE_NEW_TRY_STARTED
-from hmi.properties import TextAlignment
-from . import Widget
 from hmi.settings import POS
+from hmi.properties import TextAlignment
 from datetime import datetime, timezone
+
+from events import RACE_NEW_LAP_STARTED, RACE_RETRY_STARTED
 
 
 class EstimatedLap(Widget):
@@ -21,8 +22,8 @@ class EstimatedLap(Widget):
         super().update()
 
         paused = packet.flags.paused
-        current_lap = packet.lap_count  # current
-        total_laps = packet.lap_count  # total
+        current_lap = packet.lap_count
+        total_laps = packet.lap_count
 
         race_over = (
             total_laps < current_lap if total_laps and total_laps is not None else True
@@ -32,7 +33,7 @@ class EstimatedLap(Widget):
             estimated_laptime = "--:--"
             self.curr_laptime = 0
             self.lap = -1
-            EventDispatcher.dispatch(Event(RACE_NEW_TRY_STARTED))
+            EventDispatcher.dispatch(Event(RACE_RETRY_STARTED))
         else:
             if self.lap != current_lap:
                 if not race_over:

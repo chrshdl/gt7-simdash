@@ -10,7 +10,10 @@ class Startup:
 
         Connection(self.startup, playstation_ip, 600, 46)
 
-    def update(self, packet, events):
+    def handle_events(self, events):
+        pass
+
+    def update(self, packet):
         self.screen.fill(Color.BLACK.rgb())
         self.startup.update(packet)
         self.startup.draw(self.screen)

@@ -4,7 +4,9 @@ from hmi.properties import Color
 
 
 class Button:
-    def __init__(self, text, position, size=(120, 40), outline=True, gradient=False):
+    def __init__(
+        self, text, position, size=(60, 50), fs=50, outline=True, gradient=False
+    ):
         self.text = text
         self.position = position
         self.size = size
@@ -14,10 +16,7 @@ class Button:
         self.gradient = gradient
         self.top = pygame.Color(0, 0, 0)
 
-        font = pygame.font.Font(
-            join("fonts", "pixeltype.ttf"),
-            int((100 / 100) * self.size[1]),
-        )
+        font = pygame.font.Font(join("fonts", "pixeltype.ttf"), fs)
 
         self.text_surf = font.render(f"{text}", False, (255, 255, 255))
 
@@ -47,7 +46,11 @@ class Button:
         ):
             for event in events:
                 if event.type == pygame.MOUSEBUTTONDOWN:
+                    self.gradient = True
+                    self.top = pygame.Color(0, 50, 124)
                     return True
+                if event.type == pygame.MOUSEBUTTONUP:
+                    self.gradient = False
         return False
 
     def render(self, display):
@@ -81,9 +84,14 @@ class Button:
             sizex = self.size[0] + thickness * 2
             sizey = self.size[1] + thickness * 2
 
+            if self.gradient:
+                color = Color.BLUE.rgb()
+            else:
+                color = Color.DARK_GREY.rgb()
+
             pygame.draw.rect(
                 display,
-                Color.DARK_GREY.rgb(),
+                color,
                 (posx, posy, sizex, sizey),
                 thickness,
                 4,

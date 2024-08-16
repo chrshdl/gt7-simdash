@@ -2,24 +2,32 @@ import sys
 import pygame
 from hmi.views.dashboard import Dashboard
 from hmi.views.startup import Startup
-
+from hmi.views.wizard import Wizard
 from common.logger import Logger
-
 from common.event import Event
 from common.evendispatcher import EventDispatcher
-from events import HMI_CAR_CHANGED, HMI_CONNECTION_ESTABLISHED, HMI_VIEW_BUTTON_PRESSED
+
+from events import (
+    HMI_CAR_CHANGED,
+    HMI_CONNECTION_ESTABLISHED,
+    HMI_VIEW_BUTTON_PRESSED,
+    SYSTEM_PLAYSTATION_IP_CHANGED,
+)
 
 
 class Main:
+
     HEARTBEAT_DELAY = 10
+
     STATE_STARTUP = "STARTUP"
     STATE_DASHBOARD = "DASHBOARD"
+    STATE_WIZARD = "WIZARD"
 
     def __init__(self, conf):
         self.w = conf["width"]
         self.h = conf["height"]
         fullscreen = conf["fullscreen"]
-        playstation_ip = conf["playstation_ip"]
+        self.playstation_ip = conf["playstation_ip"]
 
         self.listener = None
         self.running = False
@@ -36,15 +44,19 @@ class Main:
         else:
             pygame.display.set_mode(monitor_size, pygame.FULLSCREEN)
 
-        self.states = {
-            Main.STATE_STARTUP: Startup(playstation_ip),
-            Main.STATE_DASHBOARD: Dashboard(),
-        }
+        self.states = {}
+        if self.playstation_ip is None:
+            self.states.update({Main.STATE_WIZARD: Wizard()})
+        else:
+            self.states.update({Main.STATE_STARTUP: Startup(self.playstation_ip)})
+            self.states.update({Main.STATE_DASHBOARD: Dashboard()})
+
         self.state = next(iter(self.states))
 
         self.logger = Logger(self.__class__.__name__).get()
 
         EventDispatcher.add_listener(HMI_CONNECTION_ESTABLISHED, self.on_connection)
+        EventDispatcher.add_listener(SYSTEM_PLAYSTATION_IP_CHANGED, self.on_ip_changed)
 
     def run(self):
         self.running = True
@@ -83,14 +95,16 @@ class Main:
                         screenshot.blit(pygame.display.get_surface(), (0, 0))
                         pygame.image.save(screenshot, "gt7-simdash.png")
 
-            self.states[self.state].update(packet, events)
+            self.states[self.state].handle_events(events)
+            self.states[self.state].update(packet)
             self.car_id(packet)
             pygame.display.update()
 
         self.close()
 
     def close(self):
-        self.listener.close()
+        if self.listener is not None:
+            self.listener.close()
         pygame.quit()
         sys.exit()
 
@@ -104,6 +118,12 @@ class Main:
     def on_connection(self, event):
         self.state = Main.STATE_DASHBOARD
         self.listener = event.data
+
+    def on_ip_changed(self, event):
+        self.playstation_ip = event.data
+        self.states.update({Main.STATE_STARTUP: Startup(self.playstation_ip)})
+        self.states.update({Main.STATE_DASHBOARD: Dashboard()})
+        self.state = Main.STATE_STARTUP
 
 
 if __name__ == "__main__":

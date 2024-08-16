@@ -168,7 +168,7 @@ class GraphicalRPM(RPM):
 class RPMUnit(pygame.sprite.Sprite):
     def __init__(self, groups, screen_width, y, alert_min, alert_max, name):
         super().__init__(groups)
-        w = 3
+        w = 2
         h = 35
         margin = 1
         offset_center = (screen_width - alert_max * (margin + w)) // 2
