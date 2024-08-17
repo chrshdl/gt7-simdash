@@ -45,7 +45,7 @@ Start the application from inside the virtual environment with `python main.py`.
   <img width=600px src="https://raw.githubusercontent.com/chrshdl/gt7-simdash/main/assets/gt7-simdash-enter-ip.png" />
 </picture>
 
-If the Playstation isn't ready to connect yet (because powered off) you will see a waiting screen. Once the Playstation is powered on and ready to connect the application will change automatically to the initial state view. Now you are ready to go. Start a race to trigger a car update and the dashboard will show the corresponding telemetry data.
+If the Playstation isn't ready to connect yet (because powered off) you will see a waiting screen. Power on your Playstation and start Gran Turismo 7. Once the opening trailer is shown the application will automatically connect and change to the initial view. Now you are ready to go. Start a race to trigger a car update and the dashboard will show the corresponding telemetry data.
 
 <picture>
   <img width=600px src="https://raw.githubusercontent.com/chrshdl/gt7-simdash/main/assets/gt7-simdash-connecting.png" />
