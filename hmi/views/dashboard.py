@@ -24,7 +24,7 @@ class Dashboard:
         Laps(self.telemetry, 120, 96)
         EstimatedLap(self.telemetry, 260, 104)
         BestLap(self.telemetry, 260, 104)
-        Minimap(self.telemetry, 324, 324)
+        Minimap(self.telemetry, 350, 350)
         LED()
 
         # PSL = Pit Speed Limiter

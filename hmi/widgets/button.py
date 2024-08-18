@@ -15,6 +15,7 @@ class Button:
         self.outline = outline
         self.gradient = gradient
         self.top = pygame.Color(0, 0, 0)
+        self.gradient_outline_color = Color.GREY.rgb()
 
         font = pygame.font.Font(join("fonts", "pixeltype.ttf"), fs)
 
@@ -24,13 +25,15 @@ class Button:
         if self.text == "TCS":
             if packet.flags.tcs_active:
                 self.gradient = True
-                self.top = pygame.Color(0, 124, 50)
+                self.top = pygame.Color(Color.DARK_GREEN.rgb())
+                self.gradient_outline_color = Color.GREEN.rgb()
             if not packet.flags.tcs_active:
                 self.gradient = False
         if self.text == "BEAM":
             if packet.flags.lights_high_beams_active:
                 self.gradient = True
-                self.top = pygame.Color(30, 112, 152)
+                self.top = pygame.Color(0, 50, 124)
+                self.gradient_outline_color = Color.BLUE.rgb()
             if not packet.flags.lights_high_beams_active:
                 self.gradient = False
 
@@ -47,7 +50,8 @@ class Button:
             for event in events:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     self.gradient = True
-                    self.top = pygame.Color(0, 50, 124)
+                    self.top = Color.DARK_BLUE.rgb()
+                    self.gradient_outline_color = Color.BLUE.rgb()
                     return True
                 if event.type == pygame.MOUSEBUTTONUP:
                     self.gradient = False
@@ -57,7 +61,7 @@ class Button:
         if self.gradient:
             self.draw_gradient(
                 top=self.top,
-                bottom=pygame.Color(0, 3, 8),
+                bottom=Color.DARKEST_BLUE.rgb(),
             )
         if not self.gradient:
             pygame.draw.rect(
@@ -85,7 +89,7 @@ class Button:
             sizey = self.size[1] + thickness * 2
 
             if self.gradient:
-                color = Color.BLUE.rgb()
+                color = self.gradient_outline_color
             else:
                 color = Color.DARK_GREY.rgb()
 
@@ -107,5 +111,5 @@ class Button:
         w = self.button.get_rect().width
         h = self.button.get_rect().height
         for y in range(0, h, 1):
-            color = top.lerp(bottom, y / h)
+            color = pygame.Color(top).lerp(pygame.Color(bottom), y / h)
             self.button.fill(color, (0, y, w, 1))

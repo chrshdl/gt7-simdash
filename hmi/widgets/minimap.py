@@ -6,8 +6,8 @@ from common.evendispatcher import EventDispatcher
 
 from events import RACE_NEW_LAP_STARTED, RACE_RETRY_STARTED
 
-SCALE_FACTOR = 4
-DELTA = 20
+SCALE_FACTOR = 6
+DELTA = 0
 
 
 class Minimap(Widget):
@@ -50,7 +50,7 @@ class Minimap(Widget):
                 x / SCALE_FACTOR + self.h // 2 + DELTA,
                 z / SCALE_FACTOR + self.h // 2 + DELTA,
             ],
-            SCALE_FACTOR,
+            SCALE_FACTOR - 2,
         )
         self.driven_distance += abs(x - self.px) * 1 / 60
         self.px = x
