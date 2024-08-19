@@ -15,7 +15,6 @@ class Color(Enum):
     DARK_BLUE = (auto(), (0, 50, 124))
     DARKEST_BLUE = (auto(), (0, 3, 8))
     WHITE = (auto(), (210, 210, 210))
-    WHITE_OPACITY = (auto(), (210, 210, 210, 80))
 
     def rgb(self):
         return self.value[1]

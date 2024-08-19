@@ -1,3 +1,4 @@
+import pickle
 from . import Widget
 from common.evendispatcher import EventDispatcher
 from common.event import Event
@@ -16,7 +17,7 @@ class EstimatedLap(Widget):
         self.body_text_alignment = TextAlignment.MIDBOTTOM
         self.lap = -1
         self.curr_laptime = 0
-        self.laptime_checkpoints = {laps: set() for laps in range(1, 4)}
+        self.laptime_checkpoints = {}
 
     def update(self, packet):
         super().update()
@@ -40,8 +41,19 @@ class EstimatedLap(Widget):
                     EventDispatcher.dispatch(Event(RACE_NEW_LAP_STARTED, current_lap))
                     self.lap = current_lap
                     self.curr_laptime = 0
+                    # with open(f"checkpoints-lap-{self.lap}.pickle", "wb") as handle:
+                    #    pickle.dump(
+                    #        self.laptime_checkpoints,
+                    #        handle,
+                    #        protocol=pickle.HIGHEST_PROTOCOL,
+                    #    )
+
             if self.lap != 0:
                 self.curr_laptime += 1 / 60 if not paused and not race_over else 0
+                if self.lap > 0:
+                    checkpoints = self.laptime_checkpoints.get(self.lap, [])
+                    checkpoints.append((packet.position.x, packet.position.z))
+                    self.laptime_checkpoints[self.lap] = checkpoints
             estimated_laptime = datetime.strftime(
                 datetime.fromtimestamp(self.curr_laptime, tz=timezone.utc), "%M:%S.%f"
             )[:-4]

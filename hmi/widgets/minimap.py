@@ -1,25 +1,30 @@
 import math
 import pygame
 from . import Widget
-from hmi.settings import POS
+from hmi.settings import POS, CIRCUITS
 from common.evendispatcher import EventDispatcher
 
 from events import RACE_NEW_LAP_STARTED, RACE_RETRY_STARTED
-
-SCALE_FACTOR = 6
-DELTA = 0
 
 
 class Minimap(Widget):
     def __init__(self, groups, w, h):
         super().__init__(groups, w, h)
-        self.rect.center = POS["minimap"]
+        self.rect.topleft = POS["minimap"]
         self.px = None
         self.pz = None
         self.w = w
         self.h = h
         self.driven_distance = 0
+        circuit_name = "brands-hatch-indy"  # TODO: infer circuit_name from the data
         self.clear_map = False
+        self.MAP_SCALE = self.w / 5
+        self.LINE_SCALE = 2
+        self.DELTA = self.w / 2
+        self.mean_x = CIRCUITS[circuit_name]["mean"][0]
+        self.mean_z = CIRCUITS[circuit_name]["mean"][1]
+        self.std_x = CIRCUITS[circuit_name]["std"][0]
+        self.std_z = CIRCUITS[circuit_name]["std"][1]
 
         EventDispatcher.add_listener(RACE_NEW_LAP_STARTED, self.on_new_lap)
         EventDispatcher.add_listener(RACE_RETRY_STARTED, self.on_retry)
@@ -43,21 +48,21 @@ class Minimap(Widget):
             self.image,
             self.colormap(speed),
             [
-                self.px / SCALE_FACTOR + self.h // 2 + DELTA,
-                self.pz / SCALE_FACTOR + self.h // 2 + DELTA,
+                (self.MAP_SCALE * ((self.px - self.mean_x) / self.std_x)) + self.DELTA,
+                (self.MAP_SCALE * ((self.pz - self.mean_z) / self.std_z)) + self.DELTA,
             ],
             [
-                x / SCALE_FACTOR + self.h // 2 + DELTA,
-                z / SCALE_FACTOR + self.h // 2 + DELTA,
+                (self.MAP_SCALE * ((x - self.mean_x) / self.std_x)) + self.DELTA,
+                (self.MAP_SCALE * ((z - self.mean_z) / self.std_z)) + self.DELTA,
             ],
-            SCALE_FACTOR - 2,
+            self.LINE_SCALE,
         )
         self.driven_distance += abs(x - self.px) * 1 / 60
         self.px = x
         self.pz = z
 
     def on_new_lap(self, event):
-        print(f"lap: {event.data}, driven distance: {self.driven_distance / 10}")
+        # print(f"lap: {event.data}, driven distance: {self.driven_distance / 10}")
         self.driven_distance = 0
         self.clear_map = False
 
