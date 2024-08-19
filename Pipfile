@@ -11,6 +11,9 @@ rpi-lgpio = "*"
 
 [dev-packages]
 pre-commit = "*"
+jupyter = "*"
+numpy = "*"
+matplotlib = "*"
 
 [requires]
 python_version = "3"
