@@ -1,4 +1,5 @@
 import math
+import numpy as np
 import pygame
 from . import Widget
 from hmi.settings import POS, CIRCUITS
@@ -57,12 +58,16 @@ class Minimap(Widget):
             ],
             self.LINE_SCALE,
         )
-        self.driven_distance += abs(x - self.px) * 1 / 60
+        self.driven_distance += np.linalg.norm(
+            np.array([x, z]) - np.array([self.px, self.pz])
+        )
         self.px = x
         self.pz = z
 
     def on_new_lap(self, event):
-        # print(f"lap: {event.data}, driven distance: {self.driven_distance / 10}")
+        print(
+            f"lap: {event.data}, driven distance: {self.driven_distance * 1e-3:.3f} km"
+        )
         self.driven_distance = 0
         self.clear_map = False
 
