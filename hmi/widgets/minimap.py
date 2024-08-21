@@ -1,6 +1,7 @@
-import math
 import numpy as np
 import pygame
+
+from hmi.properties import Color
 from . import Widget
 from hmi.settings import POS, CIRCUITS
 from common.evendispatcher import EventDispatcher
@@ -17,10 +18,10 @@ class Minimap(Widget):
         self.w = w
         self.h = h
         self.driven_distance = 0
-        circuit_name = "brands-hatch-indy"  # TODO: infer circuit_name from the data
+        circuit_name = "suzuka"  # TODO: infer circuit_name from the data
         self.clear_map = False
         self.MAP_SCALE = self.w / 5
-        self.LINE_SCALE = 2
+        self.LINE_SCALE = 6
         self.DELTA = self.w / 2
         self.mean_x = CIRCUITS[circuit_name]["mean"][0]
         self.mean_z = CIRCUITS[circuit_name]["mean"][1]
@@ -36,6 +37,7 @@ class Minimap(Widget):
             self.clear_map = False
 
         x, z = packet.position.x, packet.position.z
+
         if self.px is None:
             self.px, self.pz = x, z
             return
@@ -47,7 +49,7 @@ class Minimap(Widget):
 
         pygame.draw.line(
             self.image,
-            self.colormap(speed),
+            Color.colormap(speed),
             [
                 (self.MAP_SCALE * ((self.px - self.mean_x) / self.std_x)) + self.DELTA,
                 (self.MAP_SCALE * ((self.pz - self.mean_z) / self.std_z)) + self.DELTA,
@@ -74,38 +76,3 @@ class Minimap(Widget):
     def on_retry(self, event):
         self.driven_distance = 0
         self.clear_map = True
-
-    def colormap(self, f):
-        """
-        https://www.particleincell.com/2014/colormap/
-        """
-        a = (1 - f) / 0.2
-        X = math.floor(a)
-        Y = math.floor(255 * (a - X))
-        match X:
-            case 0:
-                r = 255
-                g = Y
-                b = 0
-            case 1:
-                r = 255 - Y
-                g = 255
-                b = 0
-            case 2:
-                r = 0
-                g = 255
-                b = Y
-            case 3:
-                r = 0
-                g = 255 - Y
-                b = 255
-            case 4:
-                r = Y
-                g = 0
-                b = 255
-            case 5:
-                r = 255
-                g = 0
-                b = 255
-
-        return (r, g, b)

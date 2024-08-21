@@ -1,3 +1,4 @@
+import math
 from enum import Enum, auto
 
 
@@ -15,9 +16,44 @@ class Color(Enum):
     DARK_BLUE = (auto(), (0, 50, 124))
     DARKEST_BLUE = (auto(), (0, 3, 8))
     WHITE = (auto(), (210, 210, 210))
+    PURPLE = (auto(), (200, 0, 200))
 
     def rgb(self):
         return self.value[1]
+
+    @classmethod
+    def colormap(cls, f):
+        """
+        https://www.particleincell.com/2014/colormap/
+        """
+        a = (1 - f) / 0.2
+        X = math.floor(a)
+        Y = math.floor(255 * (a - X))
+        match X:
+            case 0:
+                r = 255
+                g = Y
+                b = 0
+            case 1:
+                r = 255 - Y
+                g = 255
+                b = 0
+            case 2:
+                r = 0
+                g = 255
+                b = Y
+            case 3:
+                r = 0
+                g = 255 - Y
+                b = 255
+            case 4:
+                r = Y
+                g = 0
+                b = 255
+            case 5:
+                r, g, b = cls.PURPLE.rgb()
+
+        return (r, g, b)
 
 
 class TextAlignment(Enum):
