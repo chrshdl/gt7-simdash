@@ -1,15 +1,14 @@
 import pygame
 
-from hmi.widgets.led import LED
-from hmi.widgets.rpm import SimpleRPM, GraphicalRPM
-from hmi.widgets.gear import GearIndicator
-from hmi.widgets.speed import Speedometer
-from hmi.widgets.lap import Laps, BestLap, EstimatedLap
+from events import HMI_VIEW_BUTTON_PRESSED
 from hmi.properties import Color
 from hmi.widgets.button import Button
+from hmi.widgets.gear import GearIndicator
+from hmi.widgets.lap import BestLap, EstimatedLap, Laps
+from hmi.widgets.led import LED
 from hmi.widgets.minimap import Minimap
-
-from events import HMI_VIEW_BUTTON_PRESSED
+from hmi.widgets.rpm import GraphicalRPM, SimpleRPM
+from hmi.widgets.speed import Speedometer
 
 
 class Dashboard:

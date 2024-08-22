@@ -1,10 +1,9 @@
-import pygame
-from . import Widget
-from hmi.settings import POS
-from hmi.properties import Color, TextAlignment
-from . import Widget, EventDispatcher
 from common.event import Event
 from events import SYSTEM_PLAYSTATION_IP_CHANGED
+from hmi.properties import Color, TextAlignment
+from hmi.settings import POS
+
+from . import EventDispatcher, Widget
 
 
 class Textfield(Widget):

@@ -1,12 +1,12 @@
 import numpy as np
 import pygame
 
-from hmi.properties import Color
-from . import Widget
-from hmi.settings import POS, CIRCUITS
 from common.evendispatcher import EventDispatcher
-
 from events import RACE_NEW_LAP_STARTED, RACE_RETRY_STARTED
+from hmi.properties import Color
+from hmi.settings import CIRCUITS, POS
+
+from . import Widget
 
 
 class Minimap(Widget):

@@ -1,6 +1,7 @@
 import pygame
-from hmi.widgets.textfield import Textfield
+
 from hmi.widgets.button import Button
+from hmi.widgets.textfield import Textfield
 
 
 class Wizard:

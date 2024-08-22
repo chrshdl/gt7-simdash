@@ -1,8 +1,9 @@
 import platform
-from . import EventDispatcher, Logger
+
 from events import HMI_RPM_LEVEL_CHANGED
 from hmi.properties import Color
 
+from . import EventDispatcher, Logger
 
 RASPBERRY_PI = "aarch64"
 if platform.machine() == RASPBERRY_PI:

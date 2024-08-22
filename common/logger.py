@@ -16,7 +16,6 @@ class Logger:
 
 
 class LogFormatter(logging.Formatter):
-
     grey = "\x1b[38;20m"
     yellow = "\x1b[33;20m"
     red = "\x1b[91;20m"

@@ -1,10 +1,11 @@
 import pygame
-from hmi.settings import POS
+
 from common.event import Event
-from hmi.properties import Color
-from hmi.properties import TextAlignment
-from . import Widget, EventDispatcher, Logger
-from events import HMI_RPM_LEVEL_CHANGED, HMI_CAR_CHANGED
+from events import HMI_CAR_CHANGED, HMI_RPM_LEVEL_CHANGED
+from hmi.properties import Color, TextAlignment
+from hmi.settings import POS
+
+from . import EventDispatcher, Logger, Widget
 
 
 class RPM(Widget):
@@ -72,7 +73,8 @@ class SimpleRPM(RPM):
     def update(self, packet):
         super().update()
 
-        limiter_active = packet.flags.rev_limiter_alert_active
+        # FIXME: limiter_active is not used, remove assignment or complete line
+        limiter_active = packet.flags.rev_limiter_alert_active  # noqa F841
         curr_rpm = int(packet.engine_rpm)
         self.body_text = f"{curr_rpm}"
 

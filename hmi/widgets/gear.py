@@ -1,6 +1,7 @@
-from . import Widget
-from hmi.settings import POS
 from hmi.properties import Color, TextAlignment
+from hmi.settings import POS
+
+from . import Widget
 
 
 class GearIndicator(Widget):
@@ -18,7 +19,7 @@ class GearIndicator(Widget):
         else:
             if int(packet.current_gear) == 0:
                 gear = "R"
-            elif packet.current_gear == None:
+            elif packet.current_gear is None:
                 gear = "N"
             else:
                 gear = int(packet.current_gear)
