@@ -1,22 +1,22 @@
 import sys
-import pygame
-from hmi.views.dashboard import Dashboard
-from hmi.views.startup import Startup
-from hmi.views.wizard import Wizard
-from common.logger import Logger
-from common.event import Event
-from common.evendispatcher import EventDispatcher
 
+import pygame
+
+from common.evendispatcher import EventDispatcher
+from common.event import Event
+from common.logger import Logger
 from events import (
     HMI_CAR_CHANGED,
     HMI_CONNECTION_ESTABLISHED,
     HMI_VIEW_BUTTON_PRESSED,
     SYSTEM_PLAYSTATION_IP_CHANGED,
 )
+from hmi.views.dashboard import Dashboard
+from hmi.views.startup import Startup
+from hmi.views.wizard import Wizard
 
 
 class Main:
-
     HEARTBEAT_DELAY = 10
 
     STATE_STARTUP = "STARTUP"
@@ -65,7 +65,6 @@ class Main:
         last_heartbeat = 0
 
         while self.running:
-
             clock.tick()
 
             if self.listener is not None:

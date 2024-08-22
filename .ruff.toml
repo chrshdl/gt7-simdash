@@ -1,0 +1,24 @@
+line-length = 88
+target-version = "py39"
+extend-exclude = [".vscode", "htmlcov"]
+fix = true
+
+[lint]
+# On top of the default `select` (E, F), enable isort (I), flake8-bugbear (B) and flake8-bandit (S)
+extend-select = ["I", "B", "S"]
+# I want to use lambdas
+ignore = ["E731", "S101"]
+
+[format]
+# Like Black, use double quotes for strings.
+quote-style = "double"
+# Like Black, indent with spaces, rather than tabs.
+indent-style = "space"
+# Like Black, respect magic trailing commas.
+skip-magic-trailing-comma = false
+# Like Black, automatically detect the appropriate line ending.
+line-ending = "auto"
+
+# Ignore `F401` (import violations) in all `__init__.py` files, and in selected subdirectories.
+[lint.per-file-ignores]
+"__init__.py" = ["F401"]

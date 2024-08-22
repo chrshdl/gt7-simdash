@@ -1,5 +1,7 @@
-import pygame
 from os.path import join
+
+import pygame
+
 from hmi.properties import Color, TextAlignment
 
 

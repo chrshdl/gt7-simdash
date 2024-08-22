@@ -1,11 +1,13 @@
-from . import Widget
-from hmi.settings import POS
-from hmi.properties import TextAlignment
-from common.logger import Logger
 from granturismo.intake import Feed
-from common.event import Event
+
 from common.evendispatcher import EventDispatcher
+from common.event import Event
+from common.logger import Logger
 from events import HMI_CONNECTION_ESTABLISHED
+from hmi.properties import TextAlignment
+from hmi.settings import POS
+
+from . import Widget
 
 
 class Connection(Widget):

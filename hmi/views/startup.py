@@ -1,6 +1,7 @@
 import pygame
-from hmi.widgets.connection import Connection
+
 from hmi.properties import Color
+from hmi.widgets.connection import Connection
 
 
 class Startup:

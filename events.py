@@ -1,5 +1,6 @@
-import pygame
 from enum import auto
+
+import pygame
 
 SYSTEM_PLAYSTATION_IP_CHANGED = (auto(), "SYSTEM_PLAYSTATION_IP_CHANGED")
 HMI_CONNECTION_ESTABLISHED = (auto(), "HMI_CONNECTION_ESTABLISHED")

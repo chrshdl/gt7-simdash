@@ -1,12 +1,12 @@
-import pickle
-from . import Widget
-from common.evendispatcher import EventDispatcher
-from common.event import Event
-from hmi.settings import POS
-from hmi.properties import TextAlignment
 from datetime import datetime, timezone
 
+from common.evendispatcher import EventDispatcher
+from common.event import Event
 from events import RACE_NEW_LAP_STARTED, RACE_RETRY_STARTED
+from hmi.properties import TextAlignment
+from hmi.settings import POS
+
+from . import Widget
 
 
 class EstimatedLap(Widget):
