@@ -33,6 +33,8 @@ Source it by executing `source ~/.profile`. Now you are ready do create the virt
 ```sh
 pipenv --python 3
 pipenv shell
+# python 3.12 or higher (package removed from std lib, [Release Notes](https://docs.python.org/3.12/whatsnew/3.12.html))
+pip install setuptools
 pipenv install
 ```
 
