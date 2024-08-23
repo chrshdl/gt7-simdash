@@ -18,7 +18,7 @@ class Minimap(Widget):
         self.w = w
         self.h = h
         self.driven_distance = 0
-        circuit_name = "suzuka"  # TODO: infer circuit_name from the data
+        circuit_name = "goodwood"  # TODO: infer circuit_name from the data
         self.clear_map = False
         self.MAP_SCALE = self.w / 5
         self.LINE_SCALE = 6
@@ -42,10 +42,11 @@ class Minimap(Widget):
             self.px, self.pz = x, z
             return
 
-        if packet.car_max_speed > 0:
-            speed = min(1, packet.car_speed / packet.car_max_speed) * 2
-        else:
-            speed = 0
+        speed = (
+            min(1, packet.car_speed / packet.car_max_speed) * 2
+            if packet.car_max_speed > 0
+            else 0
+        )
 
         pygame.draw.line(
             self.image,
@@ -68,7 +69,7 @@ class Minimap(Widget):
 
     def on_new_lap(self, event):
         print(
-            f"lap: {event.data}, driven distance: {self.driven_distance * 1e-3:.3f} km"
+            f"lap: {event.data - 1}, driven distance: {self.driven_distance * 1e-3:.3f} km"
         )
         self.driven_distance = 0
         self.clear_map = False

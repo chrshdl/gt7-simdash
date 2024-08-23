@@ -8,6 +8,7 @@ pygame = "*"
 granturismo = {git = "https://github.com/chrshdl/granturismo.git"}
 blinkt = "*"
 rpi-lgpio = "*"
+scipy = "*"
 
 [dev-packages]
 pre-commit = "*"
@@ -16,6 +17,7 @@ numpy = "*"
 matplotlib = "*"
 shapely = "*"
 ruff = "==0.6.2"
+mpld3 = "*"
 
 [requires]
 python_version = "3"
