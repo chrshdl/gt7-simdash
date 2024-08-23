@@ -33,7 +33,7 @@ fi
 Source it by executing `source ~/.profile`. Now you are ready do create the virtual environment and install all dependencies needed by the project. From the repo root execute:
 
 ```sh
-pipenv --python 3
+pipenv --python 3.10 # or 3.11
 pipenv shell
 pipenv install
 ```
