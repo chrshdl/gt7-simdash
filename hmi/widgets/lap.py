@@ -24,7 +24,7 @@ class EstimatedLap(Widget):
         self.prev_laptime = float("inf")
         self.is_new_best_lap = False
         self.track_positions = dict()
-        self.best_track_positions = None
+        self.checkpoint_positions = None
         self.checkpoints = None
         self.route = None
 
@@ -54,23 +54,11 @@ class EstimatedLap(Widget):
                         if self.curr_laptime < self.prev_laptime:
                             self.prev_laptime = self.curr_laptime
                             self.is_new_best_lap = True
-                            self.best_track_positions = self.track_positions.copy()
+                            self.checkpoint_positions = self.track_positions.copy()
 
                     self.curr_laptime = 0
                     self.lap = current_lap
-
-                    with open(
-                        os.path.join(
-                            "notebooks",
-                            f"goodwood-lap-{current_lap - 1}.pickle",
-                        ),
-                        "wb",
-                    ) as handle:
-                        pickle.dump(
-                            self.track_positions,
-                            handle,
-                            protocol=pickle.HIGHEST_PROTOCOL,
-                        )
+                    # self.save_track("goodwood", current_lap - 1)
                     self.track_positions.clear()
 
             if self.lap != 0:
@@ -87,19 +75,31 @@ class EstimatedLap(Widget):
             if current_lap is not None and current_lap > 1:
                 if self.is_new_best_lap:
                     self.is_new_best_lap = False
-                    self.checkpoints = list(self.best_track_positions.keys())
+                    self.checkpoints = list(self.checkpoint_positions.keys())
                     self.route = KDTree(self.checkpoints)
                 _, index = self.route.query((packet.position.x, packet.position.z), k=1)
-                prev_checkpoint_time = self.best_track_positions[
-                    self.checkpoints[index]
-                ]
-                diff = self.curr_laptime - prev_checkpoint_time
+                checkpoint_laptime = self.checkpoint_positions[self.checkpoints[index]]
+                diff = self.curr_laptime - checkpoint_laptime
                 self.body_text_color = (
                     Color.GREEN.rgb() if diff < 0 else Color.RED.rgb()
                 )
                 estimated_laptime = f"{diff:.1f}"
 
         self.body_text = estimated_laptime
+
+    def save_track(self, name, lap):
+        with open(
+            os.path.join(
+                "notebooks",
+                f"{name}-lap-{lap}.pickle",
+            ),
+            "wb",
+        ) as fid:
+            pickle.dump(
+                self.track_positions,
+                fid,
+                protocol=pickle.HIGHEST_PROTOCOL,
+            )
 
 
 class BestLap(Widget):
