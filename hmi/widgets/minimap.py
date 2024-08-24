@@ -49,8 +49,8 @@ class Minimap(Widget):
             if packet.car_max_speed > 0
             else 0
         )
-        prv_pos = (np.dot(np.array([self.px, self.pz, 1]), self.M) / self.norm).tolist()
-        cur_pos = (np.dot(np.array([x, z, 1]), self.M) / self.norm).tolist()
+        prv_pos = np.dot(np.array([self.px, self.pz, 1]), self.M) / self.norm
+        cur_pos = np.dot(np.array([x, z, 1]), self.M) / self.norm
 
         pygame.draw.line(
             self.image,
