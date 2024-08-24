@@ -49,19 +49,20 @@ class EstimatedLap(Widget):
         else:
             if self.lap != current_lap:
                 if not race_over:
-                    if self.curr_laptime < self.prev_laptime:
-                        self.prev_laptime = self.curr_laptime
-                        self.is_new_best_lap = True
-                        self.best_track_positions = self.track_positions.copy()
-
                     EventDispatcher.dispatch(Event(RACE_NEW_LAP_STARTED, current_lap))
+                    if current_lap > 1:
+                        if self.curr_laptime < self.prev_laptime:
+                            self.prev_laptime = self.curr_laptime
+                            self.is_new_best_lap = True
+                            self.best_track_positions = self.track_positions.copy()
 
-                    self.lap = current_lap
                     self.curr_laptime = 0
+                    self.lap = current_lap
+
                     with open(
                         os.path.join(
                             "notebooks",
-                            f"goodwood-lap-{self.lap - 1}.pickle",
+                            f"goodwood-lap-{current_lap - 1}.pickle",
                         ),
                         "wb",
                     ) as handle:
@@ -96,7 +97,7 @@ class EstimatedLap(Widget):
                 self.body_text_color = (
                     Color.GREEN.rgb() if diff < 0 else Color.RED.rgb()
                 )
-                estimated_laptime = f"{diff:.2f}"
+                estimated_laptime = f"{diff:.1f}"
 
         self.body_text = estimated_laptime
 
