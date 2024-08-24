@@ -26,6 +26,7 @@ class EstimatedLap(Widget):
         self.checkpoint_positions = None
         self.checkpoints = None
         self.route = None
+        self.is_new_best_lap = False
 
     def update(self, packet):
         super().update()
@@ -38,13 +39,16 @@ class EstimatedLap(Widget):
             total_laps < current_lap if total_laps and total_laps is not None else True
         )
 
-        if current_lap == 0:
+        if current_lap == 0 or current_lap is None:
             estimated_laptime = "--:--"
             self.curr_laptime = 0
             self.prev_laptime = float("inf")
             self.lap = -1
             self.body_text_color = Color.WHITE.rgb()
             self.track_positions.clear()
+            self.route = None
+            self.checkpoint_positions = None
+            self.is_new_best_lap = False
             EventDispatcher.dispatch(Event(RACE_RETRY_STARTED))
         else:
             if self.lap != current_lap:
@@ -52,6 +56,7 @@ class EstimatedLap(Widget):
                     EventDispatcher.dispatch(Event(RACE_NEW_LAP_STARTED, current_lap))
                     if current_lap > 1:
                         if self.curr_laptime < self.prev_laptime:
+                            self.is_new_best_lap = True
                             self.prev_laptime = self.curr_laptime
                             self.checkpoint_positions = self.track_positions.copy()
                     self.curr_laptime = 0
@@ -70,9 +75,11 @@ class EstimatedLap(Widget):
                 self.curr_laptime
             )
 
-            if not self.prev_laptime == float("inf"):
-                self.checkpoints = list(self.checkpoint_positions.keys())
-                self.route = KDTree(self.checkpoints)
+            if current_lap > 1:
+                if self.is_new_best_lap:
+                    self.is_new_best_lap = False
+                    self.checkpoints = list(self.checkpoint_positions.keys())
+                    self.route = KDTree(self.checkpoints)
                 _, index = self.route.query((packet.position.x, packet.position.z), k=1)
                 checkpoint_laptime = self.checkpoint_positions[self.checkpoints[index]]
                 diff = self.curr_laptime - checkpoint_laptime
