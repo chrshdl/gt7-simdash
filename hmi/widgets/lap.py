@@ -1,3 +1,5 @@
+import os
+import pickle
 from datetime import datetime, timezone
 
 from scipy.spatial import KDTree
@@ -19,7 +21,10 @@ class EstimatedLap(Widget):
         self.body_text_alignment = TextAlignment.MIDBOTTOM
         self.lap = -1
         self.curr_laptime = 0
+        self.prev_laptime = float("inf")
+        self.is_new_best_lap = False
         self.track_positions = dict()
+        self.checkpoint_positions = None
         self.checkpoints = None
         self.route = None
 
@@ -45,8 +50,16 @@ class EstimatedLap(Widget):
             if self.lap != current_lap:
                 if not race_over:
                     EventDispatcher.dispatch(Event(RACE_NEW_LAP_STARTED, current_lap))
-                    self.lap = current_lap
+                    if current_lap > 1:
+                        if self.curr_laptime < self.prev_laptime:
+                            self.prev_laptime = self.curr_laptime
+                            self.is_new_best_lap = True
+                            self.checkpoint_positions = self.track_positions.copy()
+
                     self.curr_laptime = 0
+                    self.lap = current_lap
+                    # self.save_track("goodwood", current_lap - 1)
+                    self.track_positions.clear()
 
             if self.lap != 0:
                 self.curr_laptime += 1 / 60 if not paused and not race_over else 0
@@ -55,24 +68,38 @@ class EstimatedLap(Widget):
                 datetime.fromtimestamp(self.curr_laptime, tz=timezone.utc), "%M:%S.%f"
             )[:-4]
 
-            if current_lap == 1:
-                self.track_positions[(packet.position.x, packet.position.z)] = (
-                    self.curr_laptime
-                )
+            self.track_positions[(packet.position.x, packet.position.z)] = (
+                self.curr_laptime
+            )
 
-            if not race_over and current_lap > 1:
-                if self.route is None:
-                    self.checkpoints = list(self.track_positions.keys())
+            if current_lap is not None and current_lap > 1:
+                if self.is_new_best_lap:
+                    self.is_new_best_lap = False
+                    self.checkpoints = list(self.checkpoint_positions.keys())
                     self.route = KDTree(self.checkpoints)
                 _, index = self.route.query((packet.position.x, packet.position.z), k=1)
-                prev_checkpoint_time = self.track_positions[self.checkpoints[index]]
-                diff = self.curr_laptime - prev_checkpoint_time
+                checkpoint_laptime = self.checkpoint_positions[self.checkpoints[index]]
+                diff = self.curr_laptime - checkpoint_laptime
                 self.body_text_color = (
                     Color.GREEN.rgb() if diff < 0 else Color.RED.rgb()
                 )
-                estimated_laptime = f"{diff:.2f}"
+                estimated_laptime = f"{diff:.1f}"
 
         self.body_text = estimated_laptime
+
+    def save_track(self, name, lap):
+        with open(
+            os.path.join(
+                "notebooks",
+                f"{name}-lap-{lap}.pickle",
+            ),
+            "wb",
+        ) as fid:
+            pickle.dump(
+                self.track_positions,
+                fid,
+                protocol=pickle.HIGHEST_PROTOCOL,
+            )
 
 
 class BestLap(Widget):
