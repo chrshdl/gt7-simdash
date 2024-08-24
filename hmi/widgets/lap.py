@@ -22,7 +22,6 @@ class EstimatedLap(Widget):
         self.lap = -1
         self.curr_laptime = 0
         self.prev_laptime = float("inf")
-        self.is_new_best_lap = False
         self.track_positions = dict()
         self.checkpoint_positions = None
         self.checkpoints = None
@@ -42,6 +41,7 @@ class EstimatedLap(Widget):
         if current_lap == 0:
             estimated_laptime = "--:--"
             self.curr_laptime = 0
+            self.prev_laptime = float("inf")
             self.lap = -1
             self.body_text_color = Color.WHITE.rgb()
             self.track_positions.clear()
@@ -53,9 +53,7 @@ class EstimatedLap(Widget):
                     if current_lap > 1:
                         if self.curr_laptime < self.prev_laptime:
                             self.prev_laptime = self.curr_laptime
-                            self.is_new_best_lap = True
                             self.checkpoint_positions = self.track_positions.copy()
-
                     self.curr_laptime = 0
                     self.lap = current_lap
                     # self.save_track("goodwood", current_lap - 1)
@@ -72,11 +70,9 @@ class EstimatedLap(Widget):
                 self.curr_laptime
             )
 
-            if current_lap is not None and current_lap > 1:
-                if self.is_new_best_lap:
-                    self.is_new_best_lap = False
-                    self.checkpoints = list(self.checkpoint_positions.keys())
-                    self.route = KDTree(self.checkpoints)
+            if not self.prev_laptime == float("inf"):
+                self.checkpoints = list(self.checkpoint_positions.keys())
+                self.route = KDTree(self.checkpoints)
                 _, index = self.route.query((packet.position.x, packet.position.z), k=1)
                 checkpoint_laptime = self.checkpoint_positions[self.checkpoints[index]]
                 diff = self.curr_laptime - checkpoint_laptime
