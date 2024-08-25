@@ -3,6 +3,10 @@ import pygame
 from hmi.widgets.button import Button
 from hmi.widgets.textfield import Textfield
 
+BUTTONS_PER_ROW = 3
+NUMPAD_OFFSET_X = 350
+NUMPAD_OFFSET_Y = 280
+
 
 class Wizard:
     def __init__(self):
@@ -11,10 +15,18 @@ class Wizard:
 
         self.tf = Textfield(self.wizard, 360, 80)
 
-        labels = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", ".", "<", "OK"]
+        labels = ["0", ".", "<", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
         self.buttons = [
-            Button(f"{labels[i]}", (68 * i + 60, 280)) for i in range(len(labels))
+            Button(
+                f"{val}",
+                (
+                    i % BUTTONS_PER_ROW * 68 + NUMPAD_OFFSET_X,
+                    i // BUTTONS_PER_ROW * 60 + NUMPAD_OFFSET_Y,
+                ),
+            )
+            for i, val in enumerate(labels)
         ]
+        self.buttons.append(Button("OK", (450, 142), (100, 75)))
 
     def handle_events(self, events):
         for button in self.buttons:
