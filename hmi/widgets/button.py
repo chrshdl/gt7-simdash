@@ -103,11 +103,9 @@ class Button:
                 4,
             )
 
-    def is_within_button_area(self, px, py, rw, rh, rx, ry):
-        if px > rx and px < rx + rw:
-            if py > ry and py < ry + rh:
-                return True
-        return False
+    @staticmethod
+    def is_within_button_area(px, py, rw, rh, rx, ry):
+        return px > rx and px < rx + rw and py > ry and py < ry + rh
 
     def draw_gradient(self, top, bottom):
         w = self.button.get_rect().width

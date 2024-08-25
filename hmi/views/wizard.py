@@ -13,8 +13,7 @@ class Wizard:
 
         labels = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", ".", "<", "OK"]
         self.buttons = [
-            Button(f"{labels[i]}", ((68 * (i % len(labels)) + 60), 280))
-            for i in range(len(labels))
+            Button(f"{labels[i]}", (68 * i + 60, 280)) for i in range(len(labels))
         ]
 
     def handle_events(self, events):
