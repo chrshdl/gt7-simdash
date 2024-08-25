@@ -7,10 +7,11 @@ from . import EventDispatcher, Widget
 
 
 class Textfield(Widget):
-    def __init__(self, groups, w, h, mfs=38):
+    def __init__(self, groups, w, h, mfs=38, text=""):
         super().__init__(groups, w, h, mfs)
         self.rect.center = POS["textfield"]
-        self.text = ""
+        self.text = text
+        self.body_text = text
         self.body_text_alignment = TextAlignment.MIDBOTTOM
         self.body_text_color = Color.WHITE.rgb()
         self.header_color = Color.BLUE.rgb()
