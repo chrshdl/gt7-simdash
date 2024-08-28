@@ -4,8 +4,10 @@ from hmi.widgets.button import Button
 from hmi.widgets.textfield import Textfield
 
 BUTTONS_PER_ROW = 3
-NUMPAD_OFFSET_X = 350
-NUMPAD_OFFSET_Y = 280
+BUTTON_DIMENSIONS = (100, 60)
+BUTTON_MARGIN = 20
+NUMPAD_OFFSET_X = 70
+NUMPAD_OFFSET_Y = 250
 
 
 class Wizard:
@@ -15,14 +17,17 @@ class Wizard:
 
         self.tf = Textfield(self.wizard, 360, 80)
 
-        labels = ["0", ".", "<", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+        labels = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "<", "0", "."]
         self.buttons = [
             Button(
                 f"{val}",
                 (
-                    i % BUTTONS_PER_ROW * 68 + NUMPAD_OFFSET_X,
-                    i // BUTTONS_PER_ROW * 60 + NUMPAD_OFFSET_Y,
+                    i % BUTTONS_PER_ROW * (BUTTON_DIMENSIONS[0] + BUTTON_MARGIN)
+                    + NUMPAD_OFFSET_X,
+                    i // BUTTONS_PER_ROW * (BUTTON_DIMENSIONS[1] + BUTTON_MARGIN)
+                    + NUMPAD_OFFSET_Y,
                 ),
+                BUTTON_DIMENSIONS,
             )
             for i, val in enumerate(labels)
         ]
