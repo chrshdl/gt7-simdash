@@ -31,7 +31,7 @@ class Button:
                 self.gradient_outline_color = Color.GREEN.rgb()
             if not packet.flags.tcs_active:
                 self.gradient = False
-        if self.text == "BEAM":
+        elif self.text == "BEAM":
             if packet.flags.lights_high_beams_active:
                 self.gradient = True
                 self.top = pygame.Color(0, 50, 124)
