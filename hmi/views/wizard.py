@@ -1,5 +1,6 @@
 import pygame
 
+from common.ipv4 import get_ip_prefill
 from hmi.widgets.button import Button
 from hmi.widgets.textfield import Textfield
 
@@ -15,7 +16,7 @@ class Wizard:
         self.screen = pygame.display.get_surface()
         self.wizard = pygame.sprite.Group()
 
-        self.tf = Textfield(self.wizard, 360, 80)
+        self.tf = Textfield(self.wizard, 360, 80, text=get_ip_prefill())
 
         labels = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "<", "0", "."]
         self.buttons = [
