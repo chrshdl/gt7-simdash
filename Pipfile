@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 pygame = "*"
-granturismo = {git = "https://github.com/chrshdl/granturismo.git"}
+granturismo = {git = "https://github.com/chrshdl/granturismo.git", ref = "gt6"}
 blinkt = "*"
 rpi-lgpio = "*"
 scipy = "*"

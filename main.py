@@ -2,6 +2,7 @@ import sys
 from typing import Any
 
 import pygame
+from granturismo import GT_Version
 
 from common.event import Event
 from common.eventdispatcher import EventDispatcher
@@ -25,7 +26,8 @@ class Main:
     STATE_DASHBOARD = "DASHBOARD"
     STATE_WIZARD = "WIZARD"
 
-    def __init__(self, conf: Config):
+    def __init__(self, conf: Config, gt_version: int):
+        self.gt_version: GT_Version = get_gt_version(gt_version)
         self.w = conf.width
         self.h = conf.height
         fullscreen = conf.fullscreen
@@ -50,7 +52,9 @@ class Main:
         if self.playstation_ip is None:
             self.states.update({Main.STATE_WIZARD: Wizard(conf.recent_connected)})
         else:
-            self.states.update({Main.STATE_STARTUP: Startup(self.playstation_ip)})
+            self.states.update(
+                {Main.STATE_STARTUP: Startup(self.playstation_ip, self.gt_version)}
+            )
             self.states.update({Main.STATE_DASHBOARD: Dashboard()})
 
         self.state: str = next(iter(self.states))
@@ -123,9 +127,19 @@ class Main:
 
     def on_ip_changed(self, event):
         self.playstation_ip = event.data
-        self.states.update({Main.STATE_STARTUP: Startup(self.playstation_ip)})
+        self.states.update(
+            {Main.STATE_STARTUP: Startup(self.playstation_ip, self.gt_version)}
+        )
         self.states.update({Main.STATE_DASHBOARD: Dashboard()})
         self.state = Main.STATE_STARTUP
+
+
+def get_gt_version(gt_version: int) -> GT_Version:
+    if gt_version == 6:
+        return GT_Version.GT6
+    if gt_version == 7:
+        return GT_Version.GT7
+    raise NotImplementedError("Only granturismo 6 and 7 are supported!")
 
 
 if __name__ == "__main__":
@@ -134,6 +148,14 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Gran Turismo 7 simdash")
     parser.add_argument("--config", help="the config file", default=None)
+    parser.add_argument(
+        "-gt",
+        "--gt_version",
+        choices=[6, 7],
+        type=int,
+        help="The granturismo version",
+        default=7,
+    )
     args = parser.parse_args()
 
     EventDispatcher()
@@ -141,4 +163,4 @@ if __name__ == "__main__":
     if args.config:
         ConfigManager.set_path(Path(args.config))
     config = ConfigManager.get_config()
-    Main(config).run()
+    Main(config, args.gt_version).run()

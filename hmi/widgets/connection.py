@@ -1,5 +1,5 @@
 import pygame
-from granturismo.intake import Feed
+from granturismo.intake import Feed, GT_Version
 from granturismo.model import Packet
 
 from common.event import Event
@@ -21,9 +21,10 @@ class Connection(Widget):
         h: int,
         mfs: int = 40,
         hfs: int = 46,
+        gt_version: GT_Version = GT_Version.GT7,
     ):
         super().__init__(groups, w, h, mfs, hfs)
-        self.listener = Feed(playstation_ip)
+        self.listener = Feed(playstation_ip, gt_version)
         self.rect.center = POS["connection"]
         self.header_text = f"Connecting to {playstation_ip}, please wait..."
         self.body_text_alignment = TextAlignment.CENTER
