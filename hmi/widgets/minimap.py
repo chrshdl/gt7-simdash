@@ -1,7 +1,7 @@
 import numpy as np
 import pygame
 
-from common.evendispatcher import EventDispatcher
+from common.eventdispatcher import EventDispatcher
 from events import RACE_NEW_LAP_STARTED, RACE_RETRY_STARTED
 from hmi.properties import Color
 from hmi.settings import CIRCUITS, POS

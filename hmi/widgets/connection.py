@@ -1,7 +1,7 @@
 from granturismo.intake import Feed
 
-from common.evendispatcher import EventDispatcher
 from common.event import Event
+from common.eventdispatcher import EventDispatcher
 from common.logger import Logger
 from events import HMI_CONNECTION_ESTABLISHED
 from hmi.properties import TextAlignment

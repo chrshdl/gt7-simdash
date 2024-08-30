@@ -18,47 +18,36 @@ class Color(Enum):
     WHITE = (auto(), (210, 210, 210))
     PURPLE = (auto(), (200, 0, 200))
 
-    def rgb(self):
+    def rgb(self) -> tuple[int, int, int]:
         return self.value[1]
 
     @classmethod
-    def colormap(cls, f):
+    def colormap(cls, f: float) -> tuple[int, int, int]:
         """
         https://www.particleincell.com/2014/colormap/
         """
-        a = (1 - f) / 0.2
+        a = (1 - f) * 5
         X = math.floor(a)
         Y = math.floor(255 * (a - X))
         match X:
             case 0:
-                r = 255
-                g = Y
-                b = 0
+                return (255, Y, 0)
             case 1:
-                r = 255 - Y
-                g = 255
-                b = 0
+                return (255 - Y, 255, 0)
             case 2:
-                r = 0
-                g = 255
-                b = Y
+                return (0, 255, Y)
             case 3:
-                r = 0
-                g = 255 - Y
-                b = 255
+                return (0, 255 - Y, 255)
             case 4:
-                r = Y
-                g = 0
-                b = 255
+                return (Y, 0, 255)
             case 5:
-                r, g, b = cls.PURPLE.rgb()
-
-        return (r, g, b)
+                return cls.PURPLE.rgb()
+        raise NotImplementedError(f"colormap does not support input {f} yet.")
 
 
 class TextAlignment(Enum):
     CENTER = (auto(), "center")
     MIDBOTTOM = (auto(), "midbottom")
 
-    def type(self):
+    def type(self) -> str:
         return self.value[1]

@@ -4,8 +4,8 @@ from datetime import datetime, timezone
 
 from scipy.spatial import KDTree
 
-from common.evendispatcher import EventDispatcher
 from common.event import Event
+from common.eventdispatcher import EventDispatcher
 from events import RACE_NEW_LAP_STARTED, RACE_RETRY_STARTED
 from hmi.properties import Color, TextAlignment
 from hmi.settings import POS
