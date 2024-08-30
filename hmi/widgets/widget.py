@@ -15,7 +15,7 @@ class Widget(pygame.sprite.Sprite):
         self.body_text_color = Color.WHITE.rgb()
         self.body_text_alignment = TextAlignment.MIDBOTTOM
 
-        self.image = pygame.Surface((w, h), pygame.SRCALPHA).convert_alpha()
+        self.image = pygame.Surface((w, h)).convert()
         self.rect = self.image.get_rect(topleft=(0, 0))
         self.main_font = pygame.font.Font(join("fonts", "digital-7-mono.ttf"), mfs)
         self.header_font = pygame.font.Font(join("fonts", "pixeltype.ttf"), hfs)

@@ -1,6 +1,6 @@
+import datetime
 import os
 import pickle
-from datetime import datetime, timezone
 
 from scipy.spatial import KDTree
 
@@ -32,12 +32,20 @@ class EstimatedLap(Widget):
         super().update()
 
         paused = packet.flags.paused
+        loading_or_processing = packet.flags.loading_or_processing
         current_lap = packet.lap_count
-        total_laps = packet.lap_count
 
-        race_over = (
-            total_laps < current_lap if total_laps and total_laps is not None else True
-        )
+        if loading_or_processing:
+            estimated_laptime = "--:--"
+            self.curr_laptime = 0
+            self.prev_laptime = float("inf")
+            self.lap = -1
+            self.body_text_color = Color.WHITE.rgb()
+            self.track_positions.clear()
+            self.route = None
+            self.checkpoint_positions = None
+            self.is_new_best_lap = False
+            EventDispatcher.dispatch(Event(RACE_RETRY_STARTED))
 
         if current_lap == 0 or current_lap is None:
             estimated_laptime = "--:--"
@@ -49,26 +57,33 @@ class EstimatedLap(Widget):
             self.route = None
             self.checkpoint_positions = None
             self.is_new_best_lap = False
-            EventDispatcher.dispatch(Event(RACE_RETRY_STARTED))
         else:
             if self.lap != current_lap:
-                if not race_over:
-                    EventDispatcher.dispatch(Event(RACE_NEW_LAP_STARTED, current_lap))
-                    if current_lap > 1:
-                        if self.curr_laptime < self.prev_laptime:
-                            self.is_new_best_lap = True
-                            self.prev_laptime = self.curr_laptime
-                            self.checkpoint_positions = self.track_positions.copy()
-                    self.curr_laptime = 0
-                    self.lap = current_lap
-                    # self.save_track("goodwood", current_lap - 1)
-                    self.track_positions.clear()
+                laptime = str(
+                    datetime.timedelta(
+                        seconds=len(self.track_positions.keys()) * 1 / 60
+                    )
+                )
+                print(f"laptime: {laptime}")
+                EventDispatcher.dispatch(Event(RACE_NEW_LAP_STARTED, current_lap))
+                if current_lap > 1:
+                    if self.curr_laptime < self.prev_laptime:
+                        self.is_new_best_lap = True
+                        self.prev_laptime = self.curr_laptime
+                        self.checkpoint_positions = self.track_positions.copy()
+                self.curr_laptime = 0
+                self.lap = current_lap
+                # self.save_track("broad-bean", current_lap - 1)
+                self.track_positions.clear()
 
             if self.lap != 0:
-                self.curr_laptime += 1 / 60 if not paused and not race_over else 0
+                self.curr_laptime += 1 / 60 if not paused else 0
 
-            estimated_laptime = datetime.strftime(
-                datetime.fromtimestamp(self.curr_laptime, tz=timezone.utc), "%M:%S.%f"
+            estimated_laptime = datetime.datetime.strftime(
+                datetime.datetime.fromtimestamp(
+                    self.curr_laptime, tz=datetime.timezone.utc
+                ),
+                "%M:%S.%f",
             )[:-4]
 
             self.track_positions[(packet.position.x, packet.position.z)] = (
@@ -119,8 +134,9 @@ class BestLap(Widget):
         if blt is None or blt == 0:
             best_lap_time = "--:--"
         else:
-            best_lap_time = datetime.strftime(
-                datetime.fromtimestamp(blt * 1e-3, tz=timezone.utc), "%M:%S.%f"
+            best_lap_time = datetime.datetime.strftime(
+                datetime.datetime.fromtimestamp(blt * 1e-3, tz=datetime.timezone.utc),
+                "%M:%S.%f",
             )[:-4]
         self.body_text = best_lap_time
 
@@ -141,4 +157,4 @@ class Laps(Widget):
         total = 0 if total is None else total
 
         # self.body_text = f"{min(current, total):01d}/{total:01d}"
-        self.body_text = f"{min(current, total):01d}"
+        self.body_text = f"{current:01d}" if not total else f"{min(current, total):01d}"

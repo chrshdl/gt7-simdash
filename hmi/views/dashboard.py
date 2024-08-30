@@ -3,6 +3,7 @@ import pygame
 from events import HMI_VIEW_BUTTON_PRESSED
 from hmi.properties import Color
 from hmi.widgets.button import Button
+from hmi.widgets.carsor import Carsor
 from hmi.widgets.gear import GearIndicator
 from hmi.widgets.lap import BestLap, EstimatedLap, Laps
 from hmi.widgets.led import LED
@@ -20,18 +21,19 @@ class Dashboard:
         GraphicalRPM(self.telemetry, 100, 40)
         GearIndicator(self.telemetry, 200, 248)
         Speedometer(self.telemetry, 200, 150)
-        Laps(self.telemetry, 120, 96)
+        Laps(self.telemetry, 127, 96)
         EstimatedLap(self.telemetry, 260, 104)
         BestLap(self.telemetry, 260, 104)
         Minimap(self.telemetry, 350, 350)
+        Carsor(self.telemetry, 350, 350)
         LED()
 
         # PSL = Pit Speed Limiter
         # ASM = Active Stability Management
         # TCS = Traction Control System
-        labels = ["PSL", "ASM", "TCS", "BEAM"]
+        labels = ["ASM", "TCS", "LIGHTS", "HIBEAM"]
         self.buttons = [
-            Button(f"{labels[i]}", ((110 * (i % 4) + 120), 558), (100, 50), 40)
+            Button(f"{labels[i]}", ((125 * (i % 4) + 120), 558), (115, 50), 40)
             for i in range(len(labels))
         ]
 
