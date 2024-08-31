@@ -3,7 +3,7 @@ from typing import Optional
 
 import pygame
 
-from hmi.properties import Color, TextAlignment
+from hmi.properties import Color, ColorValues, TextAlignment
 
 
 class Widget(pygame.sprite.Sprite):
@@ -13,9 +13,9 @@ class Widget(pygame.sprite.Sprite):
         super().__init__(groups)
 
         self.header_text: Optional[str] = None
-        self.header_color: tuple[int, int, int] = Color.WHITE.rgb()
+        self.header_color: ColorValues = Color.WHITE.rgb()
         self.body_text: Optional[str] = None
-        self.body_text_color: tuple[int, int, int] = Color.WHITE.rgb()
+        self.body_text_color: ColorValues = Color.WHITE.rgb()
         self.body_text_alignment: TextAlignment = TextAlignment.MIDBOTTOM
 
         self.image = pygame.Surface((w, h)).convert()

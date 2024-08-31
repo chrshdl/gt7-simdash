@@ -1,5 +1,10 @@
 import math
 from enum import Enum, auto
+from typing import Union
+
+RGB = tuple[int, int, int]
+RGBA = tuple[int, int, int, int]
+ColorValues = Union[RGB, RGBA]
 
 
 class Color(Enum):
@@ -23,11 +28,11 @@ class Color(Enum):
     MEDIUM_PURPLE = (auto(), (125, 50, 140))
     DEEP_PURPLE = (auto(), (90, 10, 165))
 
-    def rgb(self) -> tuple[int, int, int]:
+    def rgb(self) -> ColorValues:
         return self.value[1]
 
     @classmethod
-    def colormap(cls, f: float) -> tuple[int, int, int]:
+    def colormap(cls, f: float) -> ColorValues:
         """
         https://www.particleincell.com/2014/colormap/
         """
