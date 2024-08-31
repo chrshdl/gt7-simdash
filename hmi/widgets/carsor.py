@@ -14,7 +14,7 @@ class Carsor(Widget):
         self.w = w
         self.h = h
         self.image = pygame.Surface((w, h), pygame.SRCALPHA).convert_alpha()
-        circuit_name = "Goodwood"  # TODO: infer circuit_name from the data
+        circuit_name = "Nordschleife"  # TODO: infer circuit_name from the data
         self.MAP_SCALE = self.w / 6
         self.LINE_SCALE = 8
         self.DELTA = self.w / 2

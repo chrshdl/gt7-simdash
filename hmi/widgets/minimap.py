@@ -18,7 +18,7 @@ class Minimap(Widget):
         self.w = w
         self.h = h
         self.driven_distance = 0
-        circuit_name = "Goodwood"  # TODO: infer circuit_name from the data
+        circuit_name = "Nordschleife"  # TODO: infer circuit_name from the data
         self.header_text = circuit_name
         self.clear_map = False
         self.MAP_SCALE = self.w / 6

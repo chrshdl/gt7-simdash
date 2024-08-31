@@ -58,7 +58,7 @@ class EstimatedLap(Widget):
                         self.checkpoint_positions = self.track_positions.copy()
                 self.curr_laptime = 0
                 self.lap = current_lap
-                # self.save_track("broad-bean", current_lap - 1)
+                self.save_track("nordschleife", current_lap - 1)
                 self.track_positions.clear()
 
             if self.lap != 0:
@@ -139,7 +139,7 @@ class BestLap(Widget):
 
 
 class Laps(Widget):
-    def __init__(self, groups, w, h, mfs=64, hfs=42):
+    def __init__(self, groups, w, h, mfs=64, hfs=42): #mfs = 64, hfs = 42
         super().__init__(groups, w, h, mfs, hfs)
         self.rect.center = POS["lap"]
         self.header_text = "Lap"

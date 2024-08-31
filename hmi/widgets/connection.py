@@ -1,5 +1,5 @@
 import pygame
-from granturismo.intake import Feed
+from granturismo import Feed
 
 from common.event import Event
 from common.eventdispatcher import EventDispatcher
