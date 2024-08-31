@@ -19,6 +19,7 @@ class EstimatedLap(Widget):
         self.rect.center = POS["est_lap_time"]
         self.header_text = "Lap Time"
         self.body_text_alignment = TextAlignment.MIDBOTTOM
+        self.estimated_laptime = "--:--"
         self.lap = -1
         self.curr_laptime = 0
         self.prev_laptime = float("inf")
@@ -36,27 +37,11 @@ class EstimatedLap(Widget):
         current_lap = packet.lap_count
 
         if loading_or_processing:
-            estimated_laptime = "--:--"
-            self.curr_laptime = 0
-            self.prev_laptime = float("inf")
-            self.lap = -1
-            self.body_text_color = Color.WHITE.rgb()
-            self.track_positions.clear()
-            self.route = None
-            self.checkpoint_positions = None
-            self.is_new_best_lap = False
+            self.reset()
             EventDispatcher.dispatch(Event(RACE_RETRY_STARTED))
 
         if current_lap == 0 or current_lap is None:
-            estimated_laptime = "--:--"
-            self.curr_laptime = 0
-            self.prev_laptime = float("inf")
-            self.lap = -1
-            self.body_text_color = Color.WHITE.rgb()
-            self.track_positions.clear()
-            self.route = None
-            self.checkpoint_positions = None
-            self.is_new_best_lap = False
+            self.reset()
         else:
             if self.lap != current_lap:
                 laptime = str(
@@ -79,7 +64,7 @@ class EstimatedLap(Widget):
             if self.lap != 0:
                 self.curr_laptime += 1 / 60 if not paused else 0
 
-            estimated_laptime = datetime.datetime.strftime(
+            self.estimated_laptime = datetime.datetime.strftime(
                 datetime.datetime.fromtimestamp(
                     self.curr_laptime, tz=datetime.timezone.utc
                 ),
@@ -91,19 +76,20 @@ class EstimatedLap(Widget):
             )
 
             if current_lap > 1:
-                if self.is_new_best_lap:
-                    self.is_new_best_lap = False
+                if self.checkpoint_positions:
+                    if self.is_new_best_lap:
+                        self.is_new_best_lap = False
                     self.checkpoints = list(self.checkpoint_positions.keys())
                     self.route = KDTree(self.checkpoints)
-                _, index = self.route.query((packet.position.x, packet.position.z), k=1)
-                checkpoint_laptime = self.checkpoint_positions[self.checkpoints[index]]
-                diff = self.curr_laptime - checkpoint_laptime
-                self.body_text_color = (
-                    Color.GREEN.rgb() if diff < 0 else Color.RED.rgb()
-                )
-                estimated_laptime = f"{diff:.1f}"
+                    _, i = self.route.query((packet.position.x, packet.position.z), k=1)
+                    checkpoint_laptime = self.checkpoint_positions[self.checkpoints[i]]
+                    diff = self.curr_laptime - checkpoint_laptime
+                    self.body_text_color = (
+                        Color.GREEN.rgb() if diff < 0 else Color.RED.rgb()
+                    )
+                    self.estimated_laptime = f"{diff:.1f}"
 
-        self.body_text = estimated_laptime
+        self.body_text = self.estimated_laptime
 
     def save_track(self, name, lap):
         with open(
@@ -118,6 +104,17 @@ class EstimatedLap(Widget):
                 fid,
                 protocol=pickle.HIGHEST_PROTOCOL,
             )
+
+    def reset(self):
+        self.estimated_laptime = "--:--"
+        self.curr_laptime = 0
+        self.prev_laptime = float("inf")
+        self.lap = -1
+        self.body_text_color = Color.WHITE.rgb()
+        self.track_positions.clear()
+        self.route = None
+        self.checkpoint_positions = None
+        self.is_new_best_lap = False
 
 
 class BestLap(Widget):
