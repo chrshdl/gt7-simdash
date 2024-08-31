@@ -19,7 +19,7 @@ class EventDispatcher:
 
     @classmethod
     def dispatch(cls, event: Event) -> None:
-        for listener in cls.events.get(event.type, ()):
+        for listener in cls.events.get(event.type, tuple()):
             listener(event)
 
     @classmethod

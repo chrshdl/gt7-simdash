@@ -1,3 +1,4 @@
+import pygame
 from granturismo.intake import Feed
 
 from common.event import Event
@@ -11,15 +12,24 @@ from . import Widget
 
 
 class Connection(Widget):
-    def __init__(self, groups, playstation_ip, w, h, mfs=40, hfs=46):
+    def __init__(
+        self,
+        groups: pygame.sprite.Group,
+        playstation_ip: str,
+        w: int,
+        h: int,
+        mfs: int = 40,
+        hfs: int = 46,
+    ):
         super().__init__(groups, w, h, mfs, hfs)
         self.listener = Feed(playstation_ip)
         self.rect.center = POS["connection"]
-        self.header_text = "Connecting, please wait..."
+        self.header_text = f"Connecting to {playstation_ip}, please wait..."
         self.body_text_alignment = TextAlignment.CENTER
         self.logger = Logger(self.__class__.__name__).get()
 
-    def update(self, packet):
+    # FIXME: is the parameter packet needed?
+    def update(self, packet) -> None:  # type: ignore
         super().update()
 
         self.send_handshake()
@@ -31,7 +41,7 @@ class Connection(Widget):
         if packet is not None:
             EventDispatcher.dispatch(Event(HMI_CONNECTION_ESTABLISHED, self.listener))
 
-    def send_handshake(self):
+    def send_handshake(self) -> None:
         if not self.listener._sock_bounded:
             self.listener.start()
         self.logger.info("🤝 SENDING HANDSHAKE...")
