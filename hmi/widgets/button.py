@@ -27,11 +27,18 @@ class Button:
         if self.text == "TCS":
             if packet.flags.tcs_active:
                 self.gradient = True
-                self.top = pygame.Color(Color.DARK_GREEN.rgb())
-                self.gradient_outline_color = Color.GREEN.rgb()
+                self.top = pygame.Color(Color.DEEP_PURPLE.rgb())
+                self.gradient_outline_color = Color.MEDIUM_PURPLE.rgb()
             if not packet.flags.tcs_active:
                 self.gradient = False
-        elif self.text == "BEAM":
+        if self.text == "LIGHTS":
+            if packet.flags.lights_active:
+                self.gradient = True
+                self.top = pygame.Color(Color.DARK_GREEN.rgb())
+                self.gradient_outline_color = Color.GREEN.rgb()
+            if not packet.flags.lights_active:
+                self.gradient = False
+        if self.text == "HIBEAM":
             if packet.flags.lights_high_beams_active:
                 self.gradient = True
                 self.top = pygame.Color(0, 50, 124)
@@ -55,8 +62,24 @@ class Button:
                     self.top = Color.DARK_BLUE.rgb()
                     self.gradient_outline_color = Color.BLUE.rgb()
                     return True
+        else:
+            self.gradient = False
+        return False
+
+    def is_released(self, events):
+        mousePos = pygame.mouse.get_pos()
+        if self.is_within_button_area(
+            mousePos[0],
+            mousePos[1],
+            self.size[0],
+            self.size[1],
+            self.position[0],
+            self.position[1],
+        ):
+            for event in events:
                 if event.type == pygame.MOUSEBUTTONUP:
                     self.gradient = False
+                    return True
         return False
 
     def render(self, display):
