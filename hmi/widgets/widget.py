@@ -18,17 +18,11 @@ class Widget(pygame.sprite.Sprite):
         self.body_text_color: tuple[int, int, int] = Color.WHITE.rgb()
         self.body_text_alignment: TextAlignment = TextAlignment.MIDBOTTOM
 
-        self.image: pygame.Surface = pygame.Surface(
-            (w, h), pygame.SRCALPHA
-        ).convert_alpha()
-        self.rect: pygame.Rect = self.image.get_rect(topleft=(0, 0))
-        self.main_font: pygame.font.Font = pygame.font.Font(
-            join("fonts", "digital-7-mono.ttf"), mfs
-        )
-        self.header_font: pygame.font.Font = pygame.font.Font(
-            join("fonts", "pixeltype.ttf"), hfs
-        )
-        self.antialiased: bool = False
+        self.image = pygame.Surface((w, h)).convert()
+        self.rect = self.image.get_rect(topleft=(0, 0))
+        self.main_font = pygame.font.Font(join("fonts", "digital-7-mono.ttf"), mfs)
+        self.header_font = pygame.font.Font(join("fonts", "pixeltype.ttf"), hfs)
+        self.antialiased = False
 
     def draw_overlay(self, use_gradient: bool, use_border: bool) -> None:
         if use_gradient:

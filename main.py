@@ -17,7 +17,7 @@ from hmi.views.wizard import Wizard
 
 
 class Main:
-    HEARTBEAT_DELAY = 10
+    HEARTBEAT_DELAY = 9
 
     STATE_STARTUP = "STARTUP"
     STATE_DASHBOARD = "DASHBOARD"
@@ -65,7 +65,7 @@ class Main:
         last_heartbeat = 0
 
         while self.running:
-            clock.tick()
+            clock.tick(60)
 
             if self.listener is not None:
                 try:

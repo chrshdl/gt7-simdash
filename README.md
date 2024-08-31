@@ -66,7 +66,7 @@ If the Playstation isn't ready to connect yet (because powered off) you will see
 - [x] ~~Show simdash in action~~
 - [x] ~~Draw "init" screen on boot / errors~~
 - [x] ~~Implement "Set up a new device"~~
-- [ ] Minimap refinement
+- [x] ~~Minimap refinement~~
 - [ ] Documentation + quick start guide
 
 ## License

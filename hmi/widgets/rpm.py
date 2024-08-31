@@ -151,12 +151,14 @@ class GraphicalRPM(RPM):
         for unit in self.units:
             if unit.step <= current_rpm:
                 if current_rpm >= self.alert_min and unit.step >= self.alert_min:
-                    unit.image.fill(Color.RED.rgb())
+                    unit.image.fill(Color.RPM_RED.rgb())
                 else:
                     unit.image.fill(Color.GREY.rgb(), (0, 0, self.w, self.h - 2))
             else:
                 if unit.step >= self.alert_min:
-                    unit.image.fill(Color.DARK_RED.rgb(), (0, 0, self.w, self.h - 2))
+                    unit.image.fill(
+                        Color.RPM_DARK_RED.rgb(), (0, 0, self.w, self.h - 2)
+                    )
                 elif unit.step % 10 == 0 and not unit.step >= self.alert_min:
                     unit.image.fill(
                         Color.BLACK.rgb(), (0, 0, self.w, self.h - 2)
@@ -183,7 +185,7 @@ class RPMUnit(pygame.sprite.Sprite):
             if name < alert_min:
                 self.image.fill(Color.LIGHT_GREY.rgb())
             else:
-                self.image.fill(Color.RED.rgb())
+                self.image.fill(Color.RPM_RED.rgb())
         else:
             self.image = pygame.Surface((w, h)).convert()
         self.rect = self.image.get_rect(topleft=pos)

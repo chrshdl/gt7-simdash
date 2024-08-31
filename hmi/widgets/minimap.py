@@ -10,18 +10,19 @@ from . import Widget
 
 
 class Minimap(Widget):
-    def __init__(self, groups, w, h):
-        super().__init__(groups, w, h)
+    def __init__(self, groups, w, h, mfs=40, hfs=42):
+        super().__init__(groups, w, h, mfs, hfs)
         self.rect.topleft = POS["minimap"]
         self.px = None
         self.pz = None
         self.w = w
         self.h = h
         self.driven_distance = 0
-        circuit_name = "goodwood"  # TODO: infer circuit_name from the data
+        circuit_name = "Goodwood"  # TODO: infer circuit_name from the data
+        self.header_text = circuit_name
         self.clear_map = False
-        self.MAP_SCALE = self.w / 5
-        self.LINE_SCALE = 6
+        self.MAP_SCALE = self.w / 6
+        self.LINE_SCALE = 5
         self.DELTA = self.w / 2
         mean_x = CIRCUITS[circuit_name]["mean"][0]
         mean_z = CIRCUITS[circuit_name]["mean"][1]
@@ -46,7 +47,7 @@ class Minimap(Widget):
 
         speed = (
             min(1, packet.car_speed / packet.car_max_speed) * 2
-            if packet.car_max_speed > 0
+            if packet.car_max_speed
             else 0
         )
         prv_pos = np.dot(np.array([self.px, self.pz, 1]), self.M) / self.norm

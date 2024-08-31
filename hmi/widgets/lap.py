@@ -1,6 +1,6 @@
+import datetime
 import os
 import pickle
-from datetime import datetime, timezone
 
 from scipy.spatial import KDTree
 
@@ -19,6 +19,7 @@ class EstimatedLap(Widget):
         self.rect.center = POS["est_lap_time"]
         self.header_text = "Lap Time"
         self.body_text_alignment = TextAlignment.MIDBOTTOM
+        self.estimated_laptime = "--:--"
         self.lap = -1
         self.curr_laptime = 0
         self.prev_laptime = float("inf")
@@ -32,43 +33,42 @@ class EstimatedLap(Widget):
         super().update()
 
         paused = packet.flags.paused
+        loading_or_processing = packet.flags.loading_or_processing
         current_lap = packet.lap_count
-        total_laps = packet.lap_count
 
-        race_over = (
-            total_laps < current_lap if total_laps and total_laps is not None else True
-        )
+        if loading_or_processing:
+            self.reset()
+            EventDispatcher.dispatch(Event(RACE_RETRY_STARTED))
 
         if current_lap == 0 or current_lap is None:
-            estimated_laptime = "--:--"
-            self.curr_laptime = 0
-            self.prev_laptime = float("inf")
-            self.lap = -1
-            self.body_text_color = Color.WHITE.rgb()
-            self.track_positions.clear()
-            self.route = None
-            self.checkpoint_positions = None
-            self.is_new_best_lap = False
-            EventDispatcher.dispatch(Event(RACE_RETRY_STARTED))
+            self.reset()
         else:
             if self.lap != current_lap:
-                if not race_over:
-                    EventDispatcher.dispatch(Event(RACE_NEW_LAP_STARTED, current_lap))
-                    if current_lap > 1:
-                        if self.curr_laptime < self.prev_laptime:
-                            self.is_new_best_lap = True
-                            self.prev_laptime = self.curr_laptime
-                            self.checkpoint_positions = self.track_positions.copy()
-                    self.curr_laptime = 0
-                    self.lap = current_lap
-                    # self.save_track("goodwood", current_lap - 1)
-                    self.track_positions.clear()
+                laptime = str(
+                    datetime.timedelta(
+                        seconds=len(self.track_positions.keys()) * 1 / 60
+                    )
+                )
+                print(f"laptime: {laptime}")
+                EventDispatcher.dispatch(Event(RACE_NEW_LAP_STARTED, current_lap))
+                if current_lap > 1:
+                    if self.curr_laptime < self.prev_laptime:
+                        self.is_new_best_lap = True
+                        self.prev_laptime = self.curr_laptime
+                        self.checkpoint_positions = self.track_positions.copy()
+                self.curr_laptime = 0
+                self.lap = current_lap
+                # self.save_track("broad-bean", current_lap - 1)
+                self.track_positions.clear()
 
             if self.lap != 0:
-                self.curr_laptime += 1 / 60 if not paused and not race_over else 0
+                self.curr_laptime += 1 / 60 if not paused else 0
 
-            estimated_laptime = datetime.strftime(
-                datetime.fromtimestamp(self.curr_laptime, tz=timezone.utc), "%M:%S.%f"
+            self.estimated_laptime = datetime.datetime.strftime(
+                datetime.datetime.fromtimestamp(
+                    self.curr_laptime, tz=datetime.timezone.utc
+                ),
+                "%M:%S.%f",
             )[:-4]
 
             self.track_positions[(packet.position.x, packet.position.z)] = (
@@ -76,19 +76,20 @@ class EstimatedLap(Widget):
             )
 
             if current_lap > 1:
-                if self.is_new_best_lap:
-                    self.is_new_best_lap = False
+                if self.checkpoint_positions:
+                    if self.is_new_best_lap:
+                        self.is_new_best_lap = False
                     self.checkpoints = list(self.checkpoint_positions.keys())
                     self.route = KDTree(self.checkpoints)
-                _, index = self.route.query((packet.position.x, packet.position.z), k=1)
-                checkpoint_laptime = self.checkpoint_positions[self.checkpoints[index]]
-                diff = self.curr_laptime - checkpoint_laptime
-                self.body_text_color = (
-                    Color.GREEN.rgb() if diff < 0 else Color.RED.rgb()
-                )
-                estimated_laptime = f"{diff:.1f}"
+                    _, i = self.route.query((packet.position.x, packet.position.z), k=1)
+                    checkpoint_laptime = self.checkpoint_positions[self.checkpoints[i]]
+                    diff = self.curr_laptime - checkpoint_laptime
+                    self.body_text_color = (
+                        Color.GREEN.rgb() if diff < 0 else Color.RED.rgb()
+                    )
+                    self.estimated_laptime = f"{diff:.1f}"
 
-        self.body_text = estimated_laptime
+        self.body_text = self.estimated_laptime
 
     def save_track(self, name, lap):
         with open(
@@ -103,6 +104,17 @@ class EstimatedLap(Widget):
                 fid,
                 protocol=pickle.HIGHEST_PROTOCOL,
             )
+
+    def reset(self):
+        self.estimated_laptime = "--:--"
+        self.curr_laptime = 0
+        self.prev_laptime = float("inf")
+        self.lap = -1
+        self.body_text_color = Color.WHITE.rgb()
+        self.track_positions.clear()
+        self.route = None
+        self.checkpoint_positions = None
+        self.is_new_best_lap = False
 
 
 class BestLap(Widget):
@@ -119,8 +131,9 @@ class BestLap(Widget):
         if blt is None or blt == 0:
             best_lap_time = "--:--"
         else:
-            best_lap_time = datetime.strftime(
-                datetime.fromtimestamp(blt * 1e-3, tz=timezone.utc), "%M:%S.%f"
+            best_lap_time = datetime.datetime.strftime(
+                datetime.datetime.fromtimestamp(blt * 1e-3, tz=datetime.timezone.utc),
+                "%M:%S.%f",
             )[:-4]
         self.body_text = best_lap_time
 
@@ -141,4 +154,4 @@ class Laps(Widget):
         total = 0 if total is None else total
 
         # self.body_text = f"{min(current, total):01d}/{total:01d}"
-        self.body_text = f"{min(current, total):01d}"
+        self.body_text = f"{current:01d}" if not total else f"{min(current, total):01d}"
