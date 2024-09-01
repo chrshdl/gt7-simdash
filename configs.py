@@ -41,7 +41,7 @@ class Config:
 
 
 class ConfigManager:
-    path = Path("config.json")  # default path
+    path = Path.home() / ".config" / "simdash" / "config.json"  # default path
     _config: Optional[Config] = None
 
     @classmethod
