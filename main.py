@@ -48,7 +48,7 @@ class Main:
 
         self.states: dict[str, Any] = {}
         if self.playstation_ip is None:
-            self.states.update({Main.STATE_WIZARD: Wizard()})
+            self.states.update({Main.STATE_WIZARD: Wizard(conf.recent_connected)})
         else:
             self.states.update({Main.STATE_STARTUP: Startup(self.playstation_ip)})
             self.states.update({Main.STATE_DASHBOARD: Dashboard()})
@@ -117,6 +117,7 @@ class Main:
                 EventDispatcher.dispatch(Event(HMI_CAR_CHANGED, data))
 
     def on_connection(self, event):
+        ConfigManager.last_connected(self.playstation_ip)  # type: ignore
         self.state = Main.STATE_DASHBOARD
         self.listener = event.data
 

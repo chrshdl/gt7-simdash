@@ -33,6 +33,8 @@ class Textfield(Widget):
                     Event(SYSTEM_PLAYSTATION_IP_CHANGED, self.text)
                 )
                 self.text = ""
+            case x if len(x) >= 7:
+                self.text = txt
             case _:
                 self.text += txt
         self.body_text = self.text
