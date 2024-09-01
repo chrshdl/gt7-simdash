@@ -1,10 +1,12 @@
 import sys
+from typing import Any
 
 import pygame
 
 from common.event import Event
 from common.eventdispatcher import EventDispatcher
 from common.logger import Logger
+from configs import Config, ConfigManager
 from events import (
     HMI_CAR_CHANGED,
     HMI_CONNECTION_ESTABLISHED,
@@ -23,11 +25,11 @@ class Main:
     STATE_DASHBOARD = "DASHBOARD"
     STATE_WIZARD = "WIZARD"
 
-    def __init__(self, conf):
-        self.w = conf["width"]
-        self.h = conf["height"]
-        fullscreen = conf["fullscreen"]
-        self.playstation_ip = conf["playstation_ip"]
+    def __init__(self, conf: Config):
+        self.w = conf.width
+        self.h = conf.height
+        fullscreen = conf.fullscreen
+        self.playstation_ip = conf.playstation_ip
 
         self.listener = None
         self.running = False
@@ -44,14 +46,14 @@ class Main:
         else:
             pygame.display.set_mode(monitor_size, pygame.FULLSCREEN)
 
-        self.states = {}
+        self.states: dict[str, Any] = {}
         if self.playstation_ip is None:
             self.states.update({Main.STATE_WIZARD: Wizard()})
         else:
             self.states.update({Main.STATE_STARTUP: Startup(self.playstation_ip)})
             self.states.update({Main.STATE_DASHBOARD: Dashboard()})
 
-        self.state = next(iter(self.states))
+        self.state: str = next(iter(self.states))
 
         self.logger = Logger(self.__class__.__name__).get()
 
@@ -127,15 +129,15 @@ class Main:
 
 if __name__ == "__main__":
     import argparse
-    import json
+    from pathlib import Path
 
     parser = argparse.ArgumentParser(description="Gran Turismo 7 simdash")
-    parser.add_argument("--config", help="the config file", default="config.json")
+    parser.add_argument("--config", help="the config file", default=None)
     args = parser.parse_args()
-
-    with open(args.config, "r") as fid:
-        config = json.load(fid)
 
     EventDispatcher()
 
+    if args.config:
+        ConfigManager.set_path(Path(args.config))
+    config = ConfigManager.get_config()
     Main(config).run()
