@@ -8,8 +8,8 @@ from hmi.widgets.textfield import Textfield
 BUTTONS_PER_ROW = 3
 BUTTON_DIMENSIONS = (114, 66)
 BUTTON_MARGIN = 7
-NUMPAD_OFFSET_X = 62
-NUMPAD_OFFSET_Y = 228
+BUTTON_GRID_OFFSET = tuple(map(lambda x: x + BUTTON_MARGIN, BUTTON_DIMENSIONS))
+NUMPAD_OFFSET = (62, 228)
 
 
 class Wizard:
@@ -24,10 +24,8 @@ class Wizard:
             Button(
                 f"{val}",
                 (
-                    i % BUTTONS_PER_ROW * (BUTTON_DIMENSIONS[0] + BUTTON_MARGIN)
-                    + NUMPAD_OFFSET_X,
-                    i // BUTTONS_PER_ROW * (BUTTON_DIMENSIONS[1] + BUTTON_MARGIN)
-                    + NUMPAD_OFFSET_Y,
+                    i % BUTTONS_PER_ROW * BUTTON_GRID_OFFSET[0] + NUMPAD_OFFSET[0],
+                    i // BUTTONS_PER_ROW * BUTTON_GRID_OFFSET[1] + NUMPAD_OFFSET[1],
                 ),
                 BUTTON_DIMENSIONS,
             )
