@@ -1,6 +1,7 @@
 import pygame
 
 from common.ipv4 import get_ip_prefill
+from hmi.properties import Color
 from hmi.widgets.button import Button
 from hmi.widgets.textfield import Textfield
 
@@ -32,8 +33,24 @@ class Wizard:
             )
             for i, val in enumerate(labels)
         ]
-        self.buttons.append(Button("OK", (430, 373), (100, 140)))
-        self.buttons.append(Button("<", (430, 142), (100, 76)))
+        self.buttons.append(
+            Button(
+                "OK",
+                (430, 373),
+                (100, 140),
+                text_color=Color.GREEN,
+                outline_color=Color.DARK_GREEN,
+            )
+        )
+        self.buttons.append(
+            Button(
+                "<",
+                (430, 142),
+                (100, 76),
+                text_color=Color.YELLOW,
+                outline_color=Color.DARK_YELLOW,
+            )
+        )
 
     def handle_events(self, events):
         for button in self.buttons:

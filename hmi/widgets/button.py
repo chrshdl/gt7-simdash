@@ -2,26 +2,35 @@ from os.path import join
 
 import pygame
 
-from hmi.properties import Color
+from hmi.properties import Color, ColorValues
 
 
 class Button:
     def __init__(
-        self, text, position, size=(60, 50), fs=50, outline=True, gradient=False
+        self,
+        text: str,
+        position: tuple[int, int],
+        size: tuple[int, int] = (60, 50),
+        fs: int = 50,
+        outline: bool = True,
+        gradient: bool = False,
+        text_color: Color = Color.WHITE,
+        outline_color: Color = Color.GREY,
     ):
-        self.text = text
-        self.position = position
-        self.size = size
-        self.button = pygame.Surface(size).convert()
+        self.text: str = text
+        self.position: tuple[int, int] = position
+        self.size: tuple[int, int] = size
+        self.button: pygame.Surface = pygame.Surface(size).convert()
         self.button.fill(Color.DARK_GREY.rgb())
-        self.outline = outline
-        self.gradient = gradient
-        self.top = pygame.Color(0, 0, 0)
-        self.gradient_outline_color = Color.GREY.rgb()
+        self.outline: bool = outline
+        self.gradient: bool = gradient
+        self.top: pygame.Color = pygame.Color(0, 0, 0)
+        self.gradient_outline_color: ColorValues = Color.GREY.rgb()
+        self.outline_color: ColorValues = outline_color.rgb()
 
         font = pygame.font.Font(join("fonts", "pixeltype.ttf"), fs)
 
-        self.text_surf = font.render(f"{text}", False, (255, 255, 255))
+        self.text_surf: pygame.Surface = font.render(f"{text}", False, text_color.rgb())
 
     def update(self, packet):
         if self.text == "TCS":
@@ -59,7 +68,7 @@ class Button:
             for event in events:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     self.gradient = True
-                    self.top = Color.DARK_BLUE.rgb()
+                    self.top = pygame.Color(*Color.DARK_BLUE.rgb())
                     self.gradient_outline_color = Color.BLUE.rgb()
                     return True
         else:
@@ -116,7 +125,7 @@ class Button:
             if self.gradient:
                 color = self.gradient_outline_color
             else:
-                color = Color.DARK_GREY.rgb()
+                color = self.outline_color
 
             pygame.draw.rect(
                 display,
