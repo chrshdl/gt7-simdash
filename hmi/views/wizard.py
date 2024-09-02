@@ -37,13 +37,14 @@ def button_grid_generator(
     ]
 
 
+RECENT_BUTTONS_PER_ROW = 1
 RECENT_BUTTONS_DIMENSIONS = (260, 70)
 RECENT_BUTTONS_MARGIN = 7
 RECENT_BUTTONS_GRID_OFFSET = (
     RECENT_BUTTONS_DIMENSIONS[0] + RECENT_BUTTONS_MARGIN,
     RECENT_BUTTONS_DIMENSIONS[1] + RECENT_BUTTONS_MARGIN,
 )
-RECENT_BUTTONS_OFFSET = (20, 20)
+RECENT_BUTTONS_OFFSET = (650, 143)
 
 
 class Wizard:
@@ -82,7 +83,7 @@ class Wizard:
         self.buttons.extend(
             button_grid_generator(
                 recent_connected[0:3],
-                4,
+                RECENT_BUTTONS_PER_ROW,
                 RECENT_BUTTONS_GRID_OFFSET,
                 RECENT_BUTTONS_OFFSET,
                 RECENT_BUTTONS_DIMENSIONS,
