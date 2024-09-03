@@ -1,5 +1,6 @@
 import numpy as np
 import pygame
+from granturismo.model import Packet
 
 from hmi.properties import Color
 from hmi.settings import CIRCUITS, POS
@@ -25,7 +26,7 @@ class Carsor(Widget):
         self.M = np.array([[1, 0], [0, 1], [-mean_x, -mean_z]])
         self.norm = np.array([std_x, std_z])
 
-    def update(self, packet):
+    def update(self, packet: Packet) -> None:  # type: ignore
         super().update(use_border=False)
 
         x, z = packet.position.x, packet.position.z

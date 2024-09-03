@@ -81,7 +81,7 @@ class Main:
                     self.logger.info("💗")
                     self.listener.send_heartbeat()
 
-            events = pygame.event.get()
+            events: list[pygame.event.Event] = pygame.event.get()
 
             for event in events:
                 if event.type == HMI_VIEW_BUTTON_PRESSED:

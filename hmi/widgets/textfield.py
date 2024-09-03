@@ -21,7 +21,7 @@ class Textfield(Widget):
         self.header_color = Color.BLUE.rgb()
         self.header_text = "Enter Playstation IP"
 
-    def handle_events(self, _):
+    def handle_events(self, _) -> None:
         pass
 
     def append(self, txt: str) -> None:

@@ -1,4 +1,5 @@
 import pygame
+from granturismo.model import Packet
 
 from events import HMI_VIEW_BUTTON_PRESSED
 from hmi.properties import Color
@@ -37,14 +38,14 @@ class Dashboard:
             for i in range(len(labels))
         ]
 
-    def handle_events(self, events):
+    def handle_events(self, events: list[pygame.event.Event]) -> None:
         for button in self.buttons:
             if button.is_pressed(events):
                 pygame.event.post(
                     pygame.event.Event(HMI_VIEW_BUTTON_PRESSED, message=button.text)
                 )
 
-    def update(self, packet):
+    def update(self, packet: Packet):
         self.screen.fill(Color.BLACK.rgb())
         self.telemetry.update(packet)
         self.telemetry.draw(self.screen)

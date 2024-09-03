@@ -1,5 +1,6 @@
 import pygame
 from granturismo.intake import Feed
+from granturismo.model import Packet
 
 from common.event import Event
 from common.eventdispatcher import EventDispatcher
@@ -28,18 +29,20 @@ class Connection(Widget):
         self.body_text_alignment = TextAlignment.CENTER
         self.logger = Logger(self.__class__.__name__).get()
 
-    # FIXME: is the parameter packet needed?
-    def update(self, packet) -> None:  # type: ignore
+    def update(self, _) -> None:  # type: ignore
         super().update()
 
         self.send_handshake()
 
         try:
-            packet = self.listener.get()
+            packet: Packet = self.listener.get()
         except Exception as e:
             self.logger.info(f"💀 CONNECTION ISSUE: {e}")
-        if packet is not None:
-            EventDispatcher.dispatch(Event(HMI_CONNECTION_ESTABLISHED, self.listener))
+        else:
+            if packet is not None:
+                EventDispatcher.dispatch(
+                    Event(HMI_CONNECTION_ESTABLISHED, self.listener)
+                )
 
     def send_handshake(self) -> None:
         if not self.listener._sock_bounded:

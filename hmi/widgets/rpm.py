@@ -1,4 +1,5 @@
 import pygame
+from granturismo.model import Packet
 
 from common.event import Event
 from events import HMI_CAR_CHANGED, HMI_RPM_LEVEL_CHANGED
@@ -9,33 +10,37 @@ from . import EventDispatcher, Logger, Widget
 
 
 class RPM(Widget):
-    LEVEL_0 = 0
-    LEVEL_1 = 2
-    LEVEL_2 = 4
-    LEVEL_3 = 8
-    LEVEL_4 = 16
+    LEVEL_0: int = 0
+    LEVEL_1: int = 2
+    LEVEL_2: int = 4
+    LEVEL_3: int = 8
+    LEVEL_4: int = 16
 
-    def __init__(self, groups, w, h, mfs=40, hfs=46):
+    def __init__(
+        self, groups: pygame.sprite.Group, w: int, h: int, mfs: int = 40, hfs: int = 46
+    ):
         super().__init__(groups, w, h, mfs, hfs)
 
-        self._alert_min = self._alert_max = 0
-        self.delta = self.RPM_LEVEL_0 = self.RPM_LEVEL_1 = self.RPM_LEVEL_2 = (
-            self.RPM_LEVEL_3
-        ) = self.RPM_LEVEL_4 = 0
+        self._alert_min: int = 0
+        self._alert_max: int = 0
+        self.delta: int = 0
+        self.RPM_LEVEL_0 = self.RPM_LEVEL_1 = self.RPM_LEVEL_2 = self.RPM_LEVEL_3 = (
+            self.RPM_LEVEL_4
+        ) = 0
 
-        self._rpm_level = RPM.LEVEL_0
+        self._rpm_level: int = RPM.LEVEL_0
         self.logger = Logger(self.__class__.__name__).get()
 
         EventDispatcher.add_listener(HMI_CAR_CHANGED, self.on_car_changed)
 
-    def on_car_changed(self, event):
+    def on_car_changed(self, event: Event) -> None:
         (rpmin, rpmax) = event.data
         self.logger.info(f"New RPM alert values:({rpmin}, {rpmax})")
         self._alert_min = rpmin
         self._alert_max = rpmax
         self.update_rpm_alerts()
 
-    def update_rpm_alerts(self):
+    def update_rpm_alerts(self) -> None:
         self.delta = int((self._alert_max - self._alert_min) * 2)
         self.RPM_LEVEL_0 = int(self._alert_min - 2 * self.delta)
         self.RPM_LEVEL_1 = int(self._alert_min - 1.5 * self.delta)
@@ -48,39 +53,39 @@ class RPM(Widget):
         self.logger.info(f"New RPM delta: {self.delta}")
 
     @property
-    def alert_min(self):
+    def alert_min(self) -> int:
         return self._alert_min
 
     @alert_min.setter
-    def alert_min(self, value):
+    def alert_min(self, value: int) -> None:
         self._alert_min = value
 
     @property
-    def alert_max(self):
+    def alert_max(self) -> int:
         return self._alert_max
 
     @alert_max.setter
-    def alert_max(self, value):
+    def alert_max(self, value: int) -> None:
         self._alert_max = value
 
 
 class SimpleRPM(RPM):
-    def __init__(self, groups, w, h, mfs=24, hfs=46):
+    def __init__(
+        self, groups: pygame.sprite.Group, w: int, h: int, mfs: int = 24, hfs: int = 46
+    ):
         super().__init__(groups, w, h, mfs, hfs)
         self.rect.center = POS["rpm"]
         self.body_text_alignment = TextAlignment.CENTER
 
-    def update(self, packet):
+    def update(self, packet: Packet) -> None:  # type:ignore
         super().update()
 
-        # FIXME: limiter_active is not used, remove assignment or complete line
-        limiter_active = packet.flags.rev_limiter_alert_active  # noqa F841
         curr_rpm = int(packet.engine_rpm)
         self.body_text = f"{curr_rpm}"
 
         self.update_leds(curr_rpm)
 
-    def update_leds(self, curr_rpm):
+    def update_leds(self, curr_rpm: int) -> None:
         if curr_rpm < self.RPM_LEVEL_0:
             if bool(self._rpm_level | RPM.LEVEL_0):
                 self.rpm_level(0)
@@ -97,28 +102,30 @@ class SimpleRPM(RPM):
             if not bool(self._rpm_level & RPM.LEVEL_4):
                 self.rpm_level(8)
 
-    def rpm_level(self, level):
+    def rpm_level(self, level: int) -> None:
         if self._rpm_level != level:
             self._rpm_level = level
             EventDispatcher.dispatch(Event(HMI_RPM_LEVEL_CHANGED, self._rpm_level))
 
 
 class GraphicalRPM(RPM):
-    def __init__(self, groups, w, h, mfs=28, hfs=46):
+    def __init__(
+        self, groups: pygame.sprite.Group, w: int, h: int, mfs: int = 28, hfs: int = 46
+    ):
         super().__init__(groups, w, h, mfs, hfs)
-        self.w = w
-        self.h = h
-        self.group = groups
-        self.screen_width = pygame.display.get_surface().get_size()[0]
-        self.alert_min = 0
-        self.alert_max = 0
+        self.w: int = w
+        self.h: int = h
+        self.group: pygame.sprite.Group = groups
+        self.screen_width: int = pygame.display.get_surface().get_size()[0]
+        self.alert_min: int = 0
+        self.alert_max: int = 0
 
-        self.y = 174
-        self.units = []
+        self.y: int = 174
+        self.units: list[RPMUnit] = []
         self.create_rpm_units(self.alert_min, self.alert_max)
         EventDispatcher.add_listener(HMI_CAR_CHANGED, self.on_car_changed)
 
-    def create_rpm_units(self, alert_min, alert_max):
+    def create_rpm_units(self, alert_min: int, alert_max: int) -> None:
         if len(self.units) > 0:
             for unit in self.group:
                 if isinstance(unit, RPMUnit):
@@ -136,16 +143,16 @@ class GraphicalRPM(RPM):
                 )
             )
 
-    def on_car_changed(self, event):
+    def on_car_changed(self, event: Event[tuple[float, float]]) -> None:
         (rpmin, rpmax) = event.data
         self.alert_min = self._normalize(rpmin) - 4
         self.alert_max = self._normalize(rpmax) + 10
         self.create_rpm_units(self.alert_min, self.alert_max)
 
-    def _normalize(self, value):
+    def _normalize(self, value: float) -> int:
         return int(value * 0.01)
 
-    def update(self, packet):
+    def update(self, packet: Packet) -> None:  # type: ignore
         current_rpm = self._normalize(packet.engine_rpm)
 
         for unit in self.units:
@@ -170,7 +177,15 @@ class GraphicalRPM(RPM):
 
 
 class RPMUnit(pygame.sprite.Sprite):
-    def __init__(self, groups, screen_width, y, alert_min, alert_max, name):
+    def __init__(
+        self,
+        groups: pygame.sprite.Group,
+        screen_width: int,
+        y: int,
+        alert_min: int,
+        alert_max: int,
+        name: int,
+    ):
         super().__init__(groups)
         w = 2
         h = 35

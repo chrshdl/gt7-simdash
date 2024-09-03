@@ -1,10 +1,12 @@
-from typing import Any, Optional
+from typing import Generic, TypeVar
 
 from events import EventType
 
+T = TypeVar("T")
 
-class Event(object):
-    def __init__(self, type: EventType, data: Optional[Any] = None):
+
+class Event(Generic[T]):
+    def __init__(self, type: EventType, data: T):
         self._type = type
         self._data = data
 
@@ -13,5 +15,5 @@ class Event(object):
         return self._type
 
     @property
-    def data(self) -> Optional[Any]:
+    def data(self) -> T:
         return self._data

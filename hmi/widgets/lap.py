@@ -1,7 +1,10 @@
 import datetime
 import os
 import pickle
+from typing import Optional
 
+import pygame
+from granturismo.model import Packet
 from scipy.spatial import KDTree
 
 from common.event import Event
@@ -14,22 +17,24 @@ from . import Widget
 
 
 class EstimatedLap(Widget):
-    def __init__(self, groups, w, h, mfs=64, hfs=42):
+    def __init__(
+        self, groups: pygame.sprite.Group, w: int, h: int, mfs: int = 64, hfs: int = 42
+    ):
         super().__init__(groups, w, h, mfs, hfs)
         self.rect.center = POS["est_lap_time"]
         self.header_text = "Lap Time"
         self.body_text_alignment = TextAlignment.MIDBOTTOM
-        self.estimated_laptime = "--:--"
-        self.lap = -1
-        self.curr_laptime = 0
-        self.prev_laptime = float("inf")
-        self.track_positions = dict()
-        self.checkpoint_positions = None
-        self.checkpoints = None
-        self.route = None
-        self.is_new_best_lap = False
+        self.estimated_laptime: str = "--:--"
+        self.lap: int = -1
+        self.curr_laptime: float = 0
+        self.prev_laptime: float = float("inf")
+        self.track_positions: dict[tuple[int, int], float] = dict()
+        self.checkpoint_positions: Optional[dict[tuple[int, int], float]] = None
+        self.checkpoints: Optional[list[tuple[int, int]]] = None
+        self.route: Optional[KDTree] = None
+        self.is_new_best_lap: bool = False
 
-    def update(self, packet):
+    def update(self, packet: Packet) -> None:  # type: ignore
         super().update()
 
         paused = packet.flags.paused
@@ -38,7 +43,7 @@ class EstimatedLap(Widget):
 
         if loading_or_processing:
             self.reset()
-            EventDispatcher.dispatch(Event(RACE_RETRY_STARTED))
+            EventDispatcher.dispatch(Event(RACE_RETRY_STARTED, None))
 
         if current_lap == 0 or current_lap is None:
             self.reset()
@@ -91,7 +96,7 @@ class EstimatedLap(Widget):
 
         self.body_text = self.estimated_laptime
 
-    def save_track(self, name, lap):
+    def save_track(self, name, lap) -> None:
         with open(
             os.path.join(
                 "notebooks",
@@ -105,7 +110,7 @@ class EstimatedLap(Widget):
                 protocol=pickle.HIGHEST_PROTOCOL,
             )
 
-    def reset(self):
+    def reset(self) -> None:
         self.estimated_laptime = "--:--"
         self.curr_laptime = 0
         self.prev_laptime = float("inf")
@@ -118,12 +123,14 @@ class EstimatedLap(Widget):
 
 
 class BestLap(Widget):
-    def __init__(self, groups, w, h, mfs=64, hfs=42):
+    def __init__(
+        self, groups: pygame.sprite.Group, w: int, h: int, mfs: int = 64, hfs: int = 42
+    ):
         super().__init__(groups, w, h, mfs, hfs)
         self.rect.center = POS["best_lap_time"]
         self.header_text = "Best Time"
 
-    def update(self, packet):
+    def update(self, packet: Packet):  # type: ignore
         super().update()
 
         blt = packet.best_lap_time
@@ -139,12 +146,14 @@ class BestLap(Widget):
 
 
 class Laps(Widget):
-    def __init__(self, groups, w, h, mfs=64, hfs=42):
+    def __init__(
+        self, groups: pygame.sprite.Group, w: int, h: int, mfs: int = 64, hfs: int = 42
+    ):
         super().__init__(groups, w, h, mfs, hfs)
         self.rect.center = POS["lap"]
         self.header_text = "Lap"
 
-    def update(self, packet):
+    def update(self, packet: Packet):  # type: ignore
         super().update()
 
         current = packet.lap_count

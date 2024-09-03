@@ -1,6 +1,7 @@
 from os.path import join
 
 import pygame
+from granturismo.model import Packet
 
 from hmi.properties import Color, ColorValues
 
@@ -32,7 +33,7 @@ class Button:
 
         self.text_surf: pygame.Surface = font.render(f"{text}", False, text_color.rgb())
 
-    def update(self, packet):
+    def update(self, packet: Packet):
         if self.text == "TCS":
             if packet.flags.tcs_active:
                 self.gradient = True
@@ -55,7 +56,7 @@ class Button:
             if not packet.flags.lights_high_beams_active:
                 self.gradient = False
 
-    def is_pressed(self, events):
+    def is_pressed(self, events: list[pygame.event.Event]) -> bool:
         mousePos = pygame.mouse.get_pos()
         if self.is_within_button_area(
             mousePos[0],
@@ -75,7 +76,7 @@ class Button:
             self.gradient = False
         return False
 
-    def is_released(self, events):
+    def is_released(self, events: list[pygame.event.Event]) -> bool:
         mousePos = pygame.mouse.get_pos()
         if self.is_within_button_area(
             mousePos[0],
@@ -91,7 +92,7 @@ class Button:
                     return True
         return False
 
-    def render(self, display):
+    def render(self, display: pygame.Surface) -> None:
         if self.gradient:
             self.draw_gradient(
                 top=self.top,
@@ -136,10 +137,10 @@ class Button:
             )
 
     @staticmethod
-    def is_within_button_area(px, py, rw, rh, rx, ry):
+    def is_within_button_area(px, py, rw, rh, rx, ry) -> bool:
         return px > rx and px < rx + rw and py > ry and py < ry + rh
 
-    def draw_gradient(self, top, bottom):
+    def draw_gradient(self, top: pygame.Color, bottom: ColorValues) -> None:
         w = self.button.get_rect().width
         h = self.button.get_rect().height
         for y in range(0, h, 1):

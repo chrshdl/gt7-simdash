@@ -2,7 +2,7 @@ import logging
 
 
 class Logger:
-    def __init__(self, name):
+    def __init__(self, name: str):
         self.logger: logging.Logger = logging.getLogger(name)
         self.logger.setLevel(logging.DEBUG)
 
@@ -31,7 +31,7 @@ class LogFormatter(logging.Formatter):
         logging.ERROR: red + format_text + reset,
     }
 
-    def format(self, record):
+    def format(self, record: logging.LogRecord) -> str:
         log_fmt = self.FORMATS.get(record.levelno)
         formatter = logging.Formatter(log_fmt)
         return formatter.format(record)

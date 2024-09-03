@@ -1,6 +1,7 @@
 from collections.abc import Iterable
 
 import pygame
+from granturismo.model import Packet
 
 from common.ipv4 import get_ip_prefill
 from hmi.properties import Color
@@ -49,8 +50,8 @@ RECENT_BUTTONS_OFFSET = (650, 143)
 
 class Wizard:
     def __init__(self, recent_connected: list[str]):
-        self.screen = pygame.display.get_surface()
-        self.wizard = pygame.sprite.Group()
+        self.screen: pygame.Surface = pygame.display.get_surface()
+        self.wizard: pygame.sprite.Group = pygame.sprite.Group()
 
         self.tf = Textfield(self.wizard, 360, 80, text=get_ip_prefill())
 
@@ -90,15 +91,14 @@ class Wizard:
             )
         )
 
-    def handle_events(self, events):
+    def handle_events(self, events: list[pygame.event.Event]) -> None:
         for button in self.buttons:
             button.render(self.screen)
-            if button.is_pressed(events):
-                pass
-            elif button.is_released(events):
+            button.is_pressed(events)  # needed to render pressed state
+            if button.is_released(events):
                 self.tf.append(button.text)
 
-    def update(self, packet):
+    def update(self, packet: Packet) -> None:
         self.wizard.update(packet)
         self.wizard.draw(self.screen)
         for button in self.buttons:
