@@ -1,3 +1,5 @@
+from collections.abc import Iterable
+
 import pygame
 
 from common.ipv4 import get_ip_prefill
@@ -8,29 +10,58 @@ from hmi.widgets.textfield import Textfield
 BUTTONS_PER_ROW = 3
 BUTTON_DIMENSIONS = (114, 66)
 BUTTON_MARGIN = 7
-BUTTON_GRID_OFFSET = tuple(map(lambda x: x + BUTTON_MARGIN, BUTTON_DIMENSIONS))
+BUTTON_GRID_OFFSET = (
+    BUTTON_DIMENSIONS[0] + BUTTON_MARGIN,
+    BUTTON_DIMENSIONS[1] + BUTTON_MARGIN,
+)
 NUMPAD_OFFSET = (62, 228)
 
 
+def button_grid_generator(
+    labels: Iterable[str],
+    buttons_per_row: int,
+    grid_offset: tuple[int, int],
+    global_offset: tuple[int, int],
+    button_size: tuple[int, int],
+) -> list[Button]:
+    return [
+        Button(
+            val,
+            (
+                i % buttons_per_row * grid_offset[0] + global_offset[0],
+                i // buttons_per_row * grid_offset[1] + global_offset[1],
+            ),
+            button_size,
+        )
+        for i, val in enumerate(labels)
+    ]
+
+
+RECENT_BUTTONS_PER_ROW = 1
+RECENT_BUTTONS_DIMENSIONS = (260, 70)
+RECENT_BUTTONS_MARGIN = 7
+RECENT_BUTTONS_GRID_OFFSET = (
+    RECENT_BUTTONS_DIMENSIONS[0] + RECENT_BUTTONS_MARGIN,
+    RECENT_BUTTONS_DIMENSIONS[1] + RECENT_BUTTONS_MARGIN,
+)
+RECENT_BUTTONS_OFFSET = (650, 143)
+
+
 class Wizard:
-    def __init__(self):
+    def __init__(self, recent_connected: list[str]):
         self.screen = pygame.display.get_surface()
         self.wizard = pygame.sprite.Group()
 
         self.tf = Textfield(self.wizard, 360, 80, text=get_ip_prefill())
 
         labels = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "."]
-        self.buttons = [
-            Button(
-                f"{val}",
-                (
-                    i % BUTTONS_PER_ROW * BUTTON_GRID_OFFSET[0] + NUMPAD_OFFSET[0],
-                    i // BUTTONS_PER_ROW * BUTTON_GRID_OFFSET[1] + NUMPAD_OFFSET[1],
-                ),
-                BUTTON_DIMENSIONS,
-            )
-            for i, val in enumerate(labels)
-        ]
+        self.buttons = button_grid_generator(
+            labels,
+            BUTTONS_PER_ROW,
+            BUTTON_GRID_OFFSET,
+            NUMPAD_OFFSET,
+            BUTTON_DIMENSIONS,
+        )
         self.buttons.append(
             Button(
                 "OK",
@@ -47,6 +78,15 @@ class Wizard:
                 (100, 76),
                 text_color=Color.YELLOW,
                 outline_color=Color.DARK_YELLOW,
+            )
+        )
+        self.buttons.extend(
+            button_grid_generator(
+                recent_connected[0:3],
+                RECENT_BUTTONS_PER_ROW,
+                RECENT_BUTTONS_GRID_OFFSET,
+                RECENT_BUTTONS_OFFSET,
+                RECENT_BUTTONS_DIMENSIONS,
             )
         )
 
