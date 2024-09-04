@@ -58,7 +58,7 @@ class EstimatedLap(Widget):
                         self.checkpoint_positions = self.track_positions.copy()
                 self.curr_laptime = 0
                 self.lap = current_lap
-                self.save_track("nordschleife", current_lap - 1)
+                self.save_track("KyotoYamagiwaMiyabi", current_lap - 1)
                 self.track_positions.clear()
 
             if self.lap != 0:
