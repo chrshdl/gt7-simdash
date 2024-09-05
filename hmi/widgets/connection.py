@@ -1,5 +1,5 @@
 import pygame
-from granturismo.intake import Feed, GT_Version
+from granturismo import Feed, GT_Version
 from granturismo.model import Packet
 
 from common.event import Event
