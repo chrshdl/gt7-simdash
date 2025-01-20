@@ -1,0 +1,5 @@
+pygame
+blinkt
+rpi-lgpio
+scipy
+git+https://github.com/chrshdl/granturismo.git@main#egg=granturismo
