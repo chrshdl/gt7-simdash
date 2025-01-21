@@ -81,6 +81,15 @@ class Wizard:
                 outline_color=Color.DARK_YELLOW,
             )
         )
+        self.buttons.append(
+            Button(
+                " X ",
+                (65, 35),
+                (100, 76),
+                text_color=Color.RED,
+                outline_color=Color.DARK_RED,
+            )
+        )
         self.buttons.extend(
             button_grid_generator(
                 recent_connected[0:3],
@@ -99,6 +108,7 @@ class Wizard:
                 self.tf.append(button.text)
 
     def update(self, packet: Packet) -> None:
+        self.screen.fill(Color.BLACK.rgb())
         self.wizard.update(packet)
         self.wizard.draw(self.screen)
         for button in self.buttons:

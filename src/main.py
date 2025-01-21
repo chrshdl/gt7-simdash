@@ -1,5 +1,6 @@
 import sys
 from typing import Any
+from unittest.mock import Mock
 
 import pygame
 
@@ -11,6 +12,7 @@ from events import (
     HMI_CAR_CHANGED,
     HMI_CONNECTION_ESTABLISHED,
     HMI_VIEW_BUTTON_PRESSED,
+    HMI_VIEW_BUTTON_RELEASED,
     SYSTEM_PLAYSTATION_IP_CHANGED,
 )
 from hmi.views.dashboard import Dashboard
@@ -23,7 +25,7 @@ class Main:
 
     STATE_STARTUP = "STARTUP"
     STATE_DASHBOARD = "DASHBOARD"
-    STATE_WIZARD = "WIZARD"
+    STATE_SETUP = "SETTINGS"
 
     def __init__(self, conf: Config):
         self.w = conf.width
@@ -47,13 +49,10 @@ class Main:
             pygame.display.set_mode(monitor_size, pygame.FULLSCREEN)
 
         self.states: dict[str, Any] = {}
-        if self.playstation_ip is None:
-            self.states.update({Main.STATE_WIZARD: Wizard(conf.recent_connected)})
-        else:
-            self.states.update({Main.STATE_STARTUP: Startup(self.playstation_ip)})
-            self.states.update({Main.STATE_DASHBOARD: Dashboard()})
+        self.states.update({Main.STATE_DASHBOARD: Dashboard()})
+        self.states.update({Main.STATE_SETUP: Wizard(conf.recent_connected)})
 
-        self.state: str = next(iter(self.states))
+        self.state = Main.STATE_DASHBOARD
 
         self.logger = Logger(self.__class__.__name__).get()
 
@@ -67,7 +66,7 @@ class Main:
         last_heartbeat = 0
 
         while self.running:
-            clock.tick(60)
+            clock.tick(30)
 
             if self.listener is not None:
                 try:
@@ -80,12 +79,22 @@ class Main:
                     last_heartbeat = packet.received_time
                     self.logger.info("💗")
                     self.listener.send_heartbeat()
+            else:
+                if packet is None:
+                    packet = self.get_mock_packet()
 
             events: list[pygame.event.Event] = pygame.event.get()
 
             for event in events:
                 if event.type == HMI_VIEW_BUTTON_PRESSED:
                     self.logger.info(f"Button {event.message} was pressed")
+                if event.type == HMI_VIEW_BUTTON_RELEASED:
+                    self.logger.info(f"Button {event.message} was released")
+                    if event.message == "Setup":
+                        self.state = Main.STATE_SETUP
+                    if event.message == "BACK":
+                        self.state = Main.STATE_DASHBOARD
+
                 if event.type == pygame.QUIT:
                     self.running = False
                 if event.type == pygame.KEYDOWN:
@@ -102,6 +111,28 @@ class Main:
             pygame.display.update()
 
         self.close()
+
+    def get_mock_packet(self):
+        packet = Mock()
+        packet.car_speed = 0/3.6
+        packet.car_max_speed = 200
+        packet.current_gear = 0
+        packet.flags.in_gear = packet.current_gear > 0 
+        packet.engine_rpm = 0.0
+        packet.rpm_alert.min = 6000
+        packet.rpm_alert.max = 7000
+        packet.flags.rev_limiter_alert_active = False
+        packet.flags.tcs_active = False
+        packet.flags.lights_active = False
+        packet.flags.lights_high_beams_active = False
+        packet.last_lap_time = 10
+        packet.lap_count = -1
+        packet.laps_in_race = -1
+        packet.best_lap_time = 10
+        packet.current_lap_time = 10
+        packet.position.x = 0
+        packet.position.z = 0
+        return packet
 
     def close(self):
         if self.listener is not None:

@@ -1,7 +1,7 @@
 import pygame
 
 from common.event import Event
-from events import SYSTEM_PLAYSTATION_IP_CHANGED
+from events import HMI_VIEW_BUTTON_RELEASED, SYSTEM_PLAYSTATION_IP_CHANGED
 from hmi.properties import Color, TextAlignment
 from hmi.settings import POS
 
@@ -18,7 +18,7 @@ class Textfield(Widget):
         self.body_text = text
         self.body_text_alignment = TextAlignment.MIDBOTTOM
         self.body_text_color = Color.WHITE.rgb()
-        self.header_color = Color.BLUE.rgb()
+        # self.header_color = Color.BLUE.rgb()
         self.header_text = "Enter Playstation IP"
 
     def handle_events(self, _) -> None:
@@ -28,6 +28,10 @@ class Textfield(Widget):
         match txt:
             case "<":
                 self.text = self.text[:-1]
+            case " X ":
+                pygame.event.post(
+                    pygame.event.Event(HMI_VIEW_BUTTON_RELEASED, message="BACK")
+                )
             case "OK":
                 EventDispatcher.dispatch(
                     Event(SYSTEM_PLAYSTATION_IP_CHANGED, self.text)

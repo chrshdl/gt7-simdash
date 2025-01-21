@@ -42,10 +42,10 @@ class RPM(Widget):
 
     def update_rpm_alerts(self) -> None:
         self.delta = int((self._alert_max - self._alert_min) * 2)
-        self.RPM_LEVEL_0 = int(self._alert_min - 2 * self.delta)
-        self.RPM_LEVEL_1 = int(self._alert_min - 1.5 * self.delta)
-        self.RPM_LEVEL_2 = int(self._alert_min - self.delta)
-        self.RPM_LEVEL_3 = int(self._alert_min - 0.5 * self.delta)
+        self.RPM_LEVEL_0 = .75 * self._alert_max # int(self._alert_min - 2 * self.delta)
+        self.RPM_LEVEL_1 = .84 * self._alert_max # int(self._alert_min - 1.5 * self.delta)
+        self.RPM_LEVEL_2 = .89 * self._alert_max # int(self._alert_min - self.delta)
+        self.RPM_LEVEL_3 = .94 * self._alert_max # int(self._alert_min - 0.5 * self.delta)
         self.RPM_LEVEL_4 = int(self._alert_max)
         self.logger.info(
             f"New RPM levels: {self.RPM_LEVEL_0} | {self.RPM_LEVEL_1} | {self.RPM_LEVEL_2} | {self.RPM_LEVEL_3} | {self.RPM_LEVEL_4}"

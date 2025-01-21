@@ -55,6 +55,10 @@ class Button:
                 self.gradient_outline_color = Color.BLUE.rgb()
             if not packet.flags.lights_high_beams_active:
                 self.gradient = False
+        if self.text == "Setup":
+            self.top = pygame.Color(Color.GREY.rgb())
+            self.gradient_outline_color = Color.LIGHT_GREY.rgb()
+
 
     def is_pressed(self, events: list[pygame.event.Event]) -> bool:
         mousePos = pygame.mouse.get_pos()

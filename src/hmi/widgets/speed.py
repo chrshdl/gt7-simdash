@@ -18,7 +18,7 @@ class Speedometer(Widget):
         self.body_text_alignment = TextAlignment.MIDBOTTOM
 
     def update(self, packet: Packet) -> None:  # type: ignore
-        super().update(use_border=False)
+        super().update(use_gradient=False, use_border=False)
 
         speed = f"{int(packet.car_speed * 3.6)}"
         self.body_text = speed.center(len(speed))

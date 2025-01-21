@@ -42,7 +42,7 @@ class Minimap(Widget):
 
     def update(self, packet: Packet) -> None:  # type:ignore
         if self.clear_map:
-            super().update(use_border=False)
+            super().update(use_border=True, use_gradient=False)
             self.clear_map = False
 
         x, z = packet.position.x, packet.position.z
