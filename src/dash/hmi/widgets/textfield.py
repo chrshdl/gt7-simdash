@@ -1,5 +1,4 @@
 import pygame
-
 from common.event import Event
 from events import HMI_VIEW_BUTTON_RELEASED, SYSTEM_PLAYSTATION_IP_CHANGED
 from hmi.properties import Color, TextAlignment

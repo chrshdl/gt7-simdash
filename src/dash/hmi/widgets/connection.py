@@ -1,11 +1,10 @@
 import pygame
-from granturismo.intake import Feed
-from granturismo.model import Packet
-
 from common.event import Event
 from common.eventdispatcher import EventDispatcher
 from common.logger import Logger
 from events import HMI_CONNECTION_ESTABLISHED
+from granturismo.intake import Feed
+from granturismo.model import Packet
 from hmi.properties import TextAlignment
 from hmi.settings import POS
 

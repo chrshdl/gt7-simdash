@@ -4,14 +4,13 @@ import pickle
 from typing import Optional
 
 import pygame
-from granturismo.model import Packet
-from scipy.spatial import KDTree
-
 from common.event import Event
 from common.eventdispatcher import EventDispatcher
 from events import RACE_NEW_LAP_STARTED, RACE_RETRY_STARTED
+from granturismo.model import Packet
 from hmi.properties import Color, TextAlignment
 from hmi.settings import POS
+from scipy.spatial import KDTree
 
 from . import Widget
 

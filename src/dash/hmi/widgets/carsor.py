@@ -1,7 +1,6 @@
 import numpy as np
 import pygame
 from granturismo.model import Packet
-
 from hmi.properties import Color
 from hmi.settings import CIRCUITS, POS
 

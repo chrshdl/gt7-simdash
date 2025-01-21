@@ -1,6 +1,5 @@
 import pygame
 from granturismo.model import Packet
-
 from hmi.properties import Color, TextAlignment
 from hmi.settings import POS
 

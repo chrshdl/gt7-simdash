@@ -1,6 +1,5 @@
 import pygame
 from granturismo.model import Packet
-
 from hmi.properties import Color
 from hmi.widgets.connection import Connection
 

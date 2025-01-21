@@ -1,9 +1,8 @@
 import io
 
 import pygame
-from granturismo.model import Packet
-
 from events import HMI_VIEW_BUTTON_PRESSED, HMI_VIEW_BUTTON_RELEASED
+from granturismo.model import Packet
 from hmi.properties import Color
 from hmi.widgets.button import Button
 from hmi.widgets.carsor import Carsor

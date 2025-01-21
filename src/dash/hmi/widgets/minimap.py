@@ -2,11 +2,10 @@ from typing import Optional
 
 import numpy as np
 import pygame
-from granturismo.model import Packet
-
 from common.event import Event
 from common.eventdispatcher import EventDispatcher
 from events import RACE_NEW_LAP_STARTED, RACE_RETRY_STARTED
+from granturismo.model import Packet
 from hmi.properties import Color
 from hmi.settings import CIRCUITS, POS
 

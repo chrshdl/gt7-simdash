@@ -2,7 +2,6 @@ from os.path import join
 from typing import Optional
 
 import pygame
-
 from hmi.properties import Color, ColorValues, TextAlignment
 
 

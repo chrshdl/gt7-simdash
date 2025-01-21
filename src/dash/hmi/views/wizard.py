@@ -1,9 +1,8 @@
 from collections.abc import Iterable
 
 import pygame
-from granturismo.model import Packet
-
 from common.ipv4 import get_ip_prefill
+from granturismo.model import Packet
 from hmi.properties import Color
 from hmi.widgets.button import Button
 from hmi.widgets.textfield import Textfield

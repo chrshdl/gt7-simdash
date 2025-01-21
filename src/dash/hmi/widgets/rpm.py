@@ -1,8 +1,7 @@
 import pygame
-from granturismo.model import Packet
-
 from common.event import Event
 from events import HMI_CAR_CHANGED, HMI_RPM_LEVEL_CHANGED
+from granturismo.model import Packet
 from hmi.properties import Color, TextAlignment
 from hmi.settings import POS
 

@@ -2,7 +2,6 @@ from os.path import join
 
 import pygame
 from granturismo.model import Packet
-
 from hmi.properties import Color, ColorValues
 
 

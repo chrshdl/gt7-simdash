@@ -3,7 +3,6 @@ from typing import Any
 from unittest.mock import Mock
 
 import pygame
-
 from common.event import Event
 from common.eventdispatcher import EventDispatcher
 from common.logger import Logger
