@@ -65,14 +65,13 @@ class Button:
                     self.top = pygame.Color(*Color.DARK_BLUE.rgb())
                     self.gradient_outline_color = Color.BLUE.rgb()
                     return True
-            self.gradient = False
             return False
 
     def is_released(self, events: list[pygame.event.Event]) -> bool:
         for event in events:
             if event.type == pygame.MOUSEBUTTONUP:
+                self.gradient = False
                 if self.rect.collidepoint(event.pos):
-                    self.gradient = False
                     return True
             return False
 
