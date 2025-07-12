@@ -18,23 +18,14 @@
 
 This is a very simple, lightweight HMI for a Gran Turismo 7 digital display. Written in Python and based on an event-driven architecture, it aims to be the easiest framework to add new features to.
 
-## Install on Raspberry Pi with Blinkt! LED
+## Installation
 
-First do a `pip3 install pipenv` to install the virtualenv management tool. After that edit `~/.profile` and check if `PATH` includes the user's private bin.
+The codebase uses `uv` for managing the dependencies and the virtual environment. Follow the [installation guide for uv]("https://docs.astral.sh/uv/#installation"). From the repo root execute
 
-```sh
-# set PATH so it includes user's private bin if it exists
-if [ -d "$HOME/.local/bin" ] ; then
-    PATH="$HOME/.local/bin:$PATH"
-fi
 ```
-
-Source it by executing `source ~/.profile`. Now you are ready do create the virtual environment and install all dependencies needed by the project. From the repo root execute:
-
-```sh
-pipenv --python 3.10 # or 3.11
-pipenv shell
-pipenv install
+uv venv
+source .venv/bin/activate
+uv sync
 ```
 
 ## Usage
