@@ -60,7 +60,6 @@ class Button:
     def is_pressed(self, events: list[pygame.event.Event]) -> bool:
         for event in events:
             if event.type == pygame.MOUSEBUTTONDOWN:
-                print("is pressed")
                 if self.rect.collidepoint(event.pos):
                     self.gradient = True
                     self.top = pygame.Color(*Color.DARK_BLUE.rgb())
@@ -72,7 +71,6 @@ class Button:
     def is_released(self, events: list[pygame.event.Event]) -> bool:
         for event in events:
             if event.type == pygame.MOUSEBUTTONUP:
-                print("is released")
                 if self.rect.collidepoint(event.pos):
                     self.gradient = False
                     return True
