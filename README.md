@@ -20,7 +20,7 @@ This is a very simple, lightweight HMI for a Gran Turismo 7 digital display. Wri
 
 ## Installation
 
-The codebase uses `uv` for managing the dependencies and the virtual environment. Follow the [installation guide for uv]("https://docs.astral.sh/uv/#installation"). From the repo root execute
+The codebase uses `uv` for managing the dependencies and the virtual environment. Follow the [installation guide for uv](https://docs.astral.sh/uv/#installation). From the repo root execute
 
 ```
 uv venv
