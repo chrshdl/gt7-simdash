@@ -67,7 +67,7 @@ class Main:
         last_heartbeat = 0
 
         while self.running:
-            clock.tick(60)
+            clock.tick(120)
 
             if self.listener is not None:
                 try:
