@@ -26,7 +26,7 @@ class Connection(Widget):
         self.listener = Feed(playstation_ip)
         self.rect.center = POS["connection"]
         self.header_color = Color.BLUE.rgb()
-        self.header_text = "Connecting to IP"
+        self.header_text = "Connecting to ..."
         self.body_text = f"{playstation_ip}"
         self.body_text_alignment = TextAlignment.MIDBOTTOM
         self.logger = Logger(self.__class__.__name__).get()

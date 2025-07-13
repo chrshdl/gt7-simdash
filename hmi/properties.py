@@ -7,6 +7,9 @@ RGBA = tuple[int, int, int, int]
 ColorValues = Union[RGB, RGBA]
 
 
+HMI_VIEW_BACK_TEXT = "x"
+
+
 class Color(Enum):
     GREEN = (auto(), (0, 200, 0))
     DARK_GREEN = (auto(), (18, 136, 54))

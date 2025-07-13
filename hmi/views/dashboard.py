@@ -1,7 +1,4 @@
-import pygame
-
 from hmi.views.view import View
-from hmi.widgets.button import Button
 from hmi.widgets.carsor import Carsor
 from hmi.widgets.gear import GearIndicator
 from hmi.widgets.lap import BestLap, EstimatedLap, Laps
@@ -29,11 +26,12 @@ class Dashboard(View):
         # PSL = Pit Speed Limiter
         # ASM = Active Stability Management
         # TCS = Traction Control System
-        labels = ["ASM", "TCS", "LIGHTS", "HIBEAM"]
-        self.buttons = [
-            Button(f"{labels[i]}", ((125 * (i % 4) + 120), 558), (115, 50), 40)
-            for i in range(len(labels))
-        ]
+
+        # labels = ["ASM", "TCS", "LIGHTS", "HIBEAM"]
+        # self.buttons = [
+        #     Button(f"{labels[i]}", ((125 * (i % 4) + 120), 558), (115, 50), 40)
+        #     for i in range(len(labels))
+        # ]
 
     def update_rpm_alerts(self, rpmin, rpmax):
         for sprite in self.sprite_group.sprites():

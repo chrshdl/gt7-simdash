@@ -1,11 +1,13 @@
 from collections.abc import Iterable
 
+import pygame
+
 from common.eventdispatcher import EventDispatcher
 from common.ipv4 import get_ip_prefill
 from events import HMI_VIEW_BUTTON_RELEASED
 from hmi.properties import Color
 from hmi.views.view import View
-from hmi.widgets.button import Button
+from hmi.widgets.button import Button, ButtonState
 from hmi.widgets.textfield import Textfield
 
 BUTTONS_PER_ROW = 3
@@ -69,8 +71,26 @@ class Wizard(View):
                 "OK",
                 (430, 373),
                 (100, 140),
-                text_color=Color.GREEN,
-                outline_color=Color.DARK_GREEN,
+                colors={
+                    ButtonState.IDLE: (
+                        pygame.Color(Color.BLACK.rgb()),
+                        pygame.Color(Color.BLACK.rgb()),
+                        pygame.Color(Color.GREY.rgb()),
+                        pygame.Color(Color.GREEN.rgb()),
+                    ),
+                    ButtonState.PRESSED: (
+                        pygame.Color(Color.DARK_GREEN.rgb()),
+                        pygame.Color(Color.BLACK.rgb()),
+                        pygame.Color(Color.GREEN.rgb()),
+                        pygame.Color(Color.GREEN.rgb()),
+                    ),
+                    ButtonState.RELEASED: (
+                        pygame.Color(Color.BLACK.rgb()),
+                        pygame.Color(Color.BLACK.rgb()),
+                        pygame.Color(Color.GREY.rgb()),
+                        pygame.Color(Color.GREEN.rgb()),
+                    ),
+                },
             )
         )
         self.buttons.append(
@@ -78,8 +98,26 @@ class Wizard(View):
                 "<",
                 (430, 142),
                 (100, 76),
-                text_color=Color.LIGHT_RED,
-                outline_color=Color.DARK_RED,
+                colors={
+                    ButtonState.IDLE: (
+                        pygame.Color(Color.BLACK.rgb()),
+                        pygame.Color(Color.BLACK.rgb()),
+                        pygame.Color(Color.GREY.rgb()),
+                        pygame.Color(Color.LIGHT_RED.rgb()),
+                    ),
+                    ButtonState.PRESSED: (
+                        pygame.Color(Color.DARK_RED.rgb()),
+                        pygame.Color(Color.BLACK.rgb()),
+                        pygame.Color(Color.LIGHT_RED.rgb()),
+                        pygame.Color(Color.LIGHT_RED.rgb()),
+                    ),
+                    ButtonState.RELEASED: (
+                        pygame.Color(Color.BLACK.rgb()),
+                        pygame.Color(Color.BLACK.rgb()),
+                        pygame.Color(Color.GREY.rgb()),
+                        pygame.Color(Color.LIGHT_RED.rgb()),
+                    ),
+                },
             )
         )
         self.buttons.extend(
@@ -90,7 +128,7 @@ class Wizard(View):
                 RECENT_BUTTONS_OFFSET,
                 RECENT_BUTTONS_DIMENSIONS,
             )
-        )       
+        )
 
     def on_button_released(self, event):
         self.tf.append(event.data)

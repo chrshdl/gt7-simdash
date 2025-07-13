@@ -11,8 +11,6 @@ from events import (
     HMI_CAR_CHANGED,
     HMI_CONNECTION_ESTABLISHED,
     HMI_VIEW_BACK,
-    HMI_VIEW_BUTTON_PRESSED,
-    HMI_VIEW_BUTTON_RELEASED,
     SYSTEM_PLAYSTATION_IP_CHANGED,
 )
 from hmi.views.dashboard import Dashboard
@@ -63,7 +61,6 @@ class Main:
         EventDispatcher.add_listener(SYSTEM_PLAYSTATION_IP_CHANGED, self.on_ip_changed)
         EventDispatcher.add_listener(HMI_VIEW_BACK, self.on_back)
 
-
     def run(self):
         self.running = True
         clock = pygame.time.Clock()
@@ -76,9 +73,10 @@ class Main:
             if self.listener is not None:
                 try:
                     packet = self.listener.get()
-                except Exception as e:
-                    self.logger.info(f"💀 CONNECTION ISSUE: {e}")
-                    self.state = Main.STATE_STARTUP
+                except Exception:  # noqa: S110
+                    pass
+                    # self.logger.info(f"💀 CONNECTION ISSUE: {e}")
+                    # self.state = Main.STATE_STARTUP
                 if packet:
                     if packet.received_time - last_heartbeat >= Main.HEARTBEAT_DELAY:
                         last_heartbeat = packet.received_time
@@ -98,8 +96,8 @@ class Main:
                         screenshot.blit(pygame.display.get_surface(), (0, 0))
                         pygame.image.save(screenshot, "gt7-simdash.png")
 
-            self.states[self.state].handle_events(events)
-            self.states[self.state].update(packet)
+            self.states[self.state].handle_view_events()
+            self.states[self.state].handle_packet(packet)
             self.car_id(packet)
             pygame.display.update()
 

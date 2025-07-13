@@ -1,3 +1,4 @@
+import hmi.properties as properties
 from common.event import Event
 from common.eventdispatcher import EventDispatcher
 from events import HMI_VIEW_BACK, HMI_VIEW_BUTTON_RELEASED
@@ -14,9 +15,9 @@ class Startup(View):
 
         EventDispatcher.add_listener(HMI_VIEW_BUTTON_RELEASED, self.on_button_released)
 
-        back = Button(text="X", position=(20, 20))
+        back = Button(text=properties.HMI_VIEW_BACK_TEXT , position=(20, 20))
         self.buttons.append(back)
 
     def on_button_released(self, event):
-        if event.data == "X":
+        if event.data == properties.HMI_VIEW_BACK_TEXT:
             EventDispatcher.dispatch(Event(type=HMI_VIEW_BACK, data=None))
