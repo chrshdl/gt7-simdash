@@ -10,7 +10,9 @@ from configs import Config, ConfigManager
 from events import (
     HMI_CAR_CHANGED,
     HMI_CONNECTION_ESTABLISHED,
+    HMI_VIEW_BACK,
     HMI_VIEW_BUTTON_PRESSED,
+    HMI_VIEW_BUTTON_RELEASED,
     SYSTEM_PLAYSTATION_IP_CHANGED,
 )
 from hmi.views.dashboard import Dashboard
@@ -59,6 +61,8 @@ class Main:
 
         EventDispatcher.add_listener(HMI_CONNECTION_ESTABLISHED, self.on_connection)
         EventDispatcher.add_listener(SYSTEM_PLAYSTATION_IP_CHANGED, self.on_ip_changed)
+        EventDispatcher.add_listener(HMI_VIEW_BACK, self.on_back)
+
 
     def run(self):
         self.running = True
@@ -75,17 +79,15 @@ class Main:
                 except Exception as e:
                     self.logger.info(f"💀 CONNECTION ISSUE: {e}")
                     self.state = Main.STATE_STARTUP
-
-                if packet.received_time - last_heartbeat >= Main.HEARTBEAT_DELAY:
-                    last_heartbeat = packet.received_time
-                    self.logger.info("💗")
-                    self.listener.send_heartbeat()
+                if packet:
+                    if packet.received_time - last_heartbeat >= Main.HEARTBEAT_DELAY:
+                        last_heartbeat = packet.received_time
+                        self.logger.info("💗")
+                        self.listener.send_heartbeat()
 
             events: list[pygame.event.Event] = pygame.event.get()
 
             for event in events:
-                if event.type == HMI_VIEW_BUTTON_PRESSED:
-                    self.logger.info(f"Button {event.message} was pressed")
                 if event.type == pygame.QUIT:
                     self.running = False
                 if event.type == pygame.KEYDOWN:
@@ -118,14 +120,17 @@ class Main:
 
     def on_connection(self, event):
         ConfigManager.last_connected(self.playstation_ip)  # type: ignore
-        self.state = Main.STATE_DASHBOARD
         self.listener = event.data
+        self.state = Main.STATE_DASHBOARD
 
     def on_ip_changed(self, event):
         self.playstation_ip = event.data
         self.states.update({Main.STATE_STARTUP: Startup(self.playstation_ip)})
         self.states.update({Main.STATE_DASHBOARD: Dashboard()})
         self.state = Main.STATE_STARTUP
+
+    def on_back(self, event):
+        self.state = Main.STATE_WIZARD
 
 
 if __name__ == "__main__":

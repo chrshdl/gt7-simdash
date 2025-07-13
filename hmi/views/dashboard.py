@@ -1,8 +1,6 @@
 import pygame
-from granturismo.model import Packet
 
-from events import HMI_VIEW_BUTTON_PRESSED
-from hmi.properties import Color
+from hmi.views.view import View
 from hmi.widgets.button import Button
 from hmi.widgets.carsor import Carsor
 from hmi.widgets.gear import GearIndicator
@@ -13,20 +11,19 @@ from hmi.widgets.rpm import GraphicalRPM, SimpleRPM
 from hmi.widgets.speed import Speedometer
 
 
-class Dashboard:
+class Dashboard(View):
     def __init__(self):
-        self.screen = pygame.display.get_surface()
-        self.telemetry = pygame.sprite.Group()
+        super().__init__()
 
-        SimpleRPM(self.telemetry, 76, 33)
-        GraphicalRPM(self.telemetry, 100, 40)
-        GearIndicator(self.telemetry, 200, 248)
-        Speedometer(self.telemetry, 200, 150)
-        Laps(self.telemetry, 127, 96)
-        EstimatedLap(self.telemetry, 260, 104)
-        BestLap(self.telemetry, 260, 104)
-        Minimap(self.telemetry, 350, 350)
-        Carsor(self.telemetry, 350, 350)
+        SimpleRPM(self.sprite_group, 76, 33)
+        GraphicalRPM(self.sprite_group, 100, 40)
+        GearIndicator(self.sprite_group, 200, 248)
+        Speedometer(self.sprite_group, 200, 150)
+        Laps(self.sprite_group, 127, 96)
+        EstimatedLap(self.sprite_group, 260, 104)
+        BestLap(self.sprite_group, 260, 104)
+        Minimap(self.sprite_group, 350, 350)
+        Carsor(self.sprite_group, 350, 350)
         LED()
 
         # PSL = Pit Speed Limiter
@@ -38,24 +35,8 @@ class Dashboard:
             for i in range(len(labels))
         ]
 
-    def handle_events(self, events: list[pygame.event.Event]) -> None:
-        for button in self.buttons:
-            if button.is_pressed(events):
-                pygame.event.post(
-                    pygame.event.Event(HMI_VIEW_BUTTON_PRESSED, message=button.text)
-                )
-
-    def update(self, packet: Packet):
-        self.screen.fill(Color.BLACK.rgb())
-        self.telemetry.update(packet)
-        self.telemetry.draw(self.screen)
-
-        for button in self.buttons:
-            button.update(packet)
-            button.render(self.screen)
-
     def update_rpm_alerts(self, rpmin, rpmax):
-        for sprite in self.telemetry.sprites():
+        for sprite in self.sprite_group.sprites():
             if isinstance(sprite, SimpleRPM):
                 sprite.alert_min(rpmin)
                 sprite.alert_max(rpmax)

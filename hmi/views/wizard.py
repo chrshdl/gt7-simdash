@@ -1,10 +1,10 @@
 from collections.abc import Iterable
 
-import pygame
-from granturismo.model import Packet
-
+from common.eventdispatcher import EventDispatcher
 from common.ipv4 import get_ip_prefill
+from events import HMI_VIEW_BUTTON_RELEASED
 from hmi.properties import Color
+from hmi.views.view import View
 from hmi.widgets.button import Button
 from hmi.widgets.textfield import Textfield
 
@@ -48,12 +48,13 @@ RECENT_BUTTONS_GRID_OFFSET = (
 RECENT_BUTTONS_OFFSET = (650, 143)
 
 
-class Wizard:
+class Wizard(View):
     def __init__(self, recent_connected: list[str]):
-        self.screen: pygame.Surface = pygame.display.get_surface()
-        self.wizard: pygame.sprite.Group = pygame.sprite.Group()
+        super().__init__()
 
-        self.tf = Textfield(self.wizard, 360, 80, text=get_ip_prefill())
+        EventDispatcher.add_listener(HMI_VIEW_BUTTON_RELEASED, self.on_button_released)
+
+        self.tf = Textfield(self.sprite_group, 360, 80, text=get_ip_prefill())
 
         labels = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "."]
         self.buttons = button_grid_generator(
@@ -77,8 +78,8 @@ class Wizard:
                 "<",
                 (430, 142),
                 (100, 76),
-                text_color=Color.YELLOW,
-                outline_color=Color.DARK_YELLOW,
+                text_color=Color.LIGHT_RED,
+                outline_color=Color.DARK_RED,
             )
         )
         self.buttons.extend(
@@ -89,18 +90,7 @@ class Wizard:
                 RECENT_BUTTONS_OFFSET,
                 RECENT_BUTTONS_DIMENSIONS,
             )
-        )
+        )       
 
-    def handle_events(self, events: list[pygame.event.Event]) -> None:
-        for button in self.buttons:
-            button.render(self.screen)
-            button.is_pressed(events)  # needed to render pressed state
-            if button.is_released(events):
-                self.tf.append(button.text)
-
-    def update(self, packet: Packet) -> None:
-        self.wizard.update(packet)
-        self.wizard.draw(self.screen)
-        for button in self.buttons:
-            button.update(packet)
-            button.render(self.screen)
+    def on_button_released(self, event):
+        self.tf.append(event.data)

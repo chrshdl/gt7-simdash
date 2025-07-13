@@ -26,6 +26,8 @@ class Textfield(Widget):
 
     def append(self, txt: str) -> None:
         match txt:
+            case "X":
+                pass
             case "<":
                 self.text = self.text[:-1]
             case "OK":

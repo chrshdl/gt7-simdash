@@ -1,21 +1,22 @@
-import pygame
-from granturismo.model import Packet
-
-from hmi.properties import Color
+from common.event import Event
+from common.eventdispatcher import EventDispatcher
+from events import HMI_VIEW_BACK, HMI_VIEW_BUTTON_RELEASED
+from hmi.views.view import View
+from hmi.widgets.button import Button
 from hmi.widgets.connection import Connection
 
 
-class Startup:
+class Startup(View):
     def __init__(self, playstation_ip: str):
-        self.screen: pygame.Surface = pygame.display.get_surface()
-        self.startup: pygame.sprite.Group = pygame.sprite.Group()
+        super().__init__()
 
-        Connection(self.startup, playstation_ip, 600, 46)
+        Connection(self.sprite_group, playstation_ip, 650, 86)
 
-    def handle_events(self, _) -> None:
-        pass
+        EventDispatcher.add_listener(HMI_VIEW_BUTTON_RELEASED, self.on_button_released)
 
-    def update(self, packet: Packet) -> None:
-        self.screen.fill(Color.BLACK.rgb())
-        self.startup.update(packet)
-        self.startup.draw(self.screen)
+        back = Button(text="X", position=(20, 20))
+        self.buttons.append(back)
+
+    def on_button_released(self, event):
+        if event.data == "X":
+            EventDispatcher.dispatch(Event(type=HMI_VIEW_BACK, data=None))

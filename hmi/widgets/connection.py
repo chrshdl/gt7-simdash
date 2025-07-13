@@ -6,7 +6,7 @@ from common.event import Event
 from common.eventdispatcher import EventDispatcher
 from common.logger import Logger
 from events import HMI_CONNECTION_ESTABLISHED
-from hmi.properties import TextAlignment
+from hmi.properties import Color, TextAlignment
 from hmi.settings import POS
 
 from . import Widget
@@ -25,8 +25,10 @@ class Connection(Widget):
         super().__init__(groups, w, h, mfs, hfs)
         self.listener = Feed(playstation_ip)
         self.rect.center = POS["connection"]
-        self.header_text = f"Connecting to {playstation_ip}, please wait..."
-        self.body_text_alignment = TextAlignment.CENTER
+        self.header_color = Color.BLUE.rgb()
+        self.header_text = "Connecting to IP"
+        self.body_text = f"{playstation_ip}"
+        self.body_text_alignment = TextAlignment.MIDBOTTOM
         self.logger = Logger(self.__class__.__name__).get()
 
     def update(self, _) -> None:  # type: ignore
@@ -36,8 +38,9 @@ class Connection(Widget):
 
         try:
             packet: Packet = self.listener.get()
-        except Exception as e:
-            self.logger.info(f"💀 CONNECTION ISSUE: {e}")
+        except Exception as e:  # noqa: S110
+            pass
+            # self.logger.info(f"💀 CONNECTION ISSUE: {e}")
         else:
             if packet is not None:
                 EventDispatcher.dispatch(
@@ -47,5 +50,5 @@ class Connection(Widget):
     def send_handshake(self) -> None:
         if not self.listener._sock_bounded:
             self.listener.start()
-        self.logger.info("🤝 SENDING HANDSHAKE...")
+        # self.logger.info("🤝 SENDING HANDSHAKE...")
         self.listener.send_heartbeat()
