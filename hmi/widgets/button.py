@@ -4,6 +4,9 @@ from os.path import join
 import pygame
 from granturismo.model import Packet
 
+from common.event import Event
+from common.eventdispatcher import EventDispatcher
+from common.logger import Logger
 from hmi.properties import Color
 
 
@@ -29,6 +32,7 @@ class Button:
                 pygame.Color,  # text
             ],
         ] = None,
+        out_events: dict[ButtonState, int] = None,
     ):
         self.text: str = text
         self.position: tuple[int, int] = position
@@ -61,6 +65,8 @@ class Button:
             ),
         }
 
+        self.out_events = {}
+
         if colors:
             self.colors.update(colors)
 
@@ -69,6 +75,11 @@ class Button:
             50,
         )
 
+        if out_events:
+            self.out_events.update(out_events)
+
+        self.logger = Logger(self.__class__.__name__).get()
+
     def update(self):
         is_inside = self.rect.collidepoint(pygame.mouse.get_pos())
         is_pressed = pygame.mouse.get_pressed()[0]
@@ -76,8 +87,16 @@ class Button:
         self.prev_state = self.state
 
         if is_pressed and is_inside:
+            if self.state != ButtonState.PRESSED:
+                EventDispatcher.dispatch(
+                    Event(type=self.out_events[ButtonState.PRESSED], data=self.text)
+                )
             self.state = ButtonState.PRESSED
+
         elif not is_pressed and self.prev_state == ButtonState.PRESSED and is_inside:
+            EventDispatcher.dispatch(
+                Event(type=self.out_events[ButtonState.RELEASED], data=self.text)
+            )
             self.state = ButtonState.RELEASED
         else:
             self.state = ButtonState.IDLE
@@ -123,7 +142,7 @@ class Button:
             border_color,
             text_color,
         ) = self.colors[self.state]
-        self.draw_gradient(top_color, bottom_color)
+        self._draw_gradient(top_color, bottom_color)
         pygame.draw.rect(
             display,
             border_color,
@@ -141,7 +160,7 @@ class Button:
         display.blit(self.button, self.position)
         display.blit(text_surf, text_rect)
 
-    def draw_gradient(self, top: pygame.Color, bottom: pygame.Color):
+    def _draw_gradient(self, top: pygame.Color, bottom: pygame.Color):
         for y in range(self.rect.height):
             ratio = y / self.rect.height
             r = top.r + (bottom.r - top.r) * ratio

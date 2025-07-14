@@ -26,8 +26,6 @@ class Textfield(Widget):
 
     def append(self, txt: str) -> None:
         match txt:
-            case properties.HMI_VIEW_BACK_TEXT:
-                pass
             case "<":
                 self.text = self.text[:-1]
             case "OK":

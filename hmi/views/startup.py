@@ -1,9 +1,9 @@
-import hmi.properties as properties
-from common.event import Event
-from common.eventdispatcher import EventDispatcher
-from events import HMI_VIEW_BACK, HMI_VIEW_BUTTON_RELEASED
+from events import (
+    HMI_STARTUP_BACK_BUTTON_PRESSED,
+    HMI_STARTUP_BACK_BUTTON_RELEASED,
+)
 from hmi.views.view import View
-from hmi.widgets.button import Button
+from hmi.widgets.button import Button, ButtonState
 from hmi.widgets.connection import Connection
 
 
@@ -13,11 +13,15 @@ class Startup(View):
 
         Connection(self.sprite_group, playstation_ip, 650, 86)
 
-        EventDispatcher.add_listener(HMI_VIEW_BUTTON_RELEASED, self.on_button_released)
+        back_button = Button(
+            text="x",
+            position=(20, 20),
+            out_events={
+                ButtonState.PRESSED: HMI_STARTUP_BACK_BUTTON_PRESSED,
+                ButtonState.RELEASED: HMI_STARTUP_BACK_BUTTON_RELEASED,
+            },
+        )
+        self.buttons.append(back_button)
 
-        back = Button(text=properties.HMI_VIEW_BACK_TEXT , position=(20, 20))
-        self.buttons.append(back)
-
-    def on_button_released(self, event):
-        if event.data == properties.HMI_VIEW_BACK_TEXT:
-            EventDispatcher.dispatch(Event(type=HMI_VIEW_BACK, data=None))
+    def handle_view_events(self):
+        super().handle_view_events()

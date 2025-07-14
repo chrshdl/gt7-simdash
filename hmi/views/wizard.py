@@ -4,7 +4,14 @@ import pygame
 
 from common.eventdispatcher import EventDispatcher
 from common.ipv4 import get_ip_prefill
-from events import HMI_VIEW_BUTTON_RELEASED
+from events import (
+    HMI_WIZARD_DEL_BUTTON_PRESSED,
+    HMI_WIZARD_DEL_BUTTON_RELEASED,
+    HMI_WIZARD_KEYPAD_BUTTON_PRESSED,
+    HMI_WIZARD_KEYPAD_BUTTON_RELEASED,
+    HMI_WIZARD_OK_BUTTON_PRESSED,
+    HMI_WIZARD_OK_BUTTON_RELEASED,
+)
 from hmi.properties import Color
 from hmi.views.view import View
 from hmi.widgets.button import Button, ButtonState
@@ -29,12 +36,16 @@ def button_grid_generator(
 ) -> list[Button]:
     return [
         Button(
-            val,
-            (
+            text=val,
+            position=(
                 i % buttons_per_row * grid_offset[0] + global_offset[0],
                 i // buttons_per_row * grid_offset[1] + global_offset[1],
             ),
-            button_size,
+            size=button_size,
+            out_events={
+                ButtonState.PRESSED: HMI_WIZARD_KEYPAD_BUTTON_PRESSED,
+                ButtonState.RELEASED: HMI_WIZARD_KEYPAD_BUTTON_RELEASED,
+            },
         )
         for i, val in enumerate(labels)
     ]
@@ -54,7 +65,12 @@ class Wizard(View):
     def __init__(self, recent_connected: list[str]):
         super().__init__()
 
-        EventDispatcher.add_listener(HMI_VIEW_BUTTON_RELEASED, self.on_button_released)
+        for event in (
+            HMI_WIZARD_DEL_BUTTON_RELEASED,
+            HMI_WIZARD_OK_BUTTON_RELEASED,
+            HMI_WIZARD_KEYPAD_BUTTON_RELEASED,
+        ):
+            EventDispatcher.add_listener(event, self.on_button_released)
 
         self.tf = Textfield(self.sprite_group, 360, 80, text=get_ip_prefill())
 
@@ -91,6 +107,10 @@ class Wizard(View):
                         pygame.Color(Color.GREEN.rgb()),
                     ),
                 },
+                out_events={
+                    ButtonState.PRESSED: HMI_WIZARD_OK_BUTTON_PRESSED,
+                    ButtonState.RELEASED: HMI_WIZARD_OK_BUTTON_RELEASED,
+                },
             )
         )
         self.buttons.append(
@@ -118,6 +138,10 @@ class Wizard(View):
                         pygame.Color(Color.LIGHT_RED.rgb()),
                     ),
                 },
+                out_events={
+                    ButtonState.PRESSED: HMI_WIZARD_DEL_BUTTON_PRESSED,
+                    ButtonState.RELEASED: HMI_WIZARD_DEL_BUTTON_RELEASED,
+                },
             )
         )
         self.buttons.extend(
@@ -129,6 +153,9 @@ class Wizard(View):
                 RECENT_BUTTONS_DIMENSIONS,
             )
         )
+
+    def handle_view_events(self):
+        super().handle_view_events()
 
     def on_button_released(self, event):
         self.tf.append(event.data)

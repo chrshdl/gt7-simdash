@@ -1,3 +1,4 @@
+import datetime
 import sys
 from typing import Any
 
@@ -10,7 +11,7 @@ from configs import Config, ConfigManager
 from events import (
     HMI_CAR_CHANGED,
     HMI_CONNECTION_ESTABLISHED,
-    HMI_VIEW_BACK,
+    HMI_STARTUP_BACK_BUTTON_RELEASED,
     SYSTEM_PLAYSTATION_IP_CHANGED,
 )
 from hmi.views.dashboard import Dashboard
@@ -33,7 +34,9 @@ class Main:
 
         self.listener = None
         self.running = False
+        self.take_screenshot = False
         self._car_id = -1
+        self.screen = None
 
         pygame.init()
 
@@ -42,9 +45,9 @@ class Main:
             pygame.display.Info().current_h,
         )
         if not fullscreen:
-            pygame.display.set_mode((self.w, self.h), pygame.RESIZABLE)
+            self.screen = pygame.display.set_mode((self.w, self.h), pygame.RESIZABLE)
         else:
-            pygame.display.set_mode(monitor_size, pygame.FULLSCREEN)
+            self.screen = pygame.display.set_mode(monitor_size, pygame.FULLSCREEN)
 
         self.states: dict[str, Any] = {}
         if self.playstation_ip is None:
@@ -59,7 +62,7 @@ class Main:
 
         EventDispatcher.add_listener(HMI_CONNECTION_ESTABLISHED, self.on_connection)
         EventDispatcher.add_listener(SYSTEM_PLAYSTATION_IP_CHANGED, self.on_ip_changed)
-        EventDispatcher.add_listener(HMI_VIEW_BACK, self.on_back)
+        EventDispatcher.add_listener(HMI_STARTUP_BACK_BUTTON_RELEASED, self.on_back)
 
     def run(self):
         self.running = True
@@ -92,14 +95,19 @@ class Main:
                     if event.key == pygame.K_ESCAPE:
                         self.running = False
                     if event.key == pygame.K_SPACE:
-                        screenshot = pygame.Surface((self.w, self.h))
-                        screenshot.blit(pygame.display.get_surface(), (0, 0))
-                        pygame.image.save(screenshot, "gt7-simdash.png")
+                        self.take_screenshot = True
 
             self.states[self.state].handle_view_events()
             self.states[self.state].handle_packet(packet)
             self.car_id(packet)
             pygame.display.update()
+
+            if self.take_screenshot:
+                timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+                filename = f"gt7-simdash_{timestamp}.png"
+                pygame.image.save(self.screen, filename)
+                self.logger.info(f"✅ Screenshot saved: {filename}")
+                self.take_screenshot = False
 
         self.close()
 

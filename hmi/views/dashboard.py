@@ -33,6 +33,9 @@ class Dashboard(View):
         #     for i in range(len(labels))
         # ]
 
+    def handle_view_events(self):
+        super().handle_view_events()
+
     def update_rpm_alerts(self, rpmin, rpmax):
         for sprite in self.sprite_group.sprites():
             if isinstance(sprite, SimpleRPM):
