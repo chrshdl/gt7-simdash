@@ -21,7 +21,7 @@ class Startup(View):
                 ButtonState.RELEASED: HMI_STARTUP_BACK_BUTTON_RELEASED,
             },
         )
-        self.buttons.append(back_button)
+        self.button_group.add(back_button)
 
     def handle_view_events(self):
         super().handle_view_events()

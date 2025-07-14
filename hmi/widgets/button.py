@@ -6,7 +6,6 @@ from granturismo.model import Packet
 
 from common.event import Event
 from common.eventdispatcher import EventDispatcher
-from common.logger import Logger
 from hmi.properties import Color
 
 
@@ -77,8 +76,6 @@ class Button:
 
         if out_events:
             self.out_events.update(out_events)
-
-        self.logger = Logger(self.__class__.__name__).get()
 
     def update(self):
         is_inside = self.rect.collidepoint(pygame.mouse.get_pos())
@@ -173,3 +170,22 @@ class Button:
                 (0, y),
                 (self.rect.width, y),
             )
+
+
+class ButtonGroup:
+    def __init__(self):
+        self.buttons = []
+
+    def add(self, button: Button):
+        self.buttons.append(button)
+
+    def extend(self, buttons: list[Button]):
+        self.buttons.extend(buttons)
+
+    def update(self):
+        for button in self.buttons:
+            button.update()
+
+    def render(self, display: pygame.Surface):
+        for button in self.buttons:
+            button.render(display)

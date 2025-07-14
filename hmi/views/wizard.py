@@ -75,14 +75,17 @@ class Wizard(View):
         self.tf = Textfield(self.sprite_group, 360, 80, text=get_ip_prefill())
 
         labels = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "."]
-        self.buttons = button_grid_generator(
-            labels,
-            BUTTONS_PER_ROW,
-            BUTTON_GRID_OFFSET,
-            NUMPAD_OFFSET,
-            BUTTON_DIMENSIONS,
+
+        self.button_group.extend(
+            button_grid_generator(
+                labels,
+                BUTTONS_PER_ROW,
+                BUTTON_GRID_OFFSET,
+                NUMPAD_OFFSET,
+                BUTTON_DIMENSIONS,
+            )
         )
-        self.buttons.append(
+        self.button_group.add(
             Button(
                 "OK",
                 (430, 373),
@@ -113,7 +116,7 @@ class Wizard(View):
                 },
             )
         )
-        self.buttons.append(
+        self.button_group.add(
             Button(
                 "<",
                 (430, 142),
@@ -144,7 +147,7 @@ class Wizard(View):
                 },
             )
         )
-        self.buttons.extend(
+        self.button_group.extend(
             button_grid_generator(
                 recent_connected[0:3],
                 RECENT_BUTTONS_PER_ROW,
