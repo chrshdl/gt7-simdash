@@ -12,13 +12,13 @@ class Dashboard(View):
     def __init__(self):
         super().__init__()
 
-        SimpleRPM(self.sprite_group, 76, 33)
+        # SimpleRPM(self.sprite_group, 76, 33)
         GraphicalRPM(self.sprite_group, 100, 40)
         GearIndicator(self.sprite_group, 200, 248)
         Speedometer(self.sprite_group, 200, 150)
         Laps(self.sprite_group, 127, 96)
-        EstimatedLap(self.sprite_group, 260, 104)
         BestLap(self.sprite_group, 260, 104)
+        EstimatedLap(self.sprite_group, 260, 104)
         Minimap(self.sprite_group, 350, 350)
         Carsor(self.sprite_group, 350, 350)
         LED()
@@ -35,6 +35,9 @@ class Dashboard(View):
 
     def handle_view_events(self):
         super().handle_view_events()
+
+    def handle_packet(self, packet):
+        super().handle_packet(packet)
 
     def update_rpm_alerts(self, rpmin, rpmax):
         for sprite in self.sprite_group.sprites():

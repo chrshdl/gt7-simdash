@@ -39,8 +39,7 @@ class Connection(Widget):
         try:
             packet: Packet = self.listener.get()
         except Exception as e:  # noqa: S110
-            pass
-            # self.logger.info(f"💀 CONNECTION ISSUE: {e}")
+            self.logger.info(f"💀 CONNECTION ISSUE: {e}")
         else:
             if packet is not None:
                 EventDispatcher.dispatch(

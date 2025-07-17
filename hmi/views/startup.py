@@ -22,6 +22,3 @@ class Startup(View):
             },
         )
         self.button_group.add(back_button)
-
-    def handle_view_events(self):
-        super().handle_view_events()

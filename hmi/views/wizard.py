@@ -157,8 +157,5 @@ class Wizard(View):
             )
         )
 
-    def handle_view_events(self):
-        super().handle_view_events()
-
     def on_button_released(self, event):
         self.tf.append(event.data)

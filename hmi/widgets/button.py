@@ -2,7 +2,6 @@ from enum import Enum, auto
 from os.path import join
 
 import pygame
-from granturismo.model import Packet
 
 from common.event import Event
 from common.eventdispatcher import EventDispatcher
@@ -97,29 +96,6 @@ class Button:
             self.state = ButtonState.RELEASED
         else:
             self.state = ButtonState.IDLE
-
-    def handle_packet(self, packet: Packet):
-        if self.text == "TCS":
-            if packet.flags.tcs_active:
-                self.gradient = True
-                self.top = pygame.Color(Color.DEEP_PURPLE.rgb())
-                self.gradient_outline_color = Color.MEDIUM_PURPLE.rgb()
-            if not packet.flags.tcs_active:
-                self.gradient = False
-        if self.text == "LIGHTS":
-            if packet.flags.lights_active:
-                self.gradient = True
-                self.top = pygame.Color(Color.DARK_GREEN.rgb())
-                self.gradient_outline_color = Color.GREEN.rgb()
-            if not packet.flags.lights_active:
-                self.gradient = False
-        if self.text == "HIBEAM":
-            if packet.flags.lights_high_beams_active:
-                self.gradient = True
-                self.top = pygame.Color(0, 50, 124)
-                self.gradient_outline_color = Color.BLUE.rgb()
-            if not packet.flags.lights_high_beams_active:
-                self.gradient = False
 
     def is_pressed(self):
         return self.state == ButtonState.PRESSED

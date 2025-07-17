@@ -60,9 +60,18 @@ class Main:
 
         self.logger = Logger(self.__class__.__name__).get()
 
-        EventDispatcher.add_listener(HMI_CONNECTION_ESTABLISHED, self.on_connection)
-        EventDispatcher.add_listener(SYSTEM_PLAYSTATION_IP_CHANGED, self.on_ip_changed)
-        EventDispatcher.add_listener(HMI_STARTUP_BACK_BUTTON_RELEASED, self.on_back)
+        EventDispatcher.add_listener(
+            HMI_CONNECTION_ESTABLISHED,
+            self.on_connection_established,
+        )
+        EventDispatcher.add_listener(
+            SYSTEM_PLAYSTATION_IP_CHANGED,
+            self.on_ip_changed,
+        )
+        EventDispatcher.add_listener(
+            HMI_STARTUP_BACK_BUTTON_RELEASED,
+            self.on_back_button_released,
+        )
 
     def run(self):
         self.running = True
@@ -104,7 +113,7 @@ class Main:
 
             if self.take_screenshot:
                 timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-                filename = f"gt7-simdash_{timestamp}.png"
+                filename = f"gt7-simdash_{timestamp}.jpg"
                 pygame.image.save(self.screen, filename)
                 self.logger.info(f"✅ Screenshot saved: {filename}")
                 self.take_screenshot = False
@@ -124,7 +133,7 @@ class Main:
                 data = (packet.rpm_alert.min, packet.rpm_alert.max)
                 EventDispatcher.dispatch(Event(HMI_CAR_CHANGED, data))
 
-    def on_connection(self, event):
+    def on_connection_established(self, event):
         ConfigManager.last_connected(self.playstation_ip)  # type: ignore
         self.listener = event.data
         self.state = Main.STATE_DASHBOARD
@@ -135,7 +144,7 @@ class Main:
         self.states.update({Main.STATE_DASHBOARD: Dashboard()})
         self.state = Main.STATE_STARTUP
 
-    def on_back(self, event):
+    def on_back_button_released(self, event):
         self.state = Main.STATE_WIZARD
 
 

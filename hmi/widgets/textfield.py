@@ -21,9 +21,6 @@ class Textfield(Widget):
         self.header_color = properties.Color.BLUE.rgb()
         self.header_text = "Enter Playstation IP"
 
-    def handle_events(self, _) -> None:
-        pass
-
     def append(self, txt: str) -> None:
         match txt:
             case "<":
@@ -41,3 +38,6 @@ class Textfield(Widget):
             case _:
                 self.text += txt
         self.body_text = self.text
+
+    def update(self, _) -> None:
+        super().update()

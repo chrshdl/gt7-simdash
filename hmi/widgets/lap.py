@@ -9,7 +9,12 @@ from scipy.spatial import KDTree
 
 from common.event import Event
 from common.eventdispatcher import EventDispatcher
-from events import RACE_NEW_LAP_STARTED, RACE_RETRY_STARTED
+from events import (
+    RACE_NEW_LAP_STARTED,
+    RACE_RETRY_STARTED,
+    WIDGET_BIG_SIZE,
+    WIDGET_NORMAL_SIZE,
+)
 from hmi.properties import Color, TextAlignment
 from hmi.settings import POS
 
@@ -33,6 +38,8 @@ class EstimatedLap(Widget):
         self.checkpoints: Optional[list[tuple[int, int]]] = None
         self.route: Optional[KDTree] = None
         self.is_new_best_lap: bool = False
+        EventDispatcher.add_listener(WIDGET_BIG_SIZE, self.on_big_size)
+        EventDispatcher.add_listener(WIDGET_NORMAL_SIZE, self.on_normal_size)
 
     def update(self, packet: Packet) -> None:  # type: ignore
         super().update()
@@ -57,6 +64,9 @@ class EstimatedLap(Widget):
                 print(f"laptime: {laptime}")
                 EventDispatcher.dispatch(Event(RACE_NEW_LAP_STARTED, current_lap))
                 if current_lap > 1:
+                    EventDispatcher.dispatch(
+                        Event(WIDGET_BIG_SIZE, (1.0, 2.0, 2.0, 1.0))
+                    )
                     if self.curr_laptime < self.prev_laptime:
                         self.is_new_best_lap = True
                         self.prev_laptime = self.curr_laptime
@@ -147,7 +157,13 @@ class BestLap(Widget):
 
 class Laps(Widget):
     def __init__(
-        self, groups: pygame.sprite.Group, w: int, h: int, mfs: int = 64, hfs: int = 42
+        self,
+        groups: pygame.sprite.Group,
+        w: int,
+        h: int,
+        mfs: int = 64,
+        hfs: int = 42,
+        animation_duration: float = 1.0,
     ):
         super().__init__(groups, w, h, mfs, hfs)
         self.rect.center = POS["lap"]
