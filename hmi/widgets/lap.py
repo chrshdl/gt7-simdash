@@ -23,7 +23,12 @@ from . import Widget
 
 class EstimatedLap(Widget):
     def __init__(
-        self, groups: pygame.sprite.Group, w: int, h: int, mfs: int = 64, hfs: int = 42
+        self,
+        groups: pygame.sprite.Group,
+        w: int,
+        h: int,
+        mfs: int = 64,
+        hfs: int = 42,
     ):
         super().__init__(groups, w, h, mfs, hfs)
         self.rect.center = POS["est_lap_time"]
@@ -65,7 +70,7 @@ class EstimatedLap(Widget):
                 EventDispatcher.dispatch(Event(RACE_NEW_LAP_STARTED, current_lap))
                 if current_lap > 1:
                     EventDispatcher.dispatch(
-                        Event(WIDGET_BIG_SIZE, (1.0, 2.0, 2.0, 1.0))
+                        Event(WIDGET_BIG_SIZE, (1.0, 2.0, 1.8, 1.0))
                     )
                     if self.curr_laptime < self.prev_laptime:
                         self.is_new_best_lap = True

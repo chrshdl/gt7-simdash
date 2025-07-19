@@ -84,11 +84,13 @@ class Main:
 
             if self.listener is not None:
                 try:
-                    packet = self.listener.get()
-                except Exception:  # noqa: S110
+                    packet = self.listener.get(blocking=True)
+                except BlockingIOError:
                     pass
-                    # self.logger.info(f"💀 CONNECTION ISSUE: {e}")
-                    # self.state = Main.STATE_STARTUP
+                except Exception as e:
+                    self.logger.info(f"💀 CONNECTION ISSUE: {e}")
+                    self.state = Main.STATE_STARTUP
+                    packet = None
                 if packet:
                     if packet.received_time - last_heartbeat >= Main.HEARTBEAT_DELAY:
                         last_heartbeat = packet.received_time
@@ -134,7 +136,7 @@ class Main:
                 EventDispatcher.dispatch(Event(HMI_CAR_CHANGED, data))
 
     def on_connection_established(self, event):
-        ConfigManager.last_connected(self.playstation_ip)  # type: ignore
+        ConfigManager.last_connected(self.playstation_ip)
         self.listener = event.data
         self.state = Main.STATE_DASHBOARD
 
@@ -145,6 +147,14 @@ class Main:
         self.state = Main.STATE_STARTUP
 
     def on_back_button_released(self, event):
+        startup_view = self.states.get(Main.STATE_STARTUP)
+        if startup_view and hasattr(startup_view, "connection_widget"):
+            startup_view.connection_widget.cancel()
+
+        if self.listener:
+            self.listener.close()
+            self.listener = None
+
         self.state = Main.STATE_WIZARD
 
 

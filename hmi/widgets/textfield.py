@@ -1,8 +1,8 @@
 import pygame
 
-import hmi.properties as properties
 from common.event import Event
 from events import SYSTEM_PLAYSTATION_IP_CHANGED
+from hmi.properties import Color, TextAlignment
 from hmi.settings import POS
 
 from . import EventDispatcher, Widget
@@ -16,9 +16,9 @@ class Textfield(Widget):
         self.rect.center = POS["textfield"]
         self.text: str = text
         self.body_text = text
-        self.body_text_alignment = properties.TextAlignment.MIDBOTTOM
-        self.body_text_color = properties.Color.WHITE.rgb()
-        self.header_color = properties.Color.BLUE.rgb()
+        self.body_text_alignment = TextAlignment.MIDBOTTOM
+        self.body_text_color = Color.WHITE.rgb()
+        self.header_color = Color.BLUE.rgb()
         self.header_text = "Enter Playstation IP"
 
     def append(self, txt: str) -> None:

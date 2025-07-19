@@ -11,7 +11,7 @@ class Startup(View):
     def __init__(self, playstation_ip: str):
         super().__init__()
 
-        Connection(self.sprite_group, playstation_ip, 650, 86)
+        self.connection_widget = Connection(self.sprite_group, playstation_ip, 650, 86)
 
         back_button = Button(
             text="x",
