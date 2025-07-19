@@ -3,6 +3,7 @@ import sys
 from typing import Any
 
 import pygame
+from granturismo.intake import Feed
 
 from common.event import Event
 from common.eventdispatcher import EventDispatcher
@@ -20,8 +21,6 @@ from hmi.views.wizard import Wizard
 
 
 class Main:
-    HEARTBEAT_DELAY = 9
-
     STATE_STARTUP = "STARTUP"
     STATE_DASHBOARD = "DASHBOARD"
     STATE_WIZARD = "WIZARD"
@@ -32,7 +31,7 @@ class Main:
         fullscreen = conf.fullscreen
         self.playstation_ip = conf.playstation_ip
 
-        self.listener = None
+        self.listener: Feed = None
         self.running = False
         self.take_screenshot = False
         self._car_id = -1
@@ -92,7 +91,10 @@ class Main:
                     self.state = Main.STATE_STARTUP
                     packet = None
                 if packet:
-                    if packet.received_time - last_heartbeat >= Main.HEARTBEAT_DELAY:
+                    if (
+                        packet.received_time - last_heartbeat
+                        >= self.listener._HEARTBEAT_DELAY
+                    ):
                         last_heartbeat = packet.received_time
                         self.logger.info("💗")
                         self.listener.send_heartbeat()

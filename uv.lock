@@ -17,7 +17,7 @@ wheels = [
 [[package]]
 name = "granturismo"
 version = "0.1.1"
-source = { git = "https://github.com/chrshdl/granturismo.git?branch=main#7d127fba1fa3269dfc5120b33a84df7a92608e4e" }
+source = { git = "https://github.com/chrshdl/granturismo.git?branch=main#8212d026268417497b8d8bfe22dca33c25002f12" }
 dependencies = [
     { name = "marshmallow-dataclass" },
     { name = "marshmallow-enum" },
