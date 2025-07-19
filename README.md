@@ -34,17 +34,23 @@ Start the application from inside the virtual environment with `python main.py`.
 
 <div align="left">
 <picture>
-  <img width=600px src="https://raw.githubusercontent.com/chrshdl/gt7-simdash/main/assets/gt7-simdash-enter-ip.png" />
+  <img width=600px src="https://raw.githubusercontent.com/chrshdl/gt7-simdash/main/assets/gt7-simdash-enter-ip-ok.jpg" />
 </picture>
 
 If the Playstation isn't ready to connect yet (because powered off) you will see a waiting screen. Power on your Playstation and start Gran Turismo 7. Once the opening trailer is shown the application will automatically connect and change to the initial view. Now you are ready to go. Start a race to trigger a car update and the dashboard will show the corresponding telemetry data.
 
 <picture>
-  <img width=600px src="https://raw.githubusercontent.com/chrshdl/gt7-simdash/main/assets/gt7-simdash-connecting.png" />
+  <img width=600px src="https://raw.githubusercontent.com/chrshdl/gt7-simdash/main/assets/gt7-simdash-connecting.jpg" />
+</picture>
+
+<picture>
+  <img width=600px src="https://raw.githubusercontent.com/chrshdl/gt7-simdash/main/assets/gt7-simdash-dashboard.jpg" />
+</picture>
+
+<picture>
+  <img width=600px src="https://raw.githubusercontent.com/chrshdl/gt7-simdash/main/assets/gt7-simdash-relative-laptime.jpg" />
 </picture>
 </div>
-
-
 
 ## Whats next
 
@@ -58,6 +64,7 @@ If the Playstation isn't ready to connect yet (because powered off) you will see
 - [x] ~~Implement "Set up a new device"~~
 - [x] ~~Minimap refinement~~
 - [ ] Documentation + quick start guide
+- 
 
 ## License
 All of my code is MIT licensed. Libraries follow their respective licenses.
