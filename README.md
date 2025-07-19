@@ -63,8 +63,9 @@ If the Playstation isn't ready to connect yet (because powered off) you will see
 - [x] ~~Draw "init" screen on boot / errors~~
 - [x] ~~Implement "Set up a new device"~~
 - [x] ~~Minimap refinement~~
-- [ ] Documentation + quick start guide
-- 
+- [ ] Documentation + quick start guide 
+- [ ] Introduce textfield, label widgets
+- [ ] Replace sprite group
 
 ## License
 All of my code is MIT licensed. Libraries follow their respective licenses.
