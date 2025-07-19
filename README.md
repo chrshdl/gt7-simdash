@@ -28,6 +28,8 @@ source .venv/bin/activate
 uv sync
 ```
 
+If your environment is pointing to an old [granturismo](https://github.com/chrshdl/granturismo) lib dependency consider running `uv lock --upgrade`.
+
 ## Usage
 
 Start the application from inside the virtual environment with `python main.py`. Enter the IP of your Playstation using the buttons and press OK. The application will attempt to establish a connection with the Playstation. 
