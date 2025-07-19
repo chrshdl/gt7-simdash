@@ -13,4 +13,4 @@ dependencies = [
 ]
 
 [tool.uv.sources]
-granturismo = { git = "https://github.com/chrshdl/granturismo.git" }
+granturismo = { git = "https://github.com/chrshdl/granturismo.git", branch = "main" }
