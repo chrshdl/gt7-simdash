@@ -28,26 +28,36 @@ source .venv/bin/activate
 uv sync
 ```
 
-If your environment is pointing to an old [granturismo](https://github.com/chrshdl/granturismo) lib dependency consider running `uv lock --upgrade`.
+If your environment is pointing to an old [granturismo](https://github.com/chrshdl/granturismo) lib dependency consider running `uv lock --upgrade` and `uv sync`.
 
 ## Usage
 
-Start the application from inside the virtual environment with `python main.py`. Enter the IP of your Playstation using the buttons and press OK. The application will attempt to establish a connection with the Playstation. 
+Start the application from inside the virtual environment with `python main.py`. Enter the IP of your Playstation using the buttons and press OK.
 
 <div align="left">
 <picture>
   <img width=600px src="https://raw.githubusercontent.com/chrshdl/gt7-simdash/main/assets/gt7-simdash-enter-ip-ok.jpg" />
 </picture>
 
-If the Playstation isn't ready to connect yet (because powered off) you will see a waiting screen. Power on your Playstation and start Gran Turismo 7. Once the opening trailer is shown the application will automatically connect and change to the initial view. Now you are ready to go. Start a race to trigger a car update and the dashboard will show the corresponding telemetry data.
+Alternatively you can select the IP from the recently connected stack on the right.
+
+<picture>
+  <img width=600px src="https://raw.githubusercontent.com/chrshdl/gt7-simdash/main/assets/gt7-simdash-recent.jpg" />
+</picture>
+
+The application will attempt to establish a connection with the Playstation. If the Playstation isn't ready to connect yet (because powered off) you will see a waiting screen. Power on your Playstation and start Gran Turismo 7.
 
 <picture>
   <img width=600px src="https://raw.githubusercontent.com/chrshdl/gt7-simdash/main/assets/gt7-simdash-connecting.jpg" />
 </picture>
 
+ Once the opening trailer is shown the application will automatically connect and change to the initial view. Now you are ready to go. Start a race to trigger a car update and the dashboard will show the corresponding telemetry data.
+
 <picture>
   <img width=600px src="https://raw.githubusercontent.com/chrshdl/gt7-simdash/main/assets/gt7-simdash-dashboard.jpg" />
 </picture>
+
+If you cross the start/finish line and the lap count is > 1 the lap time widget will zoom in and show you your relative delta time compared to the previous best lap. 
 
 <picture>
   <img width=600px src="https://raw.githubusercontent.com/chrshdl/gt7-simdash/main/assets/gt7-simdash-relative-laptime.jpg" />
@@ -67,6 +77,7 @@ If the Playstation isn't ready to connect yet (because powered off) you will see
 - [x] ~~Minimap refinement~~
 - [ ] Documentation + quick start guide 
 - [ ] Introduce textfield, label widgets
+- [ ] Fix zoom behavior of lap time widget
 - [ ] Replace sprite group
 
 ## License
