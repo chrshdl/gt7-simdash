@@ -4,7 +4,6 @@ from typing import Iterable
 import pygame
 
 import states
-from common.logger import Logger
 from events import (
     BACK_TO_MENU_PRESSED,
     BACK_TO_MENU_RELEASED,
@@ -47,7 +46,7 @@ class EnterIPState(State):
         self.state_manager = state_manager
         self.input_text = ""
         self.button_group: ButtonGroup = ButtonGroup()
-        labels = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "#", "0", "."]
+        labels = list("123456789#0.")
 
         back_button = Button(
             (pygame.display.get_surface().get_width() - 80, 20, 60, 60),
@@ -107,10 +106,8 @@ class EnterIPState(State):
             border_color=Color.GREY.rgb(),
         )
 
-        self.logger = Logger(self.__class__.__name__).get()
-
     def draw(self, surface):
-        surface.fill((0, 0, 0))
+        surface.fill(Color.BLACK.rgb())
         self.title.draw(surface)
         self.textfield.draw(surface)
         self.button_group.draw(surface)
@@ -150,7 +147,7 @@ class EnterIPState(State):
             ):
                 self.textfield.text += "."
         elif label == "#":
-            self.logger.info("show/hide recents stack...")
+            pass
         elif label == "<":
             self.textfield.text = self.textfield.text[:-1]
         else:

@@ -190,12 +190,13 @@ class ConnectingState(State):
         self,
         surface,
         center,
-        dot_color=Color.BLUE.rgb(),
+        dot_color=None,
         num_dots=3,
         wave_height=18,
         dot_radius=10,
         wave_speed=4,
     ):
+        self.dot_color = Color.BLUE.rgb()
         now = pygame.time.get_ticks() / 1000.0
         spacing = 36
         total_width = (num_dots - 1) * spacing
@@ -209,7 +210,7 @@ class ConnectingState(State):
 
             pygame.draw.circle(
                 dot_surf,
-                (*dot_color, alpha),
+                (*self.dot_color, alpha),
                 (dot_radius, dot_radius),
                 dot_radius,
                 width=4,

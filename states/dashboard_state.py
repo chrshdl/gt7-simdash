@@ -82,21 +82,17 @@ class DashboardState(State):
 
         w, h = surface.get_size()
 
-        # Draw RPM
         self.rpm_widget.draw(surface)
 
-        # Draw Speed
         speed_text = self.font_main.render(f"{self.speed}", False, Color.WHITE.rgb())
         speed_rect = speed_text.get_rect(center=(w // 2, h // 8))
         surface.blit(speed_text, speed_rect)
 
-        # Draw Gear
         gear_display = "R" if self.gear == 0 else str(self.gear)
         gear_text = self.font_main.render(gear_display, False, Color.BLUE.rgb())
         gear_rect = gear_text.get_rect(center=(w // 2, h // 2 + 30))
         surface.blit(gear_text, gear_rect)
 
-        # Draw back button
         self.button_group.draw(surface)
 
     def on_back(self, event):
@@ -106,7 +102,7 @@ class DashboardState(State):
         if self.feed is not None:
             try:
                 self.feed.close()
-            except Exception as e:
-                print(f"Error closing feed: {e}")
+            except Exception:  # noqa: S110
+                pass  # Error closing feed
             self.feed = None
         super().exit()

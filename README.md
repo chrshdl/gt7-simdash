@@ -4,6 +4,7 @@
 
 This is an HMI for a Gran Turismo 7 Instrument Cluster. It is written in Python and based on a revised state/event architecture.
 
+![GT7-Simdash](screenshots/05_gt7-simdash-dashboard.png)
 
 ## Installation
 
