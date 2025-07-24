@@ -1,0 +1,13 @@
+[project]
+name = "gt7-simdash"
+version = "0.2.0"
+description = "Gran Turismo 7 Instrument Cluster"
+readme = "README.md"
+requires-python = "==3.11.11"
+dependencies = [
+    "granturismo",
+    "pygame>=2.6.1",
+]
+
+[tool.uv.sources]
+granturismo = { git = "https://github.com/chrshdl/granturismo.git", branch = "62c201d" }

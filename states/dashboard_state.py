@@ -1,0 +1,112 @@
+from os.path import join
+
+import pygame
+from granturismo.intake.feed import Feed, Packet
+
+import states
+from common.logger import Logger
+from events import (
+    BACK_TO_MENU_PRESSED,
+    BACK_TO_MENU_RELEASED,
+)
+from states.state import State
+from widgets.button import Button, ButtonGroup
+from widgets.graphical_rpm import GraphicalRPM
+from widgets.properties.colors import Color
+
+
+class DashboardState(State):
+    def __init__(self, state_manager, feed):
+        super().__init__()
+        self.state_manager = state_manager
+        self.feed: Feed = feed
+        self.packet = None
+        self.current_rpm = 0
+        self.speed = 0
+        self.gear = 0
+        self.max_rpm = 9000
+        self.redline_rpm = 7500
+
+        self.rpm_widget = None
+
+        self.logger = Logger(__class__.__name__).get()
+
+        self.font_main = pygame.font.Font(
+            join("assets", "fonts", "digital-7-mono.ttf"), 120
+        )
+
+        self.back_button = Button(
+            rect=(40, 40, 100, 50),
+            text="Back",
+            event_type_pressed=BACK_TO_MENU_PRESSED,
+            event_type_released=BACK_TO_MENU_RELEASED,
+        )
+        self.button_group = ButtonGroup()
+        self.button_group.extend([self.back_button])
+
+    def enter(self):
+        super().enter()
+        w, _ = pygame.display.get_surface().get_size()
+        self.rpm_widget = GraphicalRPM(
+            pos=(w // 2, 180),
+            alert_min=5500,
+            alert_max=self.redline_rpm,
+            max_rpm=self.max_rpm,
+            redline_rpm=self.redline_rpm,
+        )
+
+    def handle_event(self, event):
+        self.button_group.handle_event(event)
+        if event.type == BACK_TO_MENU_RELEASED:
+            self.on_back(event)
+
+    def update(self, dt):
+        super().update(dt)
+        if self.feed is None:
+            return
+        try:
+            packet: Packet = self.feed.get_nowait()
+            if packet:
+                self.packet = packet
+        except Exception as e:
+            self.logger.info({e})
+
+        if self.packet:
+            current_rpm = int(getattr(self.packet, "engine_rpm", 0))
+            self.rpm_widget.update(current_rpm)
+            self.speed = int(self.packet.car_speed * 3.6)
+            self.gear = int(getattr(self.packet, "current_gear", 0))
+
+    def draw(self, surface):
+        surface.fill((10, 10, 20))
+
+        w, h = surface.get_size()
+
+        # Draw RPM
+        self.rpm_widget.draw(surface)
+
+        # Draw Speed
+        speed_text = self.font_main.render(f"{self.speed}", False, Color.WHITE.rgb())
+        speed_rect = speed_text.get_rect(center=(w // 2, h // 8))
+        surface.blit(speed_text, speed_rect)
+
+        # Draw Gear
+        gear_display = "R" if self.gear == 0 else str(self.gear)
+        gear_text = self.font_main.render(gear_display, False, Color.BLUE.rgb())
+        gear_rect = gear_text.get_rect(center=(w // 2, h // 2 + 30))
+        surface.blit(gear_text, gear_rect)
+
+        # Draw back button
+        self.button_group.draw(surface)
+
+    def on_back(self, event):
+        self.state_manager.change_state(states.EnterIPState(self.state_manager))
+
+    def exit(self):
+        if self.feed is not None:
+            try:
+                self.feed.close()
+            except Exception as e:
+                print(f"Error closing feed: {e}")
+            self.feed = None
+        super().exit()
