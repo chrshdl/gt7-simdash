@@ -20,9 +20,11 @@ If your environment is pointing to an old [granturismo](https://github.com/chrsh
 
 ## Raspberry Pi
 
-This is a quick and easy way to install GT7-Simdash to a microSD card, ready to use with your Raspberry Pi. To manually download the latest version, see the list below.
+This is a quick and easy way to install GT7-Simdash to a micro SD card, ready to use with your Raspberry Pi. To manually download the latest version, see the list below.
 
 [![Download Pi 4 Image](https://img.shields.io/badge/download-pi4--image-blue?logo=raspberry-pi)](https://github.com/chrshdl/gt7-br2-external/releases/download/latest/sdcard-raspberrypi4.img)
+
+Visit also [this page](https://github.com/chrshdl/gt7-br2-external?tab=readme-ov-file#usage) for steps on how to connect to WiFi.
 
 
 
