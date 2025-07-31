@@ -16,17 +16,17 @@ source .venv/bin/activate
 uv sync
 ```
 
-If your environment is pointing to an old [granturismo](https://github.com/chrshdl/granturismo) lib dependency consider running `uv lock --upgrade` and `uv sync`.
+If your environment is pointing to an old [granturismo](https://github.com/chrshdl/granturismo) dependency consider running `uv lock --upgrade` and `uv sync`.
 
 ## Raspberry Pi
 
-This is a quick and easy way to install GT7-Simdash to a micro SD card, ready to use with your Raspberry Pi. To manually download the latest version, click the lisk below.
-
-[![Download Pi 4 Image](https://img.shields.io/badge/download-pi4--image-blue?logo=raspberry-pi)](https://github.com/chrshdl/gt7-br2-external/releases/download/latest/sdcard-raspberrypi4.img)
+This is a quick and easy way to install `GT7-simdash` to a micro SD card, ready to use with your Raspberry Pi. Click the badge below to download the latest release.
 
 [![Build Status](https://github.com/chrshdl/gt7-simdash-rpi/actions/workflows/buildroot.yml/badge.svg)](https://github.com/chrshdl/gt7-simdash-rpi/actions/workflows/buildroot.yml)
 
-For steps on how to connect to WiFi [click this link](https://github.com/chrshdl/gt7-br2-external?tab=readme-ov-file#usage).
+[![Download Pi 4 Image](https://img.shields.io/badge/download-pi4--64--image-blue?logo=raspberry-pi)](https://github.com/chrshdl/gt7-simdash-rpi/releases/download/latest/gt7simdash-pi4-arm64.img)
+
+For steps on how to configure and connect to WiFi [click here](https://github.com/chrshdl/gt7-br2-external?tab=readme-ov-file#usage).
 
 
 
