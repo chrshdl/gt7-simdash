@@ -26,7 +26,7 @@ This is a quick and easy way to install `GT7-simdash` to a micro SD card, ready 
 
 [![Download Pi 4 Image](https://img.shields.io/badge/download-pi4--64--image-blue?logo=raspberry-pi)](https://github.com/chrshdl/gt7-simdash-rpi/releases/download/latest/gt7simdash-pi4-arm64.img)
 
-For steps on how to configure and connect to WiFi [click here](https://github.com/chrshdl/gt7-br2-external?tab=readme-ov-file#usage).
+For steps on how to configure and connect to WiFi [click here](https://github.com/chrshdl/gt7-simdash-rpi?tab=readme-ov-file#setup-wifi).
 
 
 
