@@ -1,6 +1,8 @@
 ## Gran Turismo 7 Instrument Cluster
 
-[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
+[![Build Status](https://github.com/chrshdl/gt7-simdash-rpi/actions/workflows/buildroot.yml/badge.svg)](https://github.com/chrshdl/gt7-simdash-rpi/actions/workflows/buildroot.yml)
+[![Download Pi 5 Image](https://img.shields.io/badge/download-pi5--image-blue?logo=raspberry-pi)](https://github.com/chrshdl/gt7-simdash-rpi/releases/download/latest/gt7simdash-pi5.img)
 
 This is an HMI for a Gran Turismo 7 Instrument Cluster. It is written in Python and based on a revised state/event architecture.
 
@@ -20,13 +22,7 @@ If your environment is pointing to an old [granturismo](https://github.com/chrsh
 
 ## Raspberry Pi
 
-This is a quick and easy way to install `GT7-simdash` to a micro SD card, ready to use with your Raspberry Pi. Click the badge below to download the latest release.
-
-[![Build Status](https://github.com/chrshdl/gt7-simdash-rpi/actions/workflows/buildroot.yml/badge.svg)](https://github.com/chrshdl/gt7-simdash-rpi/actions/workflows/buildroot.yml)
-
-[![Download Pi 4 Image](https://img.shields.io/badge/download-pi4--64--image-blue?logo=raspberry-pi)](https://github.com/chrshdl/gt7-simdash-rpi/releases/download/latest/gt7simdash-pi4-arm64.img)
-
-For steps on how to configure and connect to WiFi [click here](https://github.com/chrshdl/gt7-simdash-rpi?tab=readme-ov-file#setup-wifi).
+This is a quick and easy way to install `GT7-simdash` to a micro SD card, ready to use with your Raspberry Pi. Click the badge above to download the latest release. For steps on how to configure and connect to WiFi [click here](https://github.com/chrshdl/gt7-simdash-rpi?tab=readme-ov-file#setup-wifi).
 
 
 
