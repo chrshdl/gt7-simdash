@@ -1,9 +1,9 @@
 from os.path import join
-from typing import Iterable
+from typing import TYPE_CHECKING, Iterable
 
 import pygame
 
-from ..events import (
+from ..core.events import (
     BACK_TO_MENU_PRESSED,
     BACK_TO_MENU_RELEASED,
     ENTER_IP_DEL_BUTTON_PRESSED,
@@ -13,11 +13,10 @@ from ..events import (
     ENTER_IP_OK_BUTTON_PRESSED,
     ENTER_IP_OK_BUTTON_RELEASED,
 )
-from typing import TYPE_CHECKING
 from .state import State
+
 if TYPE_CHECKING:
-    from .main_menu_state import MainMenuState
-    from .connecting_state import ConnectingState
+    pass
 
 from ..widgets.button import Button, ButtonGroup
 from ..widgets.label import Label
@@ -132,12 +131,14 @@ class EnterIPState(State):
 
     def on_back_released(self, event):
         from .main_menu_state import MainMenuState
+
         self.state_manager.change_state(MainMenuState(self.state_manager))
 
     def on_ok_released(self, event):
         ip = self.textfield.text.strip()
         if self.is_valid_ipv4(ip):
             from .connecting_state import ConnectingState
+
             next_state = ConnectingState(self.state_manager, ip)
             self.state_manager.change_state(next_state)
 

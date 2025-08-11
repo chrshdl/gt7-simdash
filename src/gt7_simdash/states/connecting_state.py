@@ -5,13 +5,13 @@ from os.path import join
 import pygame
 from granturismo.intake.feed import Feed
 
-from ..common.logger import Logger
-from ..events import (
+from ..core.events import (
     BACK_TO_MENU_PRESSED,
     BACK_TO_MENU_RELEASED,
     CONNECTION_FAILED,
     CONNECTION_SUCCESS,
 )
+from ..core.logger import Logger
 from ..widgets.button import Button, ButtonGroup
 from ..widgets.properties.colors import Color
 from .state import State

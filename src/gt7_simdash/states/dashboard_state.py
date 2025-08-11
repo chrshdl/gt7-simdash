@@ -3,11 +3,11 @@ from os.path import join
 import pygame
 from granturismo.intake.feed import Feed, Packet
 
-from ..common.logger import Logger
-from ..events import (
+from ..core.events import (
     BACK_TO_MENU_PRESSED,
     BACK_TO_MENU_RELEASED,
 )
+from ..core.logger import Logger
 from ..widgets.button import Button, ButtonGroup
 from ..widgets.graphical_rpm import GraphicalRPM
 from ..widgets.properties.colors import Color

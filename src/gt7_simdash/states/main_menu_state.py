@@ -2,7 +2,7 @@ from os.path import join
 
 import pygame
 
-from ..events import (
+from ..core.events import (
     BACK_TO_MENU_PRESSED,
     BACK_TO_MENU_RELEASED,
     MAINMENU_SETTINGS_PRESSED,
