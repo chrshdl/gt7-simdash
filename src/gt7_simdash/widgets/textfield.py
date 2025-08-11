@@ -8,7 +8,8 @@ class TextField(Label):
     def __init__(
         self,
         text,
-        font,
+        font_path,
+        font_size,
         color,
         pos,
         width,
@@ -16,7 +17,7 @@ class TextField(Label):
         border_color=Color.GREY.rgb(),
         background_color=Color.MEDIUM_GREY.rgb(),
     ):
-        super().__init__(text, font, color, pos)
+        super().__init__(text, font_path, font_size, color, pos)
         self.width = width
         self.height = height
         self.border_color = border_color

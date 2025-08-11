@@ -13,6 +13,7 @@ from ..core.events import (
 )
 from ..core.logger import Logger
 from ..widgets.button import Button, ButtonGroup
+from ..widgets.label import Label
 from ..widgets.properties.colors import Color
 from .state import State
 
@@ -38,6 +39,27 @@ class ConnectingState(State):
         )
         self.button_group = ButtonGroup()
         self.button_group.extend([cancel_button])
+
+        self.title_label = Label(
+            text="Connecting to Playstation at",
+            font_path=join("assets", "fonts", "pixeltype.ttf"),
+            font_size=68,
+            color=Color.WHITE.rgb(),
+            pos=(320, 100),
+            center=False,
+        )
+
+        self.ip_label = Label(
+            text=self.ip_address,
+            font_path=join("assets", "fonts", "digital-7-mono.ttf"),
+            font_size=38,
+            color=Color.BLUE.rgb(),
+            pos=(
+                pygame.display.get_surface().get_width() // 2,
+                180,
+            ),
+            center=True,
+        )
 
         self.start_time = None
         self.error_shown = False
@@ -116,14 +138,9 @@ class ConnectingState(State):
 
     def draw(self, surface):
         surface.fill(Color.BLACK.rgb())
-        font = pygame.font.Font(join("assets", "fonts", "pixeltype.ttf"), 68)
-        title = font.render("Connecting to Playstation at", False, Color.WHITE.rgb())
-        surface.blit(title, (320, 100))
 
-        font = pygame.font.Font(join("assets", "fonts", "digital-7-mono.ttf"), 38)
-        text_surface = font.render(f"{self.ip_address}", False, Color.BLUE.rgb())
-        text_rect = text_surface.get_rect(center=(surface.get_width() // 2, 180))
-        surface.blit(text_surface, text_rect)
+        self.title_label.draw(surface)
+        self.ip_label.draw(surface)
 
         # spinner
         spinner_center = (surface.get_width() // 2, 260)

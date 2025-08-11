@@ -11,6 +11,7 @@ from ..core.events import (
     MAINMENU_START_RELEASED,
 )
 from ..widgets.button import Button, ButtonGroup
+from ..widgets.label import Label
 from ..widgets.properties.colors import Color
 from .state import State
 from .state_manager import StateManager
@@ -43,6 +44,15 @@ class MainMenuState(State):
                     font=pygame.font.Font(join("assets", "fonts", "pixeltype.ttf"), 48),
                 ),
             ]
+        )
+
+        self.title_label = Label(
+            text="Main Menu",
+            font_path=join("assets", "fonts", "pixeltype.ttf"),
+            font_size=68,
+            color=Color.WHITE.rgb(),
+            pos=(320, 100),
+            center=False,
         )
 
     def handle_event(self, event):
@@ -87,7 +97,5 @@ class MainMenuState(State):
 
     def draw(self, surface):
         surface.fill(Color.BLACK.rgb())
-        font = pygame.font.Font(join("assets", "fonts", "pixeltype.ttf"), 68)
-        title = font.render("Main Menu", False, Color.WHITE.rgb())
-        surface.blit(title, (320, 100))
+        self.title_label.draw(surface)
         self.button_group.draw(surface)

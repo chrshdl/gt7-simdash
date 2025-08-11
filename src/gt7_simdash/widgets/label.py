@@ -4,19 +4,34 @@ import pygame
 class Label:
     def __init__(
         self,
-        text,
-        font: pygame.font.Font,
+        text: str,
+        font_path: str,
+        font_size: int,
         color: tuple[int, int, int],
         pos: tuple[int, int],
+        center: bool = True,
     ):
-        self.font = font
+        self.font = pygame.font.Font(font_path, font_size)
         self.color = color
-        self.text = text
         self.pos = pos
+        self.center = center
 
-    def draw(self, surface):
-        title = self.font.render(self.text, False, self.color)
-        surface.blit(title, title.get_rect(center=self.pos))
-
-    def set_text(self, text):
         self.text = text
+        self._render_text()
+
+    def _render_text(self):
+        """Render and cache the surface whenever text changes."""
+        self.surface = self.font.render(self.text, False, self.color)
+        if self.center:
+            self.rect = self.surface.get_rect(center=self.pos)
+        else:
+            self.rect = self.surface.get_rect(topleft=self.pos)
+
+    def set_text(self, text: str):
+        """Update the text and re-render."""
+        if text != self.text:
+            self.text = text
+            self._render_text()
+
+    def draw(self, surface: pygame.Surface):
+        surface.blit(self.surface, self.rect)

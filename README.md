@@ -24,8 +24,5 @@ If your environment is pointing to an old [granturismo](https://github.com/chrsh
 
 This is a quick and easy way to install `GT7-simdash` to a micro SD card, ready to use with your Raspberry Pi. Click the badge above to download the latest release. For steps on how to configure and connect to WiFi [click here](https://github.com/chrshdl/gt7-simdash-rpi?tab=readme-ov-file#setup-wifi).
 
-
-
-
 ## License
 All of my code is MIT licensed. Libraries follow their respective licenses.

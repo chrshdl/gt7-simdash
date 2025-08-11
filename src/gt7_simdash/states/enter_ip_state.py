@@ -92,26 +92,28 @@ class EnterIPState(State):
         self.border_thickness = 2
         self.border_radius = 4
 
-        self.font = pygame.font.Font(join("assets", "fonts", "pixeltype.ttf"), 50)
-        self.title = Label(
-            "Enter Playstation IP",
-            pygame.font.Font(join("assets", "fonts", "pixeltype.ttf"), 50),
-            Color.BLUE.rgb(),
-            (382, 100),
+        self.title_label = Label(
+            text="Enter Playstation IP",
+            font_path=join("assets", "fonts", "pixeltype.ttf"),
+            font_size=68,
+            color=Color.BLUE.rgb(),
+            pos=(382, 100),
+            center=True,
         )
         self.textfield = TextField(
-            "10.22.33.22",
-            pygame.font.Font(join("assets", "fonts", "digital-7-mono.ttf"), 40),
-            Color.WHITE.rgb(),
-            (62, 142),
-            356,
-            76,
+            text="10.22.33.22",
+            font_path=join("assets", "fonts", "digital-7-mono.ttf"),
+            font_size=40,
+            color=Color.WHITE.rgb(),
+            pos=(62, 142),
+            width=356,
+            height=76,
             border_color=Color.GREY.rgb(),
         )
 
     def draw(self, surface):
         surface.fill(Color.BLACK.rgb())
-        self.title.draw(surface)
+        self.title_label.draw(surface)
         self.textfield.draw(surface)
         self.button_group.draw(surface)
 
