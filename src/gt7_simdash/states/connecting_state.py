@@ -5,17 +5,16 @@ from os.path import join
 import pygame
 from granturismo.intake.feed import Feed
 
-import states
-from common.logger import Logger
-from events import (
+from ..common.logger import Logger
+from ..events import (
     BACK_TO_MENU_PRESSED,
     BACK_TO_MENU_RELEASED,
     CONNECTION_FAILED,
     CONNECTION_SUCCESS,
 )
-from states.state import State
-from widgets.button import Button, ButtonGroup
-from widgets.properties.colors import Color
+from ..widgets.button import Button, ButtonGroup
+from ..widgets.properties.colors import Color
+from .state import State
 
 
 class ConnectingState(State):
@@ -154,7 +153,9 @@ class ConnectingState(State):
         try:
             self.feed = Feed(self.ip_address)
             self.feed.start()
-            next_state = states.DashboardState(self.state_manager, self.feed)
+            from .dashboard_state import DashboardState
+
+            next_state = DashboardState(self.state_manager, self.feed)
             self.request_delayed_transition(next_state, 2.0)
         except Exception as e:
             self.logger.info(f"Failed to create Feed: {e}")
@@ -162,12 +163,16 @@ class ConnectingState(State):
 
     def on_failed(self, event):
         self.error_shown = True
-        next_state = states.EnterIPState(self.state_manager)
+        from .enter_ip_state import EnterIPState
+
+        next_state = EnterIPState(self.state_manager)
         self.request_delayed_transition(next_state, 3.0)
 
     def on_cancel(self, event):
         self.cancel_event.set()
-        self.state_manager.change_state(states.EnterIPState(self.state_manager))
+        from .enter_ip_state import EnterIPState
+
+        self.state_manager.change_state(EnterIPState(self.state_manager))
 
     def update(self, dt):
         super().update(dt)
@@ -180,7 +185,9 @@ class ConnectingState(State):
             self.error_time = now
 
         if self.error_shown and elapsed > self.timeout:
-            self.state_manager.change_state(states.EnterIPState(self.state_manager))
+            from .enter_ip_state import EnterIPState
+
+            self.state_manager.change_state(EnterIPState(self.state_manager))
 
     def exit(self):
         self.cancel_event.set()

@@ -3,7 +3,7 @@ from os.path import join
 
 import pygame
 
-from widgets.properties.colors import Color
+from ..widgets.properties.colors import Color
 
 
 class ButtonState(Enum):

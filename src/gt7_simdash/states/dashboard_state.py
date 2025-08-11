@@ -3,16 +3,15 @@ from os.path import join
 import pygame
 from granturismo.intake.feed import Feed, Packet
 
-import states
-from common.logger import Logger
-from events import (
+from ..common.logger import Logger
+from ..events import (
     BACK_TO_MENU_PRESSED,
     BACK_TO_MENU_RELEASED,
 )
-from states.state import State
-from widgets.button import Button, ButtonGroup
-from widgets.graphical_rpm import GraphicalRPM
-from widgets.properties.colors import Color
+from ..widgets.button import Button, ButtonGroup
+from ..widgets.graphical_rpm import GraphicalRPM
+from ..widgets.properties.colors import Color
+from .state import State
 
 
 class DashboardState(State):
@@ -87,22 +86,12 @@ class DashboardState(State):
             return
 
         self._car_id = new_car_id
+
         alert_min = int(getattr(self.packet.rpm_alert, "min", 0))
         alert_max = int(getattr(self.packet.rpm_alert, "max", 0))
 
-        self.on_car_changed(
-            car_id=new_car_id,
-            redline_rpm=alert_min,
-            max_rpm=alert_max,
-        )
-
-    def on_car_changed(
-        self,
-        car_id: int,
-        redline_rpm: int,
-        max_rpm: int,
-    ):
-        pass
+        self.rpm_widget.redline_rpm = alert_min
+        self.rpm_widget.max_rpm = alert_max
 
     def draw(self, surface):
         surface.fill((10, 10, 20))
@@ -123,7 +112,9 @@ class DashboardState(State):
         self.button_group.draw(surface)
 
     def on_back(self, event):
-        self.state_manager.change_state(states.EnterIPState(self.state_manager))
+        from .enter_ip_state import EnterIPState
+
+        self.state_manager.change_state(EnterIPState(self.state_manager))
 
     def exit(self):
         if self.feed is not None:

@@ -2,17 +2,18 @@ from os.path import join
 
 import pygame
 
-import states
-from events import (
+from ..events import (
+    BACK_TO_MENU_PRESSED,
+    BACK_TO_MENU_RELEASED,
     MAINMENU_SETTINGS_PRESSED,
     MAINMENU_SETTINGS_RELEASED,
     MAINMENU_START_PRESSED,
     MAINMENU_START_RELEASED,
 )
-from states.state import State
-from states.state_manager import StateManager
-from widgets.button import Button, ButtonGroup
-from widgets.properties.colors import Color
+from ..widgets.button import Button, ButtonGroup
+from ..widgets.properties.colors import Color
+from .state import State
+from .state_manager import StateManager
 
 
 class MainMenuState(State):
@@ -34,6 +35,13 @@ class MainMenuState(State):
                     event_type_pressed=MAINMENU_SETTINGS_PRESSED,
                     event_type_released=MAINMENU_SETTINGS_RELEASED,
                 ),
+                Button(
+                    (pygame.display.get_surface().get_width() - 80, 20, 60, 60),
+                    "x",
+                    event_type_pressed=BACK_TO_MENU_PRESSED,
+                    event_type_released=BACK_TO_MENU_RELEASED,
+                    font=pygame.font.Font(join("assets", "fonts", "pixeltype.ttf"), 48),
+                ),
             ]
         )
 
@@ -44,10 +52,14 @@ class MainMenuState(State):
             self.on_settings_released(event)
         elif event.type == MAINMENU_START_RELEASED:
             self.on_start_released(event)
+        elif event.type == BACK_TO_MENU_RELEASED:
+            self.state_manager.running = False
 
     def on_start_released(self, event):
+        from .enter_ip_state import EnterIPState
+
         self.state_manager.change_state(
-            states.EnterIPState(
+            EnterIPState(
                 self.state_manager,
             )
         )
@@ -60,8 +72,10 @@ class MainMenuState(State):
         except ValueError:
             current_res_index = 0  # fallback
 
+        from .settings_state import SettingsState
+
         self.state_manager.change_state(
-            states.SettingsState(
+            SettingsState(
                 self.state_manager,
                 RESOLUTIONS,
                 current_res_index,

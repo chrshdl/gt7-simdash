@@ -1,6 +1,6 @@
 import pygame
 
-from widgets.properties.colors import Color
+from ..widgets.properties.colors import Color
 
 
 class GraphicalRPM:

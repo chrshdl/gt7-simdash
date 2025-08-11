@@ -2,19 +2,18 @@ from os.path import join
 
 import pygame
 
-import states
-from events import (
+from ..events import (
     BACK_TO_MENU_PRESSED,
     BACK_TO_MENU_RELEASED,
     DROP_DOWN_PRESSED,
     DROP_DOWN_RELEASED,
     DROP_DOWN_SELECTED,
 )
-from states.state import State
-from states.state_manager import StateManager
-from widgets.button import Button, ButtonGroup
-from widgets.dropdown import Dropdown
-from widgets.properties.colors import Color
+from ..widgets.button import Button, ButtonGroup
+from ..widgets.dropdown import Dropdown
+from ..widgets.properties.colors import Color
+from .state import State
+from .state_manager import StateManager
 
 
 class SettingsState(State):
@@ -71,7 +70,9 @@ class SettingsState(State):
         self.reposition_back_button()
 
     def on_back_released(self, event):
-        self.state_manager.change_state(states.MainMenuState(self.state_manager))
+        from .main_menu_state import MainMenuState
+
+        self.state_manager.change_state(MainMenuState(self.state_manager))
 
     def update(self, dt):
         super().update(dt)

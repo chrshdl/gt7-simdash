@@ -1,7 +1,9 @@
-from states.state import State
+from ..states.state import State
 
 
 class StateManager:
+    running = False
+
     def __init__(self, initial_state: State):
         self.current_state: State = initial_state
         self.current_state.enter()

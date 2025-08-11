@@ -2,8 +2,8 @@ from os.path import join
 
 import pygame
 
-from widgets.button import AbstractButton
-from widgets.properties.colors import Color
+from ..widgets.button import AbstractButton
+from ..widgets.properties.colors import Color
 
 
 class Dropdown(AbstractButton):

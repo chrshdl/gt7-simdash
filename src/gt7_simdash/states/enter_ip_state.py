@@ -3,8 +3,7 @@ from typing import Iterable
 
 import pygame
 
-import states
-from events import (
+from ..events import (
     BACK_TO_MENU_PRESSED,
     BACK_TO_MENU_RELEASED,
     ENTER_IP_DEL_BUTTON_PRESSED,
@@ -14,11 +13,16 @@ from events import (
     ENTER_IP_OK_BUTTON_PRESSED,
     ENTER_IP_OK_BUTTON_RELEASED,
 )
-from states.state import State
-from widgets.button import Button, ButtonGroup
-from widgets.label import Label
-from widgets.properties.colors import Color
-from widgets.textfield import TextField
+from typing import TYPE_CHECKING
+from .state import State
+if TYPE_CHECKING:
+    from .main_menu_state import MainMenuState
+    from .connecting_state import ConnectingState
+
+from ..widgets.button import Button, ButtonGroup
+from ..widgets.label import Label
+from ..widgets.properties.colors import Color
+from ..widgets.textfield import TextField
 
 BUTTONS_PER_ROW = 3
 BUTTON_DIMENSIONS = (114, 66)
@@ -127,12 +131,14 @@ class EnterIPState(State):
             self.on_ok_released(event)
 
     def on_back_released(self, event):
-        self.state_manager.change_state(states.MainMenuState(self.state_manager))
+        from .main_menu_state import MainMenuState
+        self.state_manager.change_state(MainMenuState(self.state_manager))
 
     def on_ok_released(self, event):
         ip = self.textfield.text.strip()
         if self.is_valid_ipv4(ip):
-            next_state = states.ConnectingState(self.state_manager, ip)
+            from .connecting_state import ConnectingState
+            next_state = ConnectingState(self.state_manager, ip)
             self.state_manager.change_state(next_state)
 
     def on_keypad_released(self, event):
