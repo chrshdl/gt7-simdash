@@ -26,6 +26,7 @@ class DashboardState(State):
         self.gear = 0
         self.max_rpm = 9000
         self.redline_rpm = 7500
+        self._car_id: int | None = None
 
         self.rpm_widget = None
 
@@ -72,10 +73,36 @@ class DashboardState(State):
             self.logger.info({e})
 
         if self.packet:
+            self._check_for_car_change()
+
             current_rpm = int(getattr(self.packet, "engine_rpm", 0))
             self.rpm_widget.update(current_rpm)
             self.speed = int(self.packet.car_speed * 3.6)
             self.gear = int(getattr(self.packet, "current_gear", 0))
+
+    def _check_for_car_change(self):
+        """Check telemetry for a new car_id and trigger change handling."""
+        new_car_id = int(getattr(self.packet, "car_id", -1))
+        if new_car_id < 0 or new_car_id == self._car_id:
+            return
+
+        self._car_id = new_car_id
+        alert_min = int(getattr(self.packet.rpm_alert, "min", 0))
+        alert_max = int(getattr(self.packet.rpm_alert, "max", 0))
+
+        self.on_car_changed(
+            car_id=new_car_id,
+            redline_rpm=alert_min,
+            max_rpm=alert_max,
+        )
+
+    def on_car_changed(
+        self,
+        car_id: int,
+        redline_rpm: int,
+        max_rpm: int,
+    ):
+        pass
 
     def draw(self, surface):
         surface.fill((10, 10, 20))
