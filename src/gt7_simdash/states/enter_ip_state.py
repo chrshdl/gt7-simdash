@@ -1,7 +1,8 @@
-from os.path import join
 from typing import TYPE_CHECKING, Iterable
 
 import pygame
+
+from gt7_simdash.core.utils import load_font
 
 from ..core.events import (
     BACK_TO_MENU_PRESSED,
@@ -56,14 +57,14 @@ class EnterIPState(State):
             "x",
             BACK_TO_MENU_PRESSED,
             BACK_TO_MENU_RELEASED,
-            font=pygame.font.Font(join("assets", "fonts", "pixeltype.ttf"), 48),
+            font=load_font(48, "pixeltype"),
         )
         del_button = Button(
             rect=(416, 142, 100, 76),
             text="<",
             event_type_pressed=ENTER_IP_DEL_BUTTON_PRESSED,
             event_type_released=ENTER_IP_DEL_BUTTON_RELEASED,
-            font=pygame.font.Font(join("assets", "fonts", "pixeltype.ttf"), 50),
+            font=load_font(50, "pixeltype"),
             color=Color.LIGHT_RED.rgb(),
         )
 
@@ -72,7 +73,7 @@ class EnterIPState(State):
             text="OK",
             event_type_pressed=ENTER_IP_OK_BUTTON_PRESSED,
             event_type_released=ENTER_IP_OK_BUTTON_RELEASED,
-            font=pygame.font.Font(join("assets", "fonts", "pixeltype.ttf"), 50),
+            font=load_font(50, "pixeltype"),
             color=Color.GREEN.rgb(),
         )
 
@@ -94,7 +95,7 @@ class EnterIPState(State):
 
         self.title_label = Label(
             text="Enter Playstation IP",
-            font_path=join("assets", "fonts", "pixeltype.ttf"),
+            font_name="pixeltype",
             font_size=68,
             color=Color.BLUE.rgb(),
             pos=(382, 100),
@@ -102,7 +103,7 @@ class EnterIPState(State):
         )
         self.textfield = TextField(
             text="10.22.33.22",
-            font_path=join("assets", "fonts", "digital-7-mono.ttf"),
+            font_name="digital-7-mono",
             font_size=40,
             color=Color.WHITE.rgb(),
             pos=(62, 142),
@@ -201,7 +202,7 @@ class EnterIPState(State):
                 event_type_pressed=ENTER_IP_KEYPAD_BUTTON_PRESSED,
                 event_type_released=ENTER_IP_KEYPAD_BUTTON_RELEASED,
                 event_data={"label": val},
-                font=pygame.font.Font(join("assets", "fonts", "pixeltype.ttf"), 50),
+                font=load_font(50, "pixeltype"),
             )
             for i, val in enumerate(labels)
         ]

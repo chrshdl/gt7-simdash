@@ -1,17 +1,19 @@
 import pygame
 
+from gt7_simdash.core.utils import load_font
+
 
 class Label:
     def __init__(
         self,
         text: str,
-        font_path: str,
+        font_name: str,
         font_size: int,
         color: tuple[int, int, int],
         pos: tuple[int, int],
         center: bool = True,
     ):
-        self.font = pygame.font.Font(font_path, font_size)
+        self.font = load_font(font_size, font_name)
         self.color = color
         self.pos = pos
         self.center = center

@@ -1,7 +1,8 @@
 from enum import Enum, auto
-from os.path import join
 
 import pygame
+
+from gt7_simdash.core.utils import load_font
 
 from ..widgets.properties.colors import Color
 
@@ -99,10 +100,8 @@ class Button(AbstractButton):
             event_data = {"label": text}
             self.event_data = event_data
         self.text = text
-        self.font = font or pygame.font.Font(
-            join("assets", "fonts", "digital-7-mono.ttf"),
-            32,
-        )
+        self.font = font or load_font(32, "digital-7-mono")
+
         self.color = color or Color.WHITE.rgb()
 
     def draw(self, surface):

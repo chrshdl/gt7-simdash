@@ -1,5 +1,7 @@
 import pygame
 
+from gt7_simdash.core.utils import load_font
+
 from ..widgets.properties.colors import Color
 
 
@@ -13,7 +15,7 @@ class GraphicalRPM:
         redline_rpm=8000,
         width=700,
         height=36,
-        font_path=None,
+        font_name=None,
     ):
         """
         pos: (x, y) center position of the widget
@@ -34,9 +36,7 @@ class GraphicalRPM:
 
         self.ticks = int(max_rpm / 100)
         self.tick_width = int(width / self.ticks)
-        self.small_font = pygame.font.Font(
-            font_path or "assets/fonts/digital-7-mono.ttf", 36
-        )
+        self.small_font = load_font(36, font_name or "digital-7-mono")
 
     def update(self, rpm):
         self.current_rpm = int(rpm)

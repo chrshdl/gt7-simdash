@@ -1,6 +1,5 @@
 import math
 import threading
-from os.path import join
 
 import pygame
 from granturismo.intake.feed import Feed
@@ -42,7 +41,7 @@ class ConnectingState(State):
 
         self.title_label = Label(
             text="Connecting to Playstation at",
-            font_path=join("assets", "fonts", "pixeltype.ttf"),
+            font_name="pixeltype",
             font_size=68,
             color=Color.WHITE.rgb(),
             pos=(320, 100),
@@ -51,7 +50,7 @@ class ConnectingState(State):
 
         self.ip_label = Label(
             text=self.ip_address,
-            font_path=join("assets", "fonts", "digital-7-mono.ttf"),
+            font_name="digital-7-mono",
             font_size=38,
             color=Color.BLUE.rgb(),
             pos=(pygame.display.get_surface().get_width() // 2, 180),
@@ -60,7 +59,7 @@ class ConnectingState(State):
 
         self.error_label = Label(
             text="Could not connect. Please check IP and network.",
-            font_path=join("assets", "fonts", "pixeltype.ttf"),
+            font_name="pixeltype",
             font_size=36,
             color=Color.LIGHTEST_RED.rgb(),
             pos=(pygame.display.get_surface().get_width() // 2, 330),
@@ -69,7 +68,7 @@ class ConnectingState(State):
 
         self.success_label = Label(
             text="Connected! Launching dashboard...",
-            font_path=join("assets", "fonts", "pixeltype.ttf"),
+            font_name="pixeltype",
             font_size=36,
             color=Color.LIGHT_GREEN.rgb(),
             pos=(pygame.display.get_surface().get_width() // 2, 330),

@@ -1,7 +1,7 @@
-from os.path import join
-
 import pygame
 from granturismo.intake.feed import Feed, Packet
+
+from gt7_simdash.core.utils import load_font
 
 from ..core.events import (
     BACK_TO_MENU_PRESSED,
@@ -31,9 +31,7 @@ class DashboardState(State):
 
         self.logger = Logger(__class__.__name__).get()
 
-        self.font_main = pygame.font.Font(
-            join("assets", "fonts", "digital-7-mono.ttf"), 120
-        )
+        self.font_main = load_font(120, "digital-7-mono")
 
         self.back_button = Button(
             rect=(40, 40, 100, 50),

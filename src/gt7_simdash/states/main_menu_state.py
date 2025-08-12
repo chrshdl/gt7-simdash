@@ -1,6 +1,6 @@
-from os.path import join
-
 import pygame
+
+from gt7_simdash.core.utils import load_font
 
 from ..core.events import (
     BACK_TO_MENU_PRESSED,
@@ -41,14 +41,14 @@ class MainMenuState(State):
                     "x",
                     event_type_pressed=BACK_TO_MENU_PRESSED,
                     event_type_released=BACK_TO_MENU_RELEASED,
-                    font=pygame.font.Font(join("assets", "fonts", "pixeltype.ttf"), 48),
+                    font=load_font(48, "pixeltype"),
                 ),
             ]
         )
 
         self.title_label = Label(
             text="Main Menu",
-            font_path=join("assets", "fonts", "pixeltype.ttf"),
+            font_name="pixeltype",
             font_size=68,
             color=Color.WHITE.rgb(),
             pos=(320, 100),
