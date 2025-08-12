@@ -10,6 +10,7 @@ ColorValues = Union[RGB, RGBA]
 class Color(Enum):
     GREEN = (auto(), (0, 200, 0))
     DARK_GREEN = (auto(), (18, 136, 54))
+    LIGHT_GREEN = (auto(), (80, 255, 120))
     YELLOW = (auto(), (200, 200, 0))
     DARK_YELLOW = (auto(), (136, 136, 0))
     BLACK = (auto(), (0, 0, 0, 10))

@@ -25,13 +25,13 @@ class MainMenuState(State):
         self.button_group.extend(
             [
                 Button(
-                    (300, 180, 200, 60),
+                    (300, 180, 200, 80),
                     "Start",
                     event_type_pressed=MAINMENU_START_PRESSED,
                     event_type_released=MAINMENU_START_RELEASED,
                 ),
                 Button(
-                    (300, 280, 200, 60),
+                    (300, 280, 200, 80),
                     "Settings",
                     event_type_pressed=MAINMENU_SETTINGS_PRESSED,
                     event_type_released=MAINMENU_SETTINGS_RELEASED,

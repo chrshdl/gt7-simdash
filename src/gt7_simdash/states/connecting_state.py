@@ -54,16 +54,28 @@ class ConnectingState(State):
             font_path=join("assets", "fonts", "digital-7-mono.ttf"),
             font_size=38,
             color=Color.BLUE.rgb(),
-            pos=(
-                pygame.display.get_surface().get_width() // 2,
-                180,
-            ),
+            pos=(pygame.display.get_surface().get_width() // 2, 180),
             center=True,
         )
 
-        self.start_time = None
-        self.error_shown = False
-        self.error_time = None
+        self.error_label = Label(
+            text="Could not connect. Please check IP and network.",
+            font_path=join("assets", "fonts", "pixeltype.ttf"),
+            font_size=36,
+            color=Color.LIGHTEST_RED.rgb(),
+            pos=(pygame.display.get_surface().get_width() // 2, 330),
+            center=True,
+        )
+
+        self.success_label = Label(
+            text="Connected! Launching dashboard...",
+            font_path=join("assets", "fonts", "pixeltype.ttf"),
+            font_size=36,
+            color=Color.LIGHT_GREEN.rgb(),
+            pos=(pygame.display.get_surface().get_width() // 2, 330),
+            center=True,
+        )
+
         self.timeout = 10
         self.connection_timeout = 5
 
@@ -148,21 +160,9 @@ class ConnectingState(State):
 
         if self._pending_transition:
             if self.error_shown:
-                err_font = pygame.font.Font(
-                    join("assets", "fonts", "pixeltype.ttf"), 36
-                )
-                err_msg = "Could not connect. Please check IP and network."
-                err_surface = err_font.render(err_msg, False, Color.LIGHTEST_RED.rgb())
-                err_rect = err_surface.get_rect(center=(surface.get_width() // 2, 330))
-                surface.blit(err_surface, err_rect)
+                self.error_label.draw(surface)
             else:
-                font = pygame.font.Font(join("assets", "fonts", "pixeltype.ttf"), 36)
-                msg = "Connected! Launching dashboard..."
-                text_surface = font.render(msg, True, (80, 255, 120))
-                text_rect = text_surface.get_rect(
-                    center=(surface.get_width() // 2, 330)
-                )
-                surface.blit(text_surface, text_rect)
+                self.success_label.draw(surface)
 
         self.button_group.draw(surface)
 
