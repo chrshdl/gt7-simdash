@@ -28,6 +28,12 @@ class AbstractButton:
 
         self.state = ButtonState.IDLE
 
+        # Track which pointer currently "owns" the press:
+        # - None: no active press
+        # - 0: mouse
+        # - finger_id (int): specific touch finger
+        self._active_pointer = None
+
     def draw(self, surface):
         raise NotImplementedError("draw() must be overridden.")
 
@@ -37,32 +43,66 @@ class AbstractButton:
     def is_released(self):
         return self.state == ButtonState.RELEASED
 
+    @staticmethod
+    def _screen_size():
+        surf = pygame.display.get_surface()
+        return surf.get_size() if surf else (0, 0)
+
+    @staticmethod
+    def _event_xy(event):
+        """
+        Return pixel (x, y) for either mouse or touch events.
+        - MOUSE*  -> event.pos
+        - FINGER* -> (event.x * w, event.y * h)
+        """
+        if event.type in (
+            pygame.MOUSEBUTTONDOWN,
+            pygame.MOUSEBUTTONUP,
+            pygame.MOUSEMOTION,
+        ):
+            return event.pos
+        if event.type in (pygame.FINGERDOWN, pygame.FINGERUP, pygame.FINGERMOTION):
+            w, h = AbstractButton._screen_size()
+            return int(event.x * w), int(event.y * h)
+        return None
+
+    def is_inside_xy(self, x, y):
+        return self.rect.collidepoint(x, y)
+
     def is_inside(self, event):
-        return self.rect.collidepoint(event.pos)
+        xy = self._event_xy(event)
+        return False if xy is None else self.is_inside_xy(*xy)
 
     def handle_event(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN:
+        # Normalize to a "pointer id":
+        # - mouse -> 0
+        # - touch -> event.finger_id
+        if event.type in (pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP):
+            pid = 0
+        elif event.type in (pygame.FINGERDOWN, pygame.FINGERUP):
+            pid = getattr(event, "finger_id", None)
+        else:
+            return
+
+        if event.type in (pygame.MOUSEBUTTONDOWN, pygame.FINGERDOWN):
             if self.is_inside(event):
                 if self.state != ButtonState.PRESSED:
                     pygame.event.post(
-                        pygame.event.Event(
-                            self.event_type_pressed,
-                            self.event_data,
-                        )
+                        pygame.event.Event(self.event_type_pressed, self.event_data)
                     )
                 self.state = ButtonState.PRESSED
+                self._active_pointer = pid
 
-        elif event.type == pygame.MOUSEBUTTONUP:
-            if self.state == ButtonState.PRESSED and self.is_inside(event):
-                pygame.event.post(
-                    pygame.event.Event(
-                        self.event_type_released,
-                        self.event_data,
+        elif event.type in (pygame.MOUSEBUTTONUP, pygame.FINGERUP):
+            if self.state == ButtonState.PRESSED and self._active_pointer == pid:
+                if self.is_inside(event):
+                    pygame.event.post(
+                        pygame.event.Event(self.event_type_released, self.event_data)
                     )
-                )
-                self.state = ButtonState.RELEASED
-            else:
-                self.state = ButtonState.IDLE
+                    self.state = ButtonState.RELEASED
+                else:
+                    self.state = ButtonState.IDLE
+                self._active_pointer = None
 
 
 class ButtonGroup:
