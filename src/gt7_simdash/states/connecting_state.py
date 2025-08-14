@@ -4,6 +4,8 @@ import threading
 import pygame
 from granturismo.intake.feed import Feed
 
+from gt7_simdash.core.utils import FontFamily
+
 from ..core.events import (
     BACK_TO_MENU_PRESSED,
     BACK_TO_MENU_RELEASED,
@@ -40,8 +42,8 @@ class ConnectingState(State):
         self.button_group.extend([cancel_button])
 
         self.title_label = Label(
-            text="Connecting to Playstation at",
-            font_name="pixeltype",
+            text="Connecting to PlayStation at",
+            font_name=FontFamily.PIXEL_TYPE,
             font_size=68,
             color=Color.WHITE.rgb(),
             pos=(320, 100),
@@ -50,7 +52,7 @@ class ConnectingState(State):
 
         self.ip_label = Label(
             text=self.ip_address,
-            font_name="digital-7-mono",
+            font_name=FontFamily.DIGITAL_7_MONO,
             font_size=38,
             color=Color.BLUE.rgb(),
             pos=(pygame.display.get_surface().get_width() // 2, 180),
@@ -59,7 +61,7 @@ class ConnectingState(State):
 
         self.error_label = Label(
             text="Could not connect. Please check IP and network.",
-            font_name="pixeltype",
+            font_name=FontFamily.PIXEL_TYPE,
             font_size=36,
             color=Color.LIGHTEST_RED.rgb(),
             pos=(pygame.display.get_surface().get_width() // 2, 330),
@@ -68,7 +70,7 @@ class ConnectingState(State):
 
         self.success_label = Label(
             text="Connected! Launching dashboard...",
-            font_name="pixeltype",
+            font_name=FontFamily.PIXEL_TYPE,
             font_size=36,
             color=Color.LIGHT_GREEN.rgb(),
             pos=(pygame.display.get_surface().get_width() // 2, 330),
@@ -93,7 +95,6 @@ class ConnectingState(State):
         Does NOT instantiate Feed (that must be done in the main thread).
         Posts CONNECTION_SUCCESS or CONNECTION_FAILED as pygame events.
         """
-        import platform
         import socket
         import time
 
@@ -102,7 +103,7 @@ class ConnectingState(State):
         try:
             sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            if platform.system() == "Darwin" and hasattr(socket, "SO_REUSEPORT"):
+            if hasattr(socket, "SO_REUSEPORT"):
                 sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
             sock.settimeout(1.0)
             try:
@@ -213,7 +214,6 @@ class ConnectingState(State):
         self,
         surface,
         center,
-        dot_color=None,
         num_dots=3,
         wave_height=18,
         dot_radius=10,

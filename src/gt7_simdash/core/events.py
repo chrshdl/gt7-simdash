@@ -1,25 +1,25 @@
 import pygame
 
-MAINMENU_START_PRESSED: int = pygame.USEREVENT + 1
-MAINMENU_START_RELEASED: int = pygame.USEREVENT + 2
-MAINMENU_SETTINGS: int = pygame.USEREVENT + 3
-MAINMENU_SETTINGS_PRESSED: int = pygame.USEREVENT + 4
-MAINMENU_SETTINGS_RELEASED: int = pygame.USEREVENT + 5
+MAINMENU_START_PRESSED = pygame.event.custom_type()
+MAINMENU_START_RELEASED = pygame.event.custom_type()
+MAINMENU_SETTINGS = pygame.event.custom_type()
+MAINMENU_SETTINGS_PRESSED = pygame.event.custom_type()
+MAINMENU_SETTINGS_RELEASED = pygame.event.custom_type()
 
-BACK_TO_MENU_PRESSED: int = pygame.USEREVENT + 6
-BACK_TO_MENU_RELEASED: int = pygame.USEREVENT + 7
+BACK_TO_MENU_PRESSED = pygame.event.custom_type()
+BACK_TO_MENU_RELEASED = pygame.event.custom_type()
 
-DROP_DOWN_PRESSED = pygame.USEREVENT + 8
-DROP_DOWN_RELEASED = pygame.USEREVENT + 9
-DROP_DOWN_SELECTED = pygame.USEREVENT + 10
+DROP_DOWN_PRESSED = pygame.event.custom_type()
+DROP_DOWN_RELEASED = pygame.event.custom_type()
+DROP_DOWN_SELECTED = pygame.event.custom_type()
 
-ENTER_IP_OK_BUTTON_PRESSED = pygame.USEREVENT + 11
-ENTER_IP_OK_BUTTON_RELEASED = pygame.USEREVENT + 12
-ENTER_IP_KEYPAD_BUTTON_PRESSED = pygame.USEREVENT + 13
-ENTER_IP_KEYPAD_BUTTON_RELEASED = pygame.USEREVENT + 14
-ENTER_IP_DEL_BUTTON_PRESSED = pygame.USEREVENT + 15
-ENTER_IP_DEL_BUTTON_RELEASED = pygame.USEREVENT + 16
+ENTER_IP_OK_BUTTON_PRESSED = pygame.event.custom_type()
+ENTER_IP_OK_BUTTON_RELEASED = pygame.event.custom_type()
+ENTER_IP_KEYPAD_BUTTON_PRESSED = pygame.event.custom_type()
+ENTER_IP_KEYPAD_BUTTON_RELEASED = pygame.event.custom_type()
+ENTER_IP_DEL_BUTTON_PRESSED = pygame.event.custom_type()
+ENTER_IP_DEL_BUTTON_RELEASED = pygame.event.custom_type()
 
 
-CONNECTION_SUCCESS = pygame.USEREVENT + 17
-CONNECTION_FAILED = pygame.USEREVENT + 18
+CONNECTION_SUCCESS = pygame.event.custom_type()
+CONNECTION_FAILED = pygame.event.custom_type()

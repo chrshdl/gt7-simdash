@@ -1,6 +1,6 @@
 import pygame
 
-from gt7_simdash.core.utils import load_font
+from gt7_simdash.core.utils import FontFamily, load_font
 
 from ..widgets.button import AbstractButton
 from ..widgets.properties.colors import Color
@@ -64,7 +64,7 @@ class Dropdown(AbstractButton):
     def draw(self, surface):
         color = Color.BLUE.rgb() if self.open else Color.GREY.rgb()
         pygame.draw.rect(surface, color, self.rect, width=2, border_radius=4)
-        font = load_font(40, "pixeltype")
+        font = load_font(40, FontFamily.PIXEL_TYPE)
         text = f"{self.options[self.selected_index][0]} x {self.options[self.selected_index][1]}"
         text_surf = font.render(text, False, Color.WHITE.rgb())
         text_rect = text_surf.get_rect(midleft=(self.rect.x + 15, self.rect.centery))

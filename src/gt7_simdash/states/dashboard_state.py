@@ -1,6 +1,6 @@
-import pygame
 from granturismo.intake.feed import Feed, Packet
 
+from gt7_simdash.core.utils import FontFamily
 from gt7_simdash.widgets.label import Label
 
 from ..core.events import (
@@ -36,7 +36,7 @@ class DashboardState(State):
         )
         self.speed_label = Label(
             text="0",
-            font_name="digital-7-mono",
+            font_name=FontFamily.DIGITAL_7_MONO,
             font_size=120,
             color=Color.WHITE.rgb(),
             pos=(0, 0),  # will be positioned in draw()
@@ -44,8 +44,8 @@ class DashboardState(State):
         )
         self.gear_label = Label(
             text="0",
-            font_name="digital-7-mono",
-            font_size=120,
+            font_name=FontFamily.DIGITAL_7_MONO,
+            font_size=240,
             color=Color.BLUE.rgb(),
             pos=(0, 0),
             center=True,
@@ -55,10 +55,8 @@ class DashboardState(State):
 
     def enter(self):
         super().enter()
-        w, _ = pygame.display.get_surface().get_size()
 
         self.rpm_widget = GraphicalRPM(
-            pos=(w // 2, 180),
             alert_min=5500,
             alert_max=self.redline_rpm,
             max_rpm=self.max_rpm,
@@ -84,8 +82,8 @@ class DashboardState(State):
         if self.packet:
             self._check_for_car_change()
 
-            current_rpm = int(getattr(self.packet, "engine_rpm", 0))
-            self.rpm_widget.update(current_rpm)
+            engine_rpm = int(getattr(self.packet, "engine_rpm", 0))
+            self.rpm_widget.update(engine_rpm)
 
             speed = int(self.packet.car_speed * 3.6)
             self.speed_label.set_text(f"{speed}")
@@ -95,11 +93,11 @@ class DashboardState(State):
             self.gear_label.set_text(gear_display)
 
     def _check_for_car_change(self):
-        new_car_id = int(getattr(self.packet, "car_id", -1))
-        if new_car_id < 0 or new_car_id == self._car_id:
+        car_id = int(getattr(self.packet, "car_id", -1))
+        if car_id < 0 or car_id == self._car_id:
             return
 
-        self._car_id = new_car_id
+        self._car_id = car_id
 
         alert_min = int(getattr(self.packet.rpm_alert, "min", 0))
         alert_max = int(getattr(self.packet.rpm_alert, "max", 0))
@@ -119,6 +117,7 @@ class DashboardState(State):
 
         self.gear_label.rect.center = (w // 2, h // 2 + 30)
         self.gear_label.draw(surface)
+
         self.button_group.draw(surface)
 
     def on_back(self, event):

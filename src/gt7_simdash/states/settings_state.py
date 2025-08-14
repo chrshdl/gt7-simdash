@@ -1,6 +1,6 @@
 import pygame
 
-from gt7_simdash.core.utils import load_font
+from gt7_simdash.core.utils import FontFamily, load_font
 
 from ..core.events import (
     BACK_TO_MENU_PRESSED,
@@ -34,7 +34,7 @@ class SettingsState(State):
             "x",
             BACK_TO_MENU_PRESSED,
             BACK_TO_MENU_RELEASED,
-            font=load_font(48, "pixeltype"),
+            font=load_font(48, FontFamily.PIXEL_TYPE),
         )
 
         self.button_group = ButtonGroup()
@@ -58,7 +58,7 @@ class SettingsState(State):
     def draw(self, surface):
         surface.fill(Color.BLACK.rgb())
 
-        font = load_font(68, "pixeltype")
+        font = load_font(68, FontFamily.PIXEL_TYPE)
         label = font.render("Settings", False, Color.WHITE.rgb())
         surface.blit(label, (320, 100))
         self.button_group.draw(surface)

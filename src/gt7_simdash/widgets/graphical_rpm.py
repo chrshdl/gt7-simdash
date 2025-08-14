@@ -2,6 +2,7 @@ import math
 
 import pygame
 
+from gt7_simdash.core.utils import FontFamily
 from gt7_simdash.widgets.label import Label
 
 from ..widgets.properties.colors import Color
@@ -10,18 +11,16 @@ from ..widgets.properties.colors import Color
 class GraphicalRPM:
     def __init__(
         self,
-        pos,
         alert_min,
         alert_max,
         max_rpm=9000,
         redline_rpm=8000,
-        width=400,
+        width=260,
         height=25,
-        font_name=None,
+        font_name=FontFamily.DIGITAL_7_MONO,
         min_px_per_tick=3,  # smallest visual width per minor tick
         major_factor=10,  # major tick every N minor ticks
     ):
-        self.pos = pos
         self.min = 0
 
         self._alert_min = int(alert_min)
@@ -41,7 +40,6 @@ class GraphicalRPM:
         self._major_step_rpm = 1000  # major tick RPM step (adaptive)
         self._tick_count = 0  # number of minor ticks (computed)
 
-        font_name = font_name or "digital-7-mono"
         self.min_label = Label(
             text=str(self.min),
             font_name=font_name,
@@ -69,7 +67,7 @@ class GraphicalRPM:
     def max_rpm(self, value):
         self._max_rpm = max(1, int(value))
         self.current_rpm = max(0, min(self.current_rpm, self._max_rpm))
-        self.max_label.set_text(str(self._max_rpm))
+        self.max_label.set_text(str(self._normalize(self._max_rpm)))
         self._recompute_geometry()
 
     @property
@@ -105,6 +103,9 @@ class GraphicalRPM:
     def alert_max(self, value):
         self._alert_max = max(0, int(value))
 
+    def _normalize(self, value):
+        return int(value * 0.001)
+
     def _recompute_geometry(self):
         """
         Choose an adaptive minor tick step so that each tick is at least
@@ -134,8 +135,8 @@ class GraphicalRPM:
         return bar_left + round(t * self._width)
 
     def draw(self, surface):
-        x_center, y = self.pos
-        bar_left = x_center - self._width // 2
+        x, y = (surface.get_width() // 2, 180)
+        bar_left = x - self._width // 2
 
         # continuous fill mode
         if self._max_rpm > 7000:
@@ -163,7 +164,7 @@ class GraphicalRPM:
                 start_x = self._rpm_to_x(bar_left, self._alert_min)
                 pygame.draw.rect(
                     surface,
-                    Color.DARK_YELLOW.rgb(),
+                    Color.DARK_GREEN.rgb(),  # Color.DARK_YELLOW.rgb()
                     pygame.Rect(
                         start_x,
                         y,
@@ -222,7 +223,7 @@ class GraphicalRPM:
                 if seg_rpm_start < self._alert_min:
                     color = Color.DARK_GREEN.rgb()
                 elif seg_rpm_start < self._redline_rpm:
-                    color = Color.DARK_YELLOW.rgb()
+                    color = Color.DARK_GREEN.rgb()  # Color.DARK_YELLOW.rgb()
                 else:
                     color = Color.RED.rgb()
 
@@ -254,7 +255,7 @@ class GraphicalRPM:
                 )
                 pygame.draw.line(surface, tick_color, (tick_x, y1), (tick_x, y2), width)
 
-        self.max_label.set_text(str(self._max_rpm))
+        self.max_label.set_text(str(self._normalize(self._max_rpm)))
         pad = 4
         label_y = y + self.height + 2
         self.min_label.rect.topleft = (
