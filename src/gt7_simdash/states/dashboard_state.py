@@ -1,7 +1,7 @@
 import pygame
 from granturismo.intake.feed import Feed, Packet
 
-from gt7_simdash.core.utils import load_font
+from gt7_simdash.widgets.label import Label
 
 from ..core.events import (
     BACK_TO_MENU_PRESSED,
@@ -20,9 +20,6 @@ class DashboardState(State):
         self.state_manager = state_manager
         self.feed: Feed = feed
         self.packet = None
-        self.current_rpm = 0
-        self.speed = 0
-        self.gear = 0
         self.max_rpm = 9000
         self.redline_rpm = 7500
         self._car_id: int | None = None
@@ -31,13 +28,27 @@ class DashboardState(State):
 
         self.logger = Logger(__class__.__name__).get()
 
-        self.font_main = load_font(120, "digital-7-mono")
-
         self.back_button = Button(
             rect=(40, 40, 100, 50),
             text="Back",
             event_type_pressed=BACK_TO_MENU_PRESSED,
             event_type_released=BACK_TO_MENU_RELEASED,
+        )
+        self.speed_label = Label(
+            text="0",
+            font_name="digital-7-mono",
+            font_size=120,
+            color=Color.WHITE.rgb(),
+            pos=(0, 0),  # will be positioned in draw()
+            center=True,
+        )
+        self.gear_label = Label(
+            text="0",
+            font_name="digital-7-mono",
+            font_size=120,
+            color=Color.BLUE.rgb(),
+            pos=(0, 0),
+            center=True,
         )
         self.button_group = ButtonGroup()
         self.button_group.extend([self.back_button])
@@ -45,6 +56,7 @@ class DashboardState(State):
     def enter(self):
         super().enter()
         w, _ = pygame.display.get_surface().get_size()
+
         self.rpm_widget = GraphicalRPM(
             pos=(w // 2, 180),
             alert_min=5500,
@@ -74,11 +86,15 @@ class DashboardState(State):
 
             current_rpm = int(getattr(self.packet, "engine_rpm", 0))
             self.rpm_widget.update(current_rpm)
-            self.speed = int(self.packet.car_speed * 3.6)
-            self.gear = int(getattr(self.packet, "current_gear", 0))
+
+            speed = int(self.packet.car_speed * 3.6)
+            self.speed_label.set_text(f"{speed}")
+
+            gear = int(getattr(self.packet, "current_gear", 0))
+            gear_display = "R" if gear == 0 else str(gear)
+            self.gear_label.set_text(gear_display)
 
     def _check_for_car_change(self):
-        """Check telemetry for a new car_id and trigger change handling."""
         new_car_id = int(getattr(self.packet, "car_id", -1))
         if new_car_id < 0 or new_car_id == self._car_id:
             return
@@ -92,21 +108,17 @@ class DashboardState(State):
         self.rpm_widget.max_rpm = alert_max
 
     def draw(self, surface):
-        surface.fill((10, 10, 20))
+        surface.fill(Color.BLACK.rgb())
 
         w, h = surface.get_size()
 
         self.rpm_widget.draw(surface)
 
-        speed_text = self.font_main.render(f"{self.speed}", False, Color.WHITE.rgb())
-        speed_rect = speed_text.get_rect(center=(w // 2, h // 8))
-        surface.blit(speed_text, speed_rect)
+        self.speed_label.rect.center = (w // 2, h // 8)
+        self.speed_label.draw(surface)
 
-        gear_display = "R" if self.gear == 0 else str(self.gear)
-        gear_text = self.font_main.render(gear_display, False, Color.BLUE.rgb())
-        gear_rect = gear_text.get_rect(center=(w // 2, h // 2 + 30))
-        surface.blit(gear_text, gear_rect)
-
+        self.gear_label.rect.center = (w // 2, h // 2 + 30)
+        self.gear_label.draw(surface)
         self.button_group.draw(surface)
 
     def on_back(self, event):
