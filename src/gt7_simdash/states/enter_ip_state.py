@@ -19,10 +19,10 @@ from .state import State
 if TYPE_CHECKING:
     pass
 
-from ..widgets.button import Button, ButtonGroup
-from ..widgets.label import Label
-from ..widgets.properties.colors import Color
-from ..widgets.textfield import TextField
+from ..widgets.base.button import Button, ButtonGroup
+from ..widgets.base.colors import Color
+from ..widgets.base.label import Label
+from ..widgets.base.textfield import TextField
 
 BUTTONS_PER_ROW = 3
 BUTTON_DIMENSIONS = (114, 66)

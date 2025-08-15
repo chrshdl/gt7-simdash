@@ -2,8 +2,8 @@ import pygame
 
 from gt7_simdash.core.utils import FontFamily, load_font
 
-from ..widgets.button import AbstractButton
-from ..widgets.properties.colors import Color
+from ..base.button import AbstractButton
+from ..base.colors import Color
 
 
 class Dropdown(AbstractButton):

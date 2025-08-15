@@ -4,7 +4,7 @@ import pygame
 
 from gt7_simdash.core.utils import FontFamily, load_font
 
-from ..widgets.properties.colors import Color
+from ..properties.colors import Color
 
 
 class ButtonState(Enum):

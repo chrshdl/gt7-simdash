@@ -13,8 +13,8 @@ from ..core.events import (
     CONNECTION_SUCCESS,
 )
 from ..core.logger import Logger
-from ..widgets.button import Button, ButtonGroup
-from ..widgets.label import Label
+from ..widgets.base.button import Button, ButtonGroup
+from ..widgets.base.label import Label
 from ..widgets.properties.colors import Color
 from .state import State
 

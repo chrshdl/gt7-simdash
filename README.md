@@ -4,7 +4,7 @@
 [![Build Status](https://github.com/chrshdl/gt7-simdash-rpi/actions/workflows/buildroot.yml/badge.svg)](https://github.com/chrshdl/gt7-simdash-rpi/actions/workflows/buildroot.yml)
 [![Download Pi 5 Image](https://img.shields.io/badge/download-pi5--image-blue?logo=raspberry-pi)](https://github.com/chrshdl/gt7-simdash-rpi/releases/download/latest/gt7simdash-pi5.img)
 
- is an HMI for a Gran Turismo 7 Instrument Cluster written entirely in Python. Based on a state- and event-driven architecture it aims to be the easiest framework to add new features to.
+This is an HMI for a Gran Turismo 7 Instrument Cluster written entirely in Python. It is based on a state- and event-driven architecture and aims to be the easiest framework to add new features to.
 
 ## Installation
 

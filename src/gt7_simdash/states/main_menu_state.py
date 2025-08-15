@@ -10,9 +10,9 @@ from ..core.events import (
     MAINMENU_START_PRESSED,
     MAINMENU_START_RELEASED,
 )
-from ..widgets.button import Button, ButtonGroup
-from ..widgets.label import Label
-from ..widgets.properties.colors import Color
+from ..widgets.base.button import Button, ButtonGroup
+from ..widgets.base.colors import Color
+from ..widgets.base.label import Label
 from .state import State
 from .state_manager import StateManager
 

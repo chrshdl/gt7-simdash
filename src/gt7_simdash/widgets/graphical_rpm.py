@@ -1,14 +1,16 @@
 import math
+from typing import Any
 
 import pygame
+from granturismo.model.packet import Packet
 
-from gt7_simdash.core.utils import FontFamily
-from gt7_simdash.widgets.label import Label
+from ..core.utils import FontFamily
+from ..widgets.base.colors import Color
+from ..widgets.base.label import Label
+from ..widgets.base.widget import Widget
 
-from ..widgets.properties.colors import Color
 
-
-class GraphicalRPM:
+class GraphicalRPM(Widget):
     def __init__(
         self,
         alert_min,
@@ -20,9 +22,7 @@ class GraphicalRPM:
         font_name=FontFamily.DIGITAL_7_MONO,
         min_px_per_tick=3,  # smallest visual width per minor tick
         major_factor=10,  # major tick every N minor ticks
-    ):
-        self.min = 0
-
+    ) -> None:
         self._alert_min = int(alert_min)
         self._alert_max = int(alert_max)
         self._max_rpm = int(max_rpm)
@@ -41,7 +41,7 @@ class GraphicalRPM:
         self._tick_count = 0  # number of minor ticks (computed)
 
         self.min_label = Label(
-            text=str(self.min),
+            text="0",
             font_name=font_name,
             font_size=26,
             color=Color.LIGHT_GREY.rgb(),
@@ -106,6 +106,10 @@ class GraphicalRPM:
     def _normalize(self, value):
         return int(value * 0.001)
 
+    def _rpm_to_x(self, bar_left, rpm):
+        t = 0.0 if self._max_rpm == 0 else (rpm / float(self._max_rpm))
+        return bar_left + round(t * self._width)
+
     def _recompute_geometry(self):
         """
         Choose an adaptive minor tick step so that each tick is at least
@@ -127,19 +131,48 @@ class GraphicalRPM:
         # actual minor tick count (inclusive end tick in drawing)
         self._tick_count = math.ceil(self._max_rpm / self._tick_step_rpm)
 
-    def update(self, rpm):
-        self.current_rpm = max(0, min(int(rpm), self._max_rpm))
+    def update(self, packet: Packet, dt: float | None = None) -> None:
+        """Reads values from Packet for current frame dt"""
+        rpm_alert = getattr(packet, "rpm_alert", None)
 
-    def _rpm_to_x(self, bar_left, rpm):
-        t = 0.0 if self._max_rpm == 0 else (rpm / float(self._max_rpm))
-        return bar_left + round(t * self._width)
+        new_redline = (
+            int(getattr(rpm_alert, "min", self.redline_rpm))
+            if rpm_alert
+            else self.redline_rpm
+        )
+        new_max = (
+            int(getattr(rpm_alert, "max", self.max_rpm)) if rpm_alert else self.max_rpm
+        )
 
-    def draw(self, surface):
+        # If these change, setters will recompute geometry
+        self.redline_rpm = new_redline
+        self.max_rpm = new_max
+
+        self.alert_min = self.redline_rpm
+
+        rpm = int(getattr(packet, "engine_rpm", 0) or 0)
+        self.current_rpm = max(0, min(rpm, self._max_rpm))
+
+    def draw(self, surface: Any) -> None:
         x, y = (surface.get_width() // 2, 180)
         bar_left = x - self._width // 2
 
+        # for consistent tick rendering (major/minor + color)
+        def _draw_tick(tick_rpm: int, y1: int) -> None:
+            tick_x = self._rpm_to_x(bar_left, tick_rpm)
+            is_end = tick_rpm >= self._max_rpm  # force last tick to be major
+            is_major = is_end or ((tick_rpm % self._major_step_rpm) == 0)
+            y2 = y1 + (7 if is_major else 3)
+            width = 3 if is_major else 1
+            tick_color = (
+                Color.LIGHT_RED.rgb()
+                if tick_rpm >= self._redline_rpm
+                else Color.LIGHT_GREY.rgb()
+            )
+            pygame.draw.line(surface, tick_color, (tick_x, y1), (tick_x, y2), width)
+
         # continuous fill mode
-        if self._max_rpm > 7000:
+        if self._max_rpm >= 0:
             rpm = self.current_rpm
             alert_zone = min(rpm, self._alert_min)
             yellow_zone = max(
@@ -151,7 +184,7 @@ class GraphicalRPM:
             if alert_zone > 0:
                 pygame.draw.rect(
                     surface,
-                    Color.DARK_GREEN.rgb(),
+                    Color.DARK_GREY.rgb(),  # replace with DARK_GREEN when ready
                     pygame.Rect(
                         bar_left,
                         y,
@@ -164,7 +197,7 @@ class GraphicalRPM:
                 start_x = self._rpm_to_x(bar_left, self._alert_min)
                 pygame.draw.rect(
                     surface,
-                    Color.DARK_GREEN.rgb(),  # Color.DARK_YELLOW.rgb()
+                    Color.DARK_GREY.rgb(),  # replace with DARK_YELLOW when ready
                     pygame.Rect(
                         start_x,
                         y,
@@ -193,68 +226,13 @@ class GraphicalRPM:
             minor_count = self._tick_count + 1
             for i in range(0, minor_count, sparse_factor):
                 tick_rpm = min(i * self._tick_step_rpm, self._max_rpm)
-                tick_x = self._rpm_to_x(bar_left, tick_rpm)
+                _draw_tick(tick_rpm, y1)
 
-                is_major = (tick_rpm % self._major_step_rpm) == 0
-                if is_major:
-                    y2 = y1 + 7
-                    width = 3
-                else:
-                    y2 = y1 + 3
-                    width = 1
+            # Ensure the last tick is drawn bold even if skipped by sparse step
+            if (minor_count - 1) % sparse_factor != 0:
+                _draw_tick(self._max_rpm, y1)
 
-                tick_color = (
-                    Color.LIGHT_RED.rgb()
-                    if tick_rpm >= self._redline_rpm
-                    else Color.LIGHT_GREY.rgb()
-                )
-                pygame.draw.line(surface, tick_color, (tick_x, y1), (tick_x, y2), width)
-
-        else:
-            # segmented fill mode
-            for i in range(self._tick_count):
-                seg_rpm_start = i * self._tick_step_rpm
-                seg_rpm_end = min((i + 1) * self._tick_step_rpm, self._max_rpm)
-
-                x0 = self._rpm_to_x(bar_left, seg_rpm_start)
-                x1 = self._rpm_to_x(bar_left, seg_rpm_end)
-                w = max(1, x1 - x0 - 1)
-
-                if seg_rpm_start < self._alert_min:
-                    color = Color.DARK_GREEN.rgb()
-                elif seg_rpm_start < self._redline_rpm:
-                    color = Color.DARK_GREEN.rgb()  # Color.DARK_YELLOW.rgb()
-                else:
-                    color = Color.RED.rgb()
-
-                rect = pygame.Rect(x0, y, w, self.height)
-                if seg_rpm_start <= self.current_rpm:
-                    pygame.draw.rect(surface, color, rect)
-                else:
-                    pygame.draw.rect(surface, Color.GREY.rgb(), rect)
-
-            # normal density tick marks
-            y1 = y + self.height
-            minor_count = self._tick_count + 1
-            for i in range(minor_count):
-                tick_rpm = min(i * self._tick_step_rpm, self._max_rpm)
-                tick_x = self._rpm_to_x(bar_left, tick_rpm)
-
-                is_major = (tick_rpm % self._major_step_rpm) == 0
-                if is_major:
-                    y2 = y1 + 7
-                    width = 3
-                else:
-                    y2 = y1 + 3
-                    width = 1
-
-                tick_color = (
-                    Color.LIGHT_RED.rgb()
-                    if tick_rpm >= self._redline_rpm
-                    else Color.LIGHT_GREY.rgb()
-                )
-                pygame.draw.line(surface, tick_color, (tick_x, y1), (tick_x, y2), width)
-
+        # labels
         self.max_label.set_text(str(self._normalize(self._max_rpm)))
         pad = 4
         label_y = y + self.height + 2

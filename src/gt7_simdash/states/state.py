@@ -4,14 +4,15 @@ import pygame
 
 
 class State(ABC):
-    def __init__(self):
+    def __init__(self, state_manager=None):
+        self.state_manager = state_manager
         self._listeners = []
         self._pending_transition = None
 
     @abstractmethod
     def handle_event(self, event):
         """
-        Handle here all widget events
+        Handle all widget events here
         """
         pass
 
@@ -44,7 +45,7 @@ class State(ABC):
         self._pending_transition = (next_state, trigger_time)
 
     def process_delayed_transition(self, state_manager):
-        """Call this from your state_manager or each state's update() every frame."""
+        """Call this from the state_manager or each state's update() every frame."""
         if self._pending_transition:
             _, trigger_time = self._pending_transition
             now = pygame.time.get_ticks() / 1000.0

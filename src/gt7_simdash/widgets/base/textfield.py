@@ -1,7 +1,7 @@
 import pygame
 
-from ..widgets.label import Label
-from ..widgets.properties.colors import Color
+from ..properties.colors import Color
+from .label import Label
 
 
 class TextField(Label):

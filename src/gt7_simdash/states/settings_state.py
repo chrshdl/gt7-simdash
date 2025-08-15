@@ -1,7 +1,5 @@
 import pygame
 
-from gt7_simdash.core.utils import FontFamily, load_font
-
 from ..core.events import (
     BACK_TO_MENU_PRESSED,
     BACK_TO_MENU_RELEASED,
@@ -9,9 +7,10 @@ from ..core.events import (
     DROP_DOWN_RELEASED,
     DROP_DOWN_SELECTED,
 )
-from ..widgets.button import Button, ButtonGroup
-from ..widgets.dropdown import Dropdown
-from ..widgets.properties.colors import Color
+from ..core.utils import FontFamily, load_font
+from ..widgets.base.button import Button, ButtonGroup
+from ..widgets.base.colors import Color
+from ..widgets.base.dropdown import Dropdown
 from .state import State
 from .state_manager import StateManager
 

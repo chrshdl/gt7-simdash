@@ -1,135 +1,85 @@
+from typing import Optional
+
 from granturismo.intake.feed import Feed, Packet
 
-from gt7_simdash.core.utils import FontFamily
-from gt7_simdash.widgets.label import Label
-
-from ..core.events import (
-    BACK_TO_MENU_PRESSED,
-    BACK_TO_MENU_RELEASED,
-)
+from ..core.events import BACK_TO_MENU_RELEASED
 from ..core.logger import Logger
-from ..widgets.button import Button, ButtonGroup
+from ..states.state_manager import StateManager
+from ..widgets.base.colors import Color
+from ..widgets.base.widget_group import WidgetGroup
+from ..widgets.button_bar import ButtonBar
+from ..widgets.gear import GearLabel
 from ..widgets.graphical_rpm import GraphicalRPM
-from ..widgets.properties.colors import Color
+from ..widgets.speed import SpeedLabel
 from .state import State
 
 
 class DashboardState(State):
-    def __init__(self, state_manager, feed):
-        super().__init__()
-        self.state_manager = state_manager
-        self.feed: Feed = feed
-        self.packet = None
-        self.max_rpm = 9000
-        self.redline_rpm = 7500
-        self._car_id: int | None = None
-
-        self.rpm_widget = None
-
+    def __init__(
+        self,
+        state_manager: StateManager,
+        feed: Optional[Feed],
+    ):
+        super().__init__(state_manager)
+        self.feed: Optional[Feed] = feed
         self.logger = Logger(__class__.__name__).get()
+        self.packet: Optional[Packet] = None
 
-        self.back_button = Button(
-            rect=(40, 40, 100, 50),
-            text="Back",
-            event_type_pressed=BACK_TO_MENU_PRESSED,
-            event_type_released=BACK_TO_MENU_RELEASED,
+        # widget tree
+        self.widgets = WidgetGroup(
+            [
+                GraphicalRPM(
+                    alert_min=5500,
+                    alert_max=9000,
+                    max_rpm=9000,
+                    redline_rpm=7500,
+                ),
+                GearLabel(
+                    anchor=lambda wh: (wh[0] // 2, wh[1] // 2 + 30),
+                ),
+                SpeedLabel(anchor=lambda wh: (wh[0] // 2, wh[1] // 8)),
+                ButtonBar(
+                    on_events={BACK_TO_MENU_RELEASED: self.on_back},
+                ),
+            ]
         )
-        self.speed_label = Label(
-            text="0",
-            font_name=FontFamily.DIGITAL_7_MONO,
-            font_size=120,
-            color=Color.WHITE.rgb(),
-            pos=(0, 0),  # will be positioned in draw()
-            center=True,
-        )
-        self.gear_label = Label(
-            text="0",
-            font_name=FontFamily.DIGITAL_7_MONO,
-            font_size=240,
-            color=Color.BLUE.rgb(),
-            pos=(0, 0),
-            center=True,
-        )
-        self.button_group = ButtonGroup()
-        self.button_group.extend([self.back_button])
 
     def enter(self):
         super().enter()
+        self.widgets.enter()
 
-        self.rpm_widget = GraphicalRPM(
-            alert_min=5500,
-            alert_max=self.redline_rpm,
-            max_rpm=self.max_rpm,
-            redline_rpm=self.redline_rpm,
-        )
+    def exit(self):
+        try:
+            if self.feed is not None:
+                self.feed.close()
+        except Exception:
+            pass
+        self.feed = None
+        self.widgets.exit()
+        super().exit()
 
     def handle_event(self, event):
-        self.button_group.handle_event(event)
-        if event.type == BACK_TO_MENU_RELEASED:
-            self.on_back(event)
+        self.widgets.handle_event(event)
 
     def update(self, dt):
         super().update(dt)
-        if self.feed is None:
+        if not self.feed:
             return
         try:
-            packet: Packet = self.feed.get_nowait()
-            if packet:
-                self.packet = packet
+            pkt: Packet | None = self.feed.get_nowait()
+            if pkt:
+                self.packet = pkt
         except Exception as e:
             self.logger.info({e})
 
         if self.packet:
-            self._check_for_car_change()
-
-            engine_rpm = int(getattr(self.packet, "engine_rpm", 0))
-            self.rpm_widget.update(engine_rpm)
-
-            speed = int(self.packet.car_speed * 3.6)
-            self.speed_label.set_text(f"{speed}")
-
-            gear = int(getattr(self.packet, "current_gear", 0))
-            gear_display = "R" if gear == 0 else str(gear)
-            self.gear_label.set_text(gear_display)
-
-    def _check_for_car_change(self):
-        car_id = int(getattr(self.packet, "car_id", -1))
-        if car_id < 0 or car_id == self._car_id:
-            return
-
-        self._car_id = car_id
-
-        alert_min = int(getattr(self.packet.rpm_alert, "min", 0))
-        alert_max = int(getattr(self.packet.rpm_alert, "max", 0))
-
-        self.rpm_widget.redline_rpm = alert_min
-        self.rpm_widget.max_rpm = alert_max
+            self.widgets.update(self.packet, dt)
 
     def draw(self, surface):
         surface.fill(Color.BLACK.rgb())
+        self.widgets.draw(surface)
 
-        w, h = surface.get_size()
-
-        self.rpm_widget.draw(surface)
-
-        self.speed_label.rect.center = (w // 2, h // 8)
-        self.speed_label.draw(surface)
-
-        self.gear_label.rect.center = (w // 2, h // 2 + 30)
-        self.gear_label.draw(surface)
-
-        self.button_group.draw(surface)
-
-    def on_back(self, event):
+    def on_back(self, event=None):
         from .enter_ip_state import EnterIPState
 
         self.state_manager.change_state(EnterIPState(self.state_manager))
-
-    def exit(self):
-        if self.feed is not None:
-            try:
-                self.feed.close()
-            except Exception:  # noqa: S110
-                pass  # Error closing feed
-            self.feed = None
-        super().exit()
