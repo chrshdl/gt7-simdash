@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gt7-simdash"
+version = "0.2.0"
+description = "Gran Turismo 7 Instrument Cluster"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "granturismo",
+  "pygame>=2.6.1",
+  "scipy==1.11.4",
+]
+
+[project.scripts]
+gt7-simdash = "gt7_simdash.main:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+gt7_simdash = ["assets/**/*"]
+
+[tool.uv.sources]
+granturismo = { git = "https://github.com/chrshdl/granturismo.git", branch = "0d9d174" }
