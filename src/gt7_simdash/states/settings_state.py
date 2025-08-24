@@ -137,7 +137,7 @@ class SettingsState(State):
                 return
             self._brightness_percent = cur
 
-        target = max(0, min(100, self._brightness_percent + delta_percent))
+        target = max(10, min(100, self._brightness_percent + delta_percent))
         if self._backlight.set_percent(target):
             self._brightness_percent = target
             self._error = None

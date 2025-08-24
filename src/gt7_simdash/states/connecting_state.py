@@ -189,7 +189,11 @@ class ConnectingState(State):
         self.cancel_event.set()
         from .enter_ip_state import EnterIPState
 
-        self.state_manager.change_state(EnterIPState(self.state_manager))
+        conf = ConfigManager.get_config()
+
+        self.state_manager.change_state(
+            EnterIPState(self.state_manager, conf.recent_connected)
+        )
 
     def update(self, dt):
         super().update(dt)
@@ -204,7 +208,11 @@ class ConnectingState(State):
         if self.error_shown and elapsed > self.timeout:
             from .enter_ip_state import EnterIPState
 
-            self.state_manager.change_state(EnterIPState(self.state_manager))
+            conf = ConfigManager.get_config()
+
+            self.state_manager.change_state(
+                EnterIPState(self.state_manager, conf.recent_connected)
+            )
 
     def exit(self):
         self.cancel_event.set()
