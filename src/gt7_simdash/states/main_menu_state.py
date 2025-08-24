@@ -1,6 +1,5 @@
 import pygame
 
-from ..config import ConfigManager
 from ..core.events import (
     BACK_TO_MENU_PRESSED,
     BACK_TO_MENU_RELEASED,
@@ -78,6 +77,7 @@ class MainMenuState(State):
             self.state_manager.running = False
 
     def on_start_released(self, event):
+        from ..config import ConfigManager
         from .enter_ip_state import EnterIPState
 
         conf = ConfigManager.get_config()

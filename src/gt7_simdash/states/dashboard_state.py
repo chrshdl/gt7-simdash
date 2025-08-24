@@ -106,6 +106,10 @@ class DashboardState(State):
         self.widgets.draw(surface)
 
     def on_back(self, event=None):
+        from ..config import ConfigManager
         from .enter_ip_state import EnterIPState
 
-        self.state_manager.change_state(EnterIPState(self.state_manager))
+        conf = ConfigManager.get_config()
+        self.state_manager.change_state(
+            EnterIPState(self.state_manager, conf.recent_connected)
+        )
