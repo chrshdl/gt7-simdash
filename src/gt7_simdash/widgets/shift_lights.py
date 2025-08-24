@@ -1,10 +1,9 @@
-from __future__ import annotations
-
+import math
 from typing import Any, List, Optional, Protocol, Tuple
 
 from granturismo.model.packet import Packet
 
-from ..core.ecu import ShiftECU
+from ..core.ecu import ECU
 from ..core.utils import FontFamily, load_font
 from ..widgets.base.colors import Color
 from ..widgets.base.label import Label
@@ -103,14 +102,13 @@ def make_blinkt() -> BlinktIface:
 
 
 class ShiftLights(Widget):
-    """Shift-light widget (outer -> inward pairs, flash on target, ECU warmup pill)."""
+    """Shift-light widget with ECU learning, target flash, and live per-gear scatter plot."""
 
     def __init__(
         self,
         anchor: Anchor,
         step_thresholds: Optional[List[float]] = None,
         color_thresholds: Tuple[float, float] = (0.5, 0.8),
-        coast_warm_samples: int = 200,
     ) -> None:
         self._label = Label(
             text=" ",
@@ -121,8 +119,7 @@ class ShiftLights(Widget):
         )
         self._anchor = anchor
 
-        # ECU brain
-        self._ecu = ShiftECU(coast_warm_samples=coast_warm_samples)
+        self._ecu = ECU()
 
         # LED device
         self._blinkt: BlinktIface = make_blinkt()
@@ -134,14 +131,26 @@ class ShiftLights(Widget):
         self._blinkt.show()
 
         # Behavior
-        self.step_thresholds = step_thresholds or [0.62, 0.78, 0.92, 0.985]
+        self.step_thresholds = step_thresholds or [0.25, 0.45, 0.60, 0.72]  # 4 pairs
         self.color_thresholds = color_thresholds
 
         self._flash_timer = 0.0
         self._flash_on = False
         self._flashing = False
-        self._last_target: Optional[float] = None
-        self._last_gear = 0
+
+        # cache for drawing
+        self._last_frac = 0.0
+        self._ready = False
+        self._up_target: Optional[float] = None
+        self._down_target: Optional[float] = None
+        self._rpm: float = 0.0
+        self._gear: int = 0
+
+        # plot data
+        self._show_plot = True
+        self._scatter_points: List[Tuple[float, float, float]] = []  # (rpm, proxy, age)
+        self._plot_bounds: Tuple[float, float, float] = (800.0, 12000.0, 1.0)
+        self._curve_series: List[Tuple[float, float]] = []
 
     def enter(self) -> None:
         pass
@@ -154,88 +163,112 @@ class ShiftLights(Widget):
             pass
 
     def handle_event(self, event: Any) -> bool:
+        # Toggle plot with 'p'
+        try:
+            import pygame
+
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_p:
+                self._show_plot = not self._show_plot
+                return True
+        except Exception:
+            pass
         return False
 
     def update(self, model: Packet, dt: float | None = None) -> None:
-        rpm = float(getattr(model, "engine_rpm", 0.0) or 0.0)
-        gear = int(getattr(model, "current_gear", 0) or 0)
-        ratios = list(getattr(model, "gear_ratios", [0, 3.2, 2.1, 1.6, 1.2, 1.0, 0.8]))
-        if ratios and ratios[0] != 0.0:
-            ratios = [0.0] + ratios
-        redline = float(
-            getattr(getattr(model, "rpm_alert", object()), "min", 7500.0) or 7500.0
-        )
+        # Update ECU learning/state
+        self._ecu.update(model, dt)
 
-        # Reset flashing when gear changes
-        if gear != self._last_gear:
+        self._rpm = float(getattr(model, "engine_rpm", 0.0))
+        self._gear = int(getattr(model, "current_gear", 0))
+        up, dn, info = self._ecu.get_shift_targets(model)
+        self._up_target = up
+        self._down_target = dn
+        self._ready = info.get("coverage", 0.0) >= 0.55
+
+        # Progress vs upshift target
+        frac = self._ecu.progress_fraction(self._rpm, self._up_target)
+        self._last_frac = frac
+
+        # Decide flashing (at/over target RPM)
+        target = self._up_target or info.get("redline", 7500.0)
+        if target and self._rpm >= target:
+            self._flashing = True
+        elif target and self._rpm <= (target - SHIFT_HYST_RPM):
             self._flashing = False
+
+        # LED output
+        if self._flashing:
+            self._flash_timer += dt or 0.0
+            if self._flash_timer >= FLASH_PERIOD_S:
+                self._flash_on = not self._flash_on
+                self._flash_timer = 0.0
+            self._flash_all_red(self._flash_on)
+        else:
             self._flash_timer = 0.0
             self._flash_on = False
-            self._last_gear = gear
-
-        # ECU learning + target
-        self._ecu.ingest(model, dt)
-        self._ecu.maybe_rebuild()
-        target = self._ecu.get_shift_target(gear, ratios, redline)
-        if target is not None and target < 1200.0:
-            target = None
-        self._last_target = target
-
-        # Hysteresis
-        if target:
-            if rpm >= target + SHIFT_HYST_RPM:
-                self._flashing = True
-            elif rpm <= target - SHIFT_HYST_RPM:
-                self._flashing = False
-
+            self._set_progress_leds(frac)
         try:
-            self._blinkt.clear()
-            if rpm > 0 and gear > 0:
-                if target and self._flashing:
-                    self._flash_timer += dt or 1 / 60
-                    if self._flash_timer >= FLASH_PERIOD_S:
-                        self._flash_timer = 0.0
-                        self._flash_on = not self._flash_on
-                    self._flash_all_red(self._flash_on)
-                else:
-                    frac = rpm / (target if target else redline)
-                    frac = max(0.0, min(1.0, frac))
-                    self._set_progress_leds(frac)
             self._blinkt.show()
         except Exception:
             pass
 
-        mode = self._ecu.proxy_mode_name()
-        self._label.set_text(
-            f"{int(rpm):04d} / {int(target):04d} [{mode}]"
-            if target
-            else f"{int(rpm):04d} [{mode}]"
+        # Screen label
+        label_txt = self._format_label(info)
+        self._label.set_text(label_txt)
+
+        # Fetch live scatter for current gear
+        self._scatter_points, self._plot_bounds, self._curve_series = (
+            self._ecu.get_plot_data(model, self._gear)
         )
 
     def draw(self, surface: Any) -> None:
-        w, h = surface.get_size()
+        # LED bar visualization (for when no hardware)
+        self._draw_led_bar(surface, x=20, y=20, w=240, h=28)
 
-        warm = self._ecu.coast_warm()
-        C0, C1, C2, N, thr = self._ecu.coast_params()
-        pill_text = f"COAST MODEL: {'ACTIVE' if warm else 'TRAINING'} ({N}/{thr})"
+        # ECU pill: shows learning/ready and target(s)
+        pill = "READY" if self._ready else "LEARNING"
+        bg = Color.DARK_GREEN.rgb() if self._ready else Color.DARK_YELLOW.rgb()
+        self._draw_pill(surface, x=20, y=60, text=f"ECU {pill}", bg=bg)
+
+        # Gear/RPM pill
         self._draw_pill(
             surface,
-            w - 330,
-            h - 60,
-            pill_text,
-            Color.DARK_GREEN.rgb() if warm else Color.DEEP_PURPLE.rgb(),
+            x=20,
+            y=95,
+            text=f"G{self._gear}  {int(self._rpm)} rpm",
+            bg=Color.DARK_GREY.rgb(),
         )
 
-        if isinstance(self._blinkt, FakeBlinkt):
-            margin = 320
-            self._draw_led_bar(surface, margin, 16, w - 2 * margin, 30)
+        # Targets pill
+        up = int(self._up_target) if self._up_target else None
+        dn = int(self._down_target) if self._down_target else None
+        txt = []
+        if up:
+            txt.append(f"UP {up} rpm")
+        if dn:
+            txt.append(f"DN {dn} rpm")
+        if txt:
+            self._draw_pill(
+                surface, x=20, y=130, text="  ".join(txt), bg=Color.DARK_GREY.rgb()
+            )
 
-        # Anchor + label
-        # TODO:
-        # self._label.rect.center = self._anchor((w, h))
-        # self._label.draw(surface)
+        # Numeric progress (center label)
+        try:
+            pass
+        except Exception:
+            return
+        rect = self._label.surface.get_rect()
+        rect.center = (surface.get_width() // 2, 26)
+        surface.blit(self._label.surface, rect)
 
-    # --- helpers ----------------------------------------------------------------
+        # Live scatter plot (per gear)
+        if self._show_plot:
+            W = surface.get_width()
+            plot_w, plot_h = 360, 160
+            x = W - plot_w - 20
+            y = 50
+            self._draw_scatter_plot(surface, x, y, plot_w, plot_h)
+
     def _set_progress_leds(self, frac: float) -> None:
         n = self._blinkt.NUM_PIXELS
         pairs = [
@@ -307,3 +340,72 @@ class ShiftLights(Widget):
                 (max(r, 10), max(g, 10), max(b, 10)) if (r + g + b) > 0 else (8, 8, 10)
             )
             pygame.draw.rect(surface, color, inner, border_radius=8)
+
+    def _draw_scatter_plot(self, surface: Any, x: int, y: int, w: int, h: int) -> None:
+        try:
+            import pygame
+        except Exception:
+            return
+        # Frame
+        box = pygame.Rect(x, y, w, h)
+        pygame.draw.rect(surface, (22, 22, 28), box, border_radius=10)
+        pygame.draw.rect(surface, Color.BLACK.rgb(), box, width=2, border_radius=10)
+
+        # Axes (inside padding)
+        pad = 12
+        inner = box.inflate(-2 * pad, -2 * pad)
+        pygame.draw.rect(surface, (30, 30, 38), inner, border_radius=8)
+
+        rpm_min, rpm_max, y_max = self._plot_bounds
+        xr = max(1.0, rpm_max - rpm_min)
+
+        # Curve (learned)
+        if self._curve_series:
+            pts = []
+            for r, t in self._curve_series:
+                sx = (r - rpm_min) / xr
+                sx = 0.0 if sx < 0 else (1.0 if sx > 1 else sx)
+                sy = 1.0 - min(1.0, t / y_max)
+                px = inner.left + int(sx * inner.width)
+                py = inner.top + int(sy * inner.height)
+                pts.append((px, py))
+            if len(pts) >= 2:
+                import pygame
+
+                pygame.draw.lines(surface, (120, 180, 255), False, pts, 2)
+
+        # Scatter for current gear (fade with age)
+        if self._scatter_points:
+            import pygame
+
+            lay = pygame.Surface((inner.width, inner.height), pygame.SRCALPHA)
+            for r, p, age in self._scatter_points[-400:]:
+                sx = (r - rpm_min) / xr
+                if sx < 0 or sx > 1:
+                    continue
+                sy = 1.0 - min(1.0, p / y_max)
+                px = int(sx * inner.width)
+                py = int(sy * inner.height)
+                fade = max(0.25, min(1.0, math.exp(-age / 8.0)))  # ~8s half-life
+                col = (
+                    int(255 * fade),
+                    int(220 * fade),
+                    int(80 * fade),
+                    int(200 * fade),
+                )
+                pygame.draw.circle(lay, col, (px, py), 2)
+            surface.blit(lay, (inner.left, inner.top))
+
+    def _format_label(self, info: dict) -> str:
+        cov = info.get("coverage", 0.0)
+        red = int(info.get("redline", 0.0) or 0)
+        rpm = int(info.get("rpm", 0.0) or 0)
+        g = int(info.get("gear", 0.0) or 0)
+        thr_raw = info.get("thr_raw", 0.0)
+        thr = info.get("thr", 0.0)
+        spd = info.get("speed", 0.0)
+        dbg = info.get("dbg", "")
+        if self._up_target:
+            tgt = int(self._up_target)
+            return f"G{g} {rpm}/{tgt}  RL {red}  Th {thr:.2f} ({thr_raw:.0f})  v {spd:.1f} m/s  cov {int(100 * cov)}%  {dbg}"
+        return f"G{g} {rpm}  RL {red}  Th {thr:.2f} ({thr_raw:.0f})  v {spd:.1f} m/s  cov {int(100 * cov)}%  {dbg}"

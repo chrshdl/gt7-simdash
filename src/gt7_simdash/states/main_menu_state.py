@@ -24,7 +24,7 @@ class MainMenuState(State):
             [
                 Button(
                     rect=(200, 200, 260, 180),
-                    text="Dashboard  Kit",
+                    text="Instrument Viz",
                     text_gap=10,
                     event_type_pressed=MAINMENU_START_PRESSED,
                     event_type_released=MAINMENU_START_RELEASED,
@@ -48,7 +48,7 @@ class MainMenuState(State):
                     font=load_font(42, dir="pixeltype", name=FontFamily.PIXEL_TYPE),
                     antialias=True,
                     icon="\ue8b8",
-                    icon_color=Color.LIGHT_GREY.rgb(),
+                    icon_color=Color.WHITE.rgb(),
                     icon_size=62,
                     icon_position="center",
                     icon_gap=0,
