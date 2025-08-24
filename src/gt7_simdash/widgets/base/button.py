@@ -251,7 +251,7 @@ class Button(AbstractButton):
         event_type_released,
         event_data=None,
         font=None,
-        color=None,
+        text_color=None,
         antialias=None,
         *,
         icon: Optional[str] = None,
@@ -272,7 +272,7 @@ class Button(AbstractButton):
             self.event_data = {"label": text}
         self.text = text
         self.font = font or load_font(32, name=FontFamily.DIGITAL_7_MONO)
-        self.color = color or Color.WHITE.rgb()
+        self.color = text_color or Color.WHITE.rgb()
         self.antialias = bool(antialias) if antialias is not None else False
 
         self.icon = icon
